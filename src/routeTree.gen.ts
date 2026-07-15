@@ -19,6 +19,7 @@ import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
+import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
 
 const BuscarRoute = BuscarRouteImport.update({
   id: '/buscar',
@@ -71,6 +72,12 @@ const AuthenticatedPainelPerfilRoute =
     path: '/perfil',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelProdutosIndexRoute =
+  AuthenticatedPainelProdutosIndexRouteImport.update({
+    id: '/produtos/',
+    path: '/produtos/',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/empresas/': typeof EmpresasIndexRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel/': typeof AuthenticatedPainelIndexRoute
+  '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -92,6 +100,7 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasIndexRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel': typeof AuthenticatedPainelIndexRoute
+  '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -105,6 +114,7 @@ export interface FileRoutesById {
   '/empresas/': typeof EmpresasIndexRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
+  '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/painel/perfil'
     | '/painel/'
+    | '/painel/produtos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/painel/perfil'
     | '/painel'
+    | '/painel/produtos'
   id:
     | '__root__'
     | '/'
@@ -140,6 +152,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/_authenticated/painel/perfil'
     | '/_authenticated/painel/'
+    | '/_authenticated/painel/produtos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -224,17 +237,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelPerfilRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/produtos/': {
+      id: '/_authenticated/painel/produtos/'
+      path: '/produtos'
+      fullPath: '/painel/produtos/'
+      preLoaderRoute: typeof AuthenticatedPainelProdutosIndexRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
   }
 }
 
 interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelPerfilRoute: typeof AuthenticatedPainelPerfilRoute
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
+  AuthenticatedPainelProdutosIndexRoute: typeof AuthenticatedPainelProdutosIndexRoute
 }
 
 const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelPerfilRoute: AuthenticatedPainelPerfilRoute,
   AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
+  AuthenticatedPainelProdutosIndexRoute: AuthenticatedPainelProdutosIndexRoute,
 }
 
 const AuthenticatedPainelRouteWithChildren =
