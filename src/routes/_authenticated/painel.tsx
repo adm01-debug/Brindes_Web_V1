@@ -1,17 +1,21 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   component: PainelLayout,
 });
 
-const NAV = [
+const BASE_NAV = [
   { to: "/painel", label: "Visão geral", icon: LayoutDashboard, exact: true },
   { to: "/painel/produtos", label: "Produtos", icon: Package },
   { to: "/painel/perfil", label: "Perfil da empresa", icon: User },
+];
+const ADMIN_NAV = [
+  { to: "/painel/admin/empresas", label: "Admin: empresas", icon: ShieldCheck },
 ];
 
 function PainelLayout() {
