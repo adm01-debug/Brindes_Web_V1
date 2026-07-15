@@ -256,6 +256,10 @@ export type Database = {
           is_active: boolean
           material: string | null
           min_order_quantity: number | null
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_reason: string | null
+          moderation_status: Database["public"]["Enums"]["product_moderation_status"]
           name: string
           price: number | null
           price_on_request: boolean
@@ -281,6 +285,10 @@ export type Database = {
           is_active?: boolean
           material?: string | null
           min_order_quantity?: number | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_reason?: string | null
+          moderation_status?: Database["public"]["Enums"]["product_moderation_status"]
           name: string
           price?: number | null
           price_on_request?: boolean
@@ -306,6 +314,10 @@ export type Database = {
           is_active?: boolean
           material?: string | null
           min_order_quantity?: number | null
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_reason?: string | null
+          moderation_status?: Database["public"]["Enums"]["product_moderation_status"]
           name?: string
           price?: number | null
           price_on_request?: boolean
@@ -372,6 +384,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "company_owner"
       company_status: "pending" | "approved" | "rejected" | "suspended"
+      product_moderation_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -501,6 +514,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "company_owner"],
       company_status: ["pending", "approved", "rejected", "suspended"],
+      product_moderation_status: ["pending", "approved", "rejected"],
     },
   },
 } as const
