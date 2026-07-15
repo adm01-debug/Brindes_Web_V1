@@ -21,6 +21,8 @@ const ADMIN_NAV = [
 function PainelLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { data: isAdmin } = useIsAdmin();
+  const NAV = isAdmin ? [...BASE_NAV, ...ADMIN_NAV] : BASE_NAV;
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
