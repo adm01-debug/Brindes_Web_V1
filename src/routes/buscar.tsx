@@ -67,7 +67,7 @@ function SearchPage() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate({ search: (prev) => ({ ...prev, q: term || undefined }) });
+    navigate({ search: (prev: { q?: string; categoria?: string }) => ({ ...prev, q: term || undefined }) });
   };
 
   return (
@@ -90,7 +90,7 @@ function SearchPage() {
             <Select
               value={search.categoria ?? "all"}
               onValueChange={(v) =>
-                navigate({ search: (prev) => ({ ...prev, categoria: v === "all" ? undefined : v }) })
+                navigate({ search: (prev: { q?: string; categoria?: string }) => ({ ...prev, categoria: v === "all" ? undefined : v }) })
               }
             >
               <SelectTrigger className="sm:w-64">
