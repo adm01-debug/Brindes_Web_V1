@@ -20,6 +20,7 @@ import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
+import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
 
 const BuscarRoute = BuscarRouteImport.update({
   id: '/buscar',
@@ -78,6 +79,12 @@ const AuthenticatedPainelProdutosIndexRoute =
     path: '/produtos/',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelProdutosNovoRoute =
+  AuthenticatedPainelProdutosNovoRouteImport.update({
+    id: '/produtos/novo',
+    path: '/produtos/novo',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/empresas/': typeof EmpresasIndexRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel/': typeof AuthenticatedPainelIndexRoute
+  '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
 }
 export interface FileRoutesByTo {
@@ -100,6 +108,7 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasIndexRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel': typeof AuthenticatedPainelIndexRoute
+  '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
 }
 export interface FileRoutesById {
@@ -114,6 +123,7 @@ export interface FileRoutesById {
   '/empresas/': typeof EmpresasIndexRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
+  '/_authenticated/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
 }
 export interface FileRouteTypes {
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/painel/perfil'
     | '/painel/'
+    | '/painel/produtos/novo'
     | '/painel/produtos/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/painel/perfil'
     | '/painel'
+    | '/painel/produtos/novo'
     | '/painel/produtos'
   id:
     | '__root__'
@@ -152,6 +164,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/_authenticated/painel/perfil'
     | '/_authenticated/painel/'
+    | '/_authenticated/painel/produtos/novo'
     | '/_authenticated/painel/produtos/'
   fileRoutesById: FileRoutesById
 }
@@ -244,18 +257,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelProdutosIndexRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/produtos/novo': {
+      id: '/_authenticated/painel/produtos/novo'
+      path: '/produtos/novo'
+      fullPath: '/painel/produtos/novo'
+      preLoaderRoute: typeof AuthenticatedPainelProdutosNovoRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
   }
 }
 
 interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelPerfilRoute: typeof AuthenticatedPainelPerfilRoute
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
+  AuthenticatedPainelProdutosNovoRoute: typeof AuthenticatedPainelProdutosNovoRoute
   AuthenticatedPainelProdutosIndexRoute: typeof AuthenticatedPainelProdutosIndexRoute
 }
 
 const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelPerfilRoute: AuthenticatedPainelPerfilRoute,
   AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
+  AuthenticatedPainelProdutosNovoRoute: AuthenticatedPainelProdutosNovoRoute,
   AuthenticatedPainelProdutosIndexRoute: AuthenticatedPainelProdutosIndexRoute,
 }
 
