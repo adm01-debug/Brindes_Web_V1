@@ -110,7 +110,13 @@ function AdminProdutosPage() {
       is_active?: boolean;
     }) => {
       const { data: userRes } = await supabase.auth.getUser();
-      const updates: Record<string, unknown> = {};
+      const updates: {
+        moderation_status?: ModStatus;
+        moderation_reason?: string | null;
+        moderated_at?: string;
+        moderated_by?: string | null;
+        is_active?: boolean;
+      } = {};
       if (status) {
         updates.moderation_status = status;
         updates.moderation_reason = reason ?? null;
