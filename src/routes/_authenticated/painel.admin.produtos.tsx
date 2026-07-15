@@ -64,7 +64,7 @@ type ProductRow = {
   moderation_reason: string | null;
   created_at: string;
   company: { name: string; slug: string; status: string } | null;
-  cover: { storage_path: string } | null;
+  cover: { url: string } | null;
 };
 
 function AdminProdutosPage() {
@@ -82,7 +82,7 @@ function AdminProdutosPage() {
       let q = supabase
         .from("products")
         .select(
-          "id, name, slug, price, price_on_request, is_active, moderation_status, moderation_reason, created_at, company:companies!inner(name, slug, status), cover:product_images(storage_path)",
+          "id, name, slug, price, price_on_request, is_active, moderation_status, moderation_reason, created_at, company:companies!inner(name, slug, status), cover:product_images(url)",
         )
         .is("deleted_at", null)
         .order("created_at", { ascending: false })
@@ -300,10 +300,10 @@ function ProductRowCard({
 }) {
   const [thumb, setThumb] = useState<string | null>(null);
   useEffect(() => {
-    if (product.cover?.storage_path) {
-      getSignedUrl("product-images", product.cover.storage_path).then(setThumb);
+    if (product.cover?.url) {
+      getSignedUrl("product-images", product.cover.url).then(setThumb);
     }
-  }, [product.cover?.storage_path]);
+  }, [product.cover?.url]);
 
   const meta = STATUS_META[product.moderation_status];
   const Icon = meta.icon;
