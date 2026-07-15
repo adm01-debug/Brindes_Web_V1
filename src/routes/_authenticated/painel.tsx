@@ -9,12 +9,13 @@ export const Route = createFileRoute("/_authenticated/painel")({
   component: PainelLayout,
 });
 
-const BASE_NAV = [
+type NavItem = { to: string; label: string; icon: React.ElementType; exact?: boolean };
+const BASE_NAV: NavItem[] = [
   { to: "/painel", label: "Visão geral", icon: LayoutDashboard, exact: true },
   { to: "/painel/produtos", label: "Produtos", icon: Package },
   { to: "/painel/perfil", label: "Perfil da empresa", icon: User },
 ];
-const ADMIN_NAV = [
+const ADMIN_NAV: NavItem[] = [
   { to: "/painel/admin/empresas", label: "Admin: empresas", icon: ShieldCheck },
 ];
 
