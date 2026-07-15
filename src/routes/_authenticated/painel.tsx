@@ -17,6 +17,7 @@ const BASE_NAV: NavItem[] = [
 ];
 const ADMIN_NAV: NavItem[] = [
   { to: "/painel/admin/empresas", label: "Admin: empresas", icon: ShieldCheck },
+  { to: "/painel/admin/produtos", label: "Admin: produtos", icon: Package },
 ];
 
 function PainelLayout() {
