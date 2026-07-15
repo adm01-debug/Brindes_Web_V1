@@ -12,6 +12,23 @@ import { CategoryPill } from "@/components/category-pill";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
+  head: () => ({
+    meta: [
+      { title: "BrindesHub — Portal de Empresas de Brindes Corporativos no Brasil" },
+      {
+        name: "description",
+        content:
+          "Descubra empresas de brindes personalizados, promocionais e ecológicos em um só portal. Compare fornecedores, veja catálogos e peça orçamentos direto com a empresa.",
+      },
+      { property: "og:title", content: "BrindesHub — Portal de Empresas de Brindes" },
+      {
+        property: "og:description",
+        content: "Conecte-se com centenas de fornecedores de brindes corporativos em todo o Brasil.",
+      },
+      { property: "og:url", content: "https://brinde-gallery.lovable.app/" },
+    ],
+    links: [{ rel: "canonical", href: "https://brinde-gallery.lovable.app/" }],
+  }),
 });
 
 function HomePage() {
