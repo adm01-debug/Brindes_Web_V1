@@ -21,6 +21,7 @@ import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
 import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
+import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
 
 const BuscarRoute = BuscarRouteImport.update({
   id: '/buscar',
@@ -85,6 +86,12 @@ const AuthenticatedPainelProdutosNovoRoute =
     path: '/produtos/novo',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelProdutosIdEditarRoute =
+  AuthenticatedPainelProdutosIdEditarRouteImport.update({
+    id: '/produtos/$id/editar',
+    path: '/produtos/$id/editar',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/painel/': typeof AuthenticatedPainelIndexRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
+  '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelIndexRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
+  '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +134,7 @@ export interface FileRoutesById {
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
   '/_authenticated/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
+  '/_authenticated/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/painel/'
     | '/painel/produtos/novo'
     | '/painel/produtos/'
+    | '/painel/produtos/$id/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/painel/produtos/novo'
     | '/painel/produtos'
+    | '/painel/produtos/$id/editar'
   id:
     | '__root__'
     | '/'
@@ -166,6 +178,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/'
     | '/_authenticated/painel/produtos/novo'
     | '/_authenticated/painel/produtos/'
+    | '/_authenticated/painel/produtos/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelProdutosNovoRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/produtos/$id/editar': {
+      id: '/_authenticated/painel/produtos/$id/editar'
+      path: '/produtos/$id/editar'
+      fullPath: '/painel/produtos/$id/editar'
+      preLoaderRoute: typeof AuthenticatedPainelProdutosIdEditarRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
   }
 }
 
@@ -272,6 +292,7 @@ interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
   AuthenticatedPainelProdutosNovoRoute: typeof AuthenticatedPainelProdutosNovoRoute
   AuthenticatedPainelProdutosIndexRoute: typeof AuthenticatedPainelProdutosIndexRoute
+  AuthenticatedPainelProdutosIdEditarRoute: typeof AuthenticatedPainelProdutosIdEditarRoute
 }
 
 const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
@@ -279,6 +300,8 @@ const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
   AuthenticatedPainelProdutosNovoRoute: AuthenticatedPainelProdutosNovoRoute,
   AuthenticatedPainelProdutosIndexRoute: AuthenticatedPainelProdutosIndexRoute,
+  AuthenticatedPainelProdutosIdEditarRoute:
+    AuthenticatedPainelProdutosIdEditarRoute,
 }
 
 const AuthenticatedPainelRouteWithChildren =
