@@ -11,10 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
+import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 
 const BuscarRoute = BuscarRouteImport.update({
   id: '/buscar',
@@ -24,6 +26,10 @@ const BuscarRoute = BuscarRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -46,11 +52,17 @@ const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
   path: '/empresa/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
+  id: '/painel',
+  path: '/painel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/painel': typeof AuthenticatedPainelRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
@@ -59,6 +71,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/painel': typeof AuthenticatedPainelRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas': typeof EmpresasIndexRoute
@@ -66,8 +79,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/_authenticated/painel': typeof AuthenticatedPainelRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
@@ -78,6 +93,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buscar'
+    | '/painel'
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
@@ -86,14 +102,17 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buscar'
+    | '/painel'
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
     | '/buscar'
+    | '/_authenticated/painel'
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
@@ -101,6 +120,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BuscarRoute: typeof BuscarRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
@@ -122,6 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -152,11 +179,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmpresaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/painel': {
+      id: '/_authenticated/painel'
+      path: '/painel'
+      fullPath: '/painel'
+      preLoaderRoute: typeof AuthenticatedPainelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BuscarRoute: BuscarRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
