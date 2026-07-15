@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
+import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -28,34 +29,43 @@ const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
   path: '/empresas/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
+  id: '/empresa/$slug',
+  path: '/empresa/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/empresa/$slug': typeof EmpresaSlugRoute
   '/empresas/': typeof EmpresasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/empresa/$slug': typeof EmpresaSlugRoute
   '/empresas': typeof EmpresasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/empresa/$slug': typeof EmpresaSlugRoute
   '/empresas/': typeof EmpresasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/empresas/'
+  fullPaths: '/' | '/auth' | '/empresa/$slug' | '/empresas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/empresas'
-  id: '__root__' | '/' | '/auth' | '/empresas/'
+  to: '/' | '/auth' | '/empresa/$slug' | '/empresas'
+  id: '__root__' | '/' | '/auth' | '/empresa/$slug' | '/empresas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  EmpresaSlugRoute: typeof EmpresaSlugRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
 }
 
@@ -82,12 +92,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmpresasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/empresa/$slug': {
+      id: '/empresa/$slug'
+      path: '/empresa/$slug'
+      fullPath: '/empresa/$slug'
+      preLoaderRoute: typeof EmpresaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  EmpresaSlugRoute: EmpresaSlugRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
 }
 export const routeTree = rootRouteImport
