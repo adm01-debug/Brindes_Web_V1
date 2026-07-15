@@ -75,8 +75,8 @@ function PerfilPage() {
     const path = `${company.id}/${kind}-${Date.now()}.${ext}`;
     try {
       await uploadFile("company-assets", path, file);
-      const column = kind === "logo" ? "logo_url" : "banner_url";
-      const { error } = await supabase.from("companies").update({ [column]: path }).eq("id", company.id);
+      const updates = kind === "logo" ? { logo_url: path } : { banner_url: path };
+      const { error } = await supabase.from("companies").update(updates).eq("id", company.id);
       if (error) throw error;
       toast.success(`${kind === "logo" ? "Logo" : "Banner"} atualizado!`);
       qc.invalidateQueries({ queryKey: ["my-company"] });
