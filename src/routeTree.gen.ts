@@ -17,6 +17,7 @@ import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
+import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
 
 const BuscarRoute = BuscarRouteImport.update({
   id: '/buscar',
@@ -57,24 +58,31 @@ const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
   path: '/painel',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPainelIndexRoute =
+  AuthenticatedPainelIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
-  '/painel': typeof AuthenticatedPainelRoute
+  '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/painel/': typeof AuthenticatedPainelIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
-  '/painel': typeof AuthenticatedPainelRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas': typeof EmpresasIndexRoute
+  '/painel': typeof AuthenticatedPainelIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,10 +90,11 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
-  '/_authenticated/painel': typeof AuthenticatedPainelRoute
+  '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,15 +106,16 @@ export interface FileRouteTypes {
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
+    | '/painel/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/buscar'
-    | '/painel'
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas'
+    | '/painel'
   id:
     | '__root__'
     | '/'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
+    | '/_authenticated/painel/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -186,15 +197,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/painel/': {
+      id: '/_authenticated/painel/'
+      path: '/'
+      fullPath: '/painel/'
+      preLoaderRoute: typeof AuthenticatedPainelIndexRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
   }
 }
 
+interface AuthenticatedPainelRouteChildren {
+  AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
+}
+
+const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
+  AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
+}
+
+const AuthenticatedPainelRouteWithChildren =
+  AuthenticatedPainelRoute._addFileChildren(AuthenticatedPainelRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedPainelRoute: typeof AuthenticatedPainelRoute
+  AuthenticatedPainelRoute: typeof AuthenticatedPainelRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedPainelRoute: AuthenticatedPainelRoute,
+  AuthenticatedPainelRoute: AuthenticatedPainelRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
