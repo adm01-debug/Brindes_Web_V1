@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
@@ -10,8 +10,68 @@ import { Badge } from "@/components/ui/badge";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock } from "lucide-react";
 
+const productQueryOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["product", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select(`
+          *,
+          company:companies!inner(id, slug, name, status, whatsapp, phone, email, logo_url),
+          images:product_images(id, url, sort_order),
+          variants:product_variants(id, name, attributes)
+        `)
+        .eq("id", id)
+        .eq("is_active", true)
+        .is("deleted_at", null)
+        .eq("company.status", "approved")
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
 export const Route = createFileRoute("/produto/$id")({
   component: ProductPage,
+  loader: async ({ params, context }) => {
+    const product = await context.queryClient.ensureQueryData(productQueryOptions(params.id));
+    if (!product) throw notFound();
+    const priceLabel =
+      product.price_on_request || product.price == null
+        ? "sob consulta"
+        : `R$ ${Number(product.price).toFixed(2).replace(".", ",")}`;
+    const desc =
+      product.short_description ??
+      product.description?.slice(0, 155) ??
+      `${product.name} por ${product.company?.name ?? "empresa parceira"} no BrindesHub.`;
+    return {
+      title: product.name,
+      companyName: product.company?.name ?? "BrindesHub",
+      description: `${desc} · Preço: ${priceLabel}.`,
+    };
+  },
+  head: ({ params, loaderData }) => {
+    const url = `https://brinde-gallery.lovable.app/produto/${params.id}`;
+    const title = loaderData
+      ? `${loaderData.title} — ${loaderData.companyName}`
+      : "Produto — BrindesHub";
+    const description = loaderData?.description ?? "Produto não encontrado no BrindesHub.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:type", content: "product" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: url },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
 });
 
 function ProductPage() {

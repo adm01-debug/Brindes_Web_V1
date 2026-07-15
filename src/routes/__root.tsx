@@ -84,13 +84,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Encontre e conecte-se com centenas de empresas de brindes personalizados no Brasil. Catálogo completo de brindes corporativos, promocionais e ecológicos.",
       },
+      { property: "og:site_name", content: "BrindesHub" },
+      { property: "og:locale", content: "pt_BR" },
+      { property: "og:type", content: "website" },
       { property: "og:title", content: "BrindesHub — Portal de Empresas de Brindes" },
       {
         property: "og:description",
         content: "Encontre e conecte-se com centenas de empresas de brindes personalizados no Brasil.",
       },
-      { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "BrindesHub — Portal de Empresas de Brindes" },
+      {
+        name: "twitter:description",
+        content: "Encontre e conecte-se com centenas de empresas de brindes personalizados no Brasil.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -111,7 +118,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>

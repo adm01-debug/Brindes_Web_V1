@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader } from "@/components/site-header";
@@ -12,8 +12,53 @@ import {
   Building2, MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook, Linkedin, Package,
 } from "lucide-react";
 
+const companyQueryOptions = (slug: string) =>
+  queryOptions({
+    queryKey: ["company", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("slug", slug)
+        .eq("status", "approved")
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
 export const Route = createFileRoute("/empresa/$slug")({
   component: CompanyPage,
+  loader: async ({ params, context }) => {
+    const company = await context.queryClient.ensureQueryData(companyQueryOptions(params.slug));
+    if (!company) throw notFound();
+    return {
+      title: company.name,
+      description:
+        company.tagline ??
+        company.description?.slice(0, 155) ??
+        `Conheça o catálogo de brindes de ${company.name} no BrindesHub.`,
+    };
+  },
+  head: ({ params, loaderData }) => {
+    const url = `https://brinde-gallery.lovable.app/empresa/${params.slug}`;
+    const title = loaderData ? `${loaderData.title} — BrindesHub` : "Empresa — BrindesHub";
+    const description = loaderData?.description ?? "Empresa não encontrada no BrindesHub.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:type", content: "profile" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: url },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
 });
 
 function CompanyPage() {
