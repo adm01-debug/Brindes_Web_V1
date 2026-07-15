@@ -21,6 +21,7 @@ import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
 import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
+import { Route as AuthenticatedPainelAdminEmpresasRouteImport } from './routes/_authenticated/painel.admin.empresas'
 import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
 
 const BuscarRoute = BuscarRouteImport.update({
@@ -86,6 +87,12 @@ const AuthenticatedPainelProdutosNovoRoute =
     path: '/produtos/novo',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelAdminEmpresasRoute =
+  AuthenticatedPainelAdminEmpresasRouteImport.update({
+    id: '/admin/empresas',
+    path: '/admin/empresas',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 const AuthenticatedPainelProdutosIdEditarRoute =
   AuthenticatedPainelProdutosIdEditarRouteImport.update({
     id: '/produtos/$id/editar',
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/empresas/': typeof EmpresasIndexRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel/': typeof AuthenticatedPainelIndexRoute
+  '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
@@ -116,6 +124,7 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasIndexRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel': typeof AuthenticatedPainelIndexRoute
+  '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
@@ -132,6 +141,7 @@ export interface FileRoutesById {
   '/empresas/': typeof EmpresasIndexRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
+  '/_authenticated/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/_authenticated/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/_authenticated/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/painel/perfil'
     | '/painel/'
+    | '/painel/admin/empresas'
     | '/painel/produtos/novo'
     | '/painel/produtos/'
     | '/painel/produtos/$id/editar'
@@ -161,6 +172,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/painel/perfil'
     | '/painel'
+    | '/painel/admin/empresas'
     | '/painel/produtos/novo'
     | '/painel/produtos'
     | '/painel/produtos/$id/editar'
@@ -176,6 +188,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/_authenticated/painel/perfil'
     | '/_authenticated/painel/'
+    | '/_authenticated/painel/admin/empresas'
     | '/_authenticated/painel/produtos/novo'
     | '/_authenticated/painel/produtos/'
     | '/_authenticated/painel/produtos/$id/editar'
@@ -277,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelProdutosNovoRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/admin/empresas': {
+      id: '/_authenticated/painel/admin/empresas'
+      path: '/admin/empresas'
+      fullPath: '/painel/admin/empresas'
+      preLoaderRoute: typeof AuthenticatedPainelAdminEmpresasRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
     '/_authenticated/painel/produtos/$id/editar': {
       id: '/_authenticated/painel/produtos/$id/editar'
       path: '/produtos/$id/editar'
@@ -290,6 +310,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelPerfilRoute: typeof AuthenticatedPainelPerfilRoute
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
+  AuthenticatedPainelAdminEmpresasRoute: typeof AuthenticatedPainelAdminEmpresasRoute
   AuthenticatedPainelProdutosNovoRoute: typeof AuthenticatedPainelProdutosNovoRoute
   AuthenticatedPainelProdutosIndexRoute: typeof AuthenticatedPainelProdutosIndexRoute
   AuthenticatedPainelProdutosIdEditarRoute: typeof AuthenticatedPainelProdutosIdEditarRoute
@@ -298,6 +319,7 @@ interface AuthenticatedPainelRouteChildren {
 const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelPerfilRoute: AuthenticatedPainelPerfilRoute,
   AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
+  AuthenticatedPainelAdminEmpresasRoute: AuthenticatedPainelAdminEmpresasRoute,
   AuthenticatedPainelProdutosNovoRoute: AuthenticatedPainelProdutosNovoRoute,
   AuthenticatedPainelProdutosIndexRoute: AuthenticatedPainelProdutosIndexRoute,
   AuthenticatedPainelProdutosIdEditarRoute:
