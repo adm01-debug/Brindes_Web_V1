@@ -20,6 +20,7 @@ export type Database = {
           description: string | null
           icon: string | null
           id: string
+          is_active: boolean
           name: string
           parent_id: string | null
           slug: string
@@ -31,6 +32,7 @@ export type Database = {
           description?: string | null
           icon?: string | null
           id?: string
+          is_active?: boolean
           name: string
           parent_id?: string | null
           slug: string
@@ -42,6 +44,7 @@ export type Database = {
           description?: string | null
           icon?: string | null
           id?: string
+          is_active?: boolean
           name?: string
           parent_id?: string | null
           slug?: string
