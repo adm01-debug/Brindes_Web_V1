@@ -3,6 +3,7 @@ import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon } from "luc
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
