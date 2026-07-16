@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
+import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
@@ -69,6 +70,11 @@ const ProdutoIdRoute = ProdutoIdRouteImport.update({
 const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
   id: '/empresa/$slug',
   path: '/empresa/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
+  id: '/categoria/$slug',
+  path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPainelRoute = AuthenticatedPainelRouteImport.update({
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/buscar': typeof BuscarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/painel': typeof AuthenticatedPainelRouteWithChildren
+  '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas': typeof EmpresasIndexRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/buscar': typeof BuscarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
+  '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/buscar'
     | '/sitemap.xml'
     | '/painel'
+    | '/categoria/$slug'
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/buscar'
     | '/sitemap.xml'
+    | '/categoria/$slug'
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/buscar'
     | '/sitemap.xml'
     | '/_authenticated/painel'
+    | '/categoria/$slug'
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
@@ -301,6 +313,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BuscarRoute: typeof BuscarRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  CategoriaSlugRoute: typeof CategoriaSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       path: '/empresa/$slug'
       fullPath: '/empresa/$slug'
       preLoaderRoute: typeof EmpresaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categoria/$slug': {
+      id: '/categoria/$slug'
+      path: '/categoria/$slug'
+      fullPath: '/categoria/$slug'
+      preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/painel': {
@@ -518,6 +538,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BuscarRoute: BuscarRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  CategoriaSlugRoute: CategoriaSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
