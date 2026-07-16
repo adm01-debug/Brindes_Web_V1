@@ -141,6 +141,38 @@ function AdminDashboard() {
     },
   });
 
+  const { data: tops, isLoading: topsLoading } = useQuery({
+    queryKey: ["admin-tops"],
+    enabled: !!isAdmin,
+    queryFn: async () => {
+      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data, error } = await supabase
+        .from("leads")
+        .select("company_id, product_id, company:companies(name, slug), product:products(name, slug, id)")
+        .gte("created_at", since)
+        .limit(5000);
+      if (error) throw error;
+      const companies = new Map<string, { name: string; slug: string; count: number }>();
+      const products = new Map<string, { name: string; slug: string; id: string; count: number }>();
+      (data ?? []).forEach((r: any) => {
+        if (r.company_id && r.company) {
+          const c = companies.get(r.company_id) ?? { name: r.company.name, slug: r.company.slug, count: 0 };
+          c.count++;
+          companies.set(r.company_id, c);
+        }
+        if (r.product_id && r.product) {
+          const p = products.get(r.product_id) ?? { name: r.product.name, slug: r.product.slug, id: r.product.id, count: 0 };
+          p.count++;
+          products.set(r.product_id, p);
+        }
+      });
+      return {
+        topCompanies: [...companies.values()].sort((a, b) => b.count - a.count).slice(0, 10),
+        topProducts: [...products.values()].sort((a, b) => b.count - a.count).slice(0, 10),
+      };
+    },
+  });
+
   const { data: audit, isLoading: auditLoading } = useQuery({
     queryKey: ["admin-audit"],
     enabled: !!isAdmin,
@@ -154,6 +186,7 @@ function AdminDashboard() {
       return (data ?? []) as AuditRow[];
     },
   });
+
 
   if (adminLoading) return <div className="p-6 text-muted-foreground">Carregando…</div>;
   if (!isAdmin) return <Navigate to="/painel" />;
