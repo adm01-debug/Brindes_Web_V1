@@ -529,6 +529,29 @@ export type Database = {
         Args: { _older_than_days?: number }
         Returns: number
       }
+      search_companies: {
+        Args: {
+          _city?: string
+          _page?: number
+          _page_size?: number
+          _q?: string
+          _sort?: string
+          _state?: string
+        }
+        Returns: {
+          banner_url: string
+          city: string
+          created_at: string
+          id: string
+          logo_url: string
+          name: string
+          products_count: number
+          slug: string
+          state: string
+          tagline: string
+          total_count: number
+        }[]
+      }
       search_products: {
         Args: {
           _category_slug?: string
