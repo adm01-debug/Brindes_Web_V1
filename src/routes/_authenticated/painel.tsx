@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck, Tag, Gauge, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   component: PainelLayout,
 });
+
 
 type NavItem = { to: string; label: string; icon: React.ElementType; exact?: boolean };
 const BASE_NAV: NavItem[] = [
@@ -28,11 +32,40 @@ function PainelLayout() {
   const navigate = useNavigate();
   const { data: isAdmin } = useIsAdmin();
   const NAV = isAdmin ? [...BASE_NAV, ...ADMIN_NAV] : BASE_NAV;
+  const queryClient = useQueryClient();
+
+  const { data: unreadLeads = 0 } = useQuery({
+    queryKey: ["leads-unread-count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("leads")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "new");
+      return count ?? 0;
+    },
+    refetchInterval: 60_000,
+  });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("leads-nav")
+      .on("postgres_changes", { event: "*", schema: "public", table: "leads" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  const badgeFor = (to: string) =>
+    to === "/painel/leads" && unreadLeads > 0 ? unreadLeads : null;
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate({ to: "/" });
   };
+
 
   return (
     <div className="flex min-h-screen bg-muted/30">
@@ -50,6 +83,7 @@ function PainelLayout() {
               ? location.pathname === item.to
               : location.pathname.startsWith(item.to);
             const Icon = item.icon;
+            const badge = badgeFor(item.to);
             return (
               <Link
                 key={item.to}
@@ -62,10 +96,19 @@ function PainelLayout() {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {badge !== null && (
+                  <span className={cn(
+                    "ml-auto inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold",
+                    active ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary text-primary-foreground",
+                  )}>
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
               </Link>
             );
           })}
+
         </nav>
         <div className="border-t p-3 space-y-1">
           <Button variant="ghost" className="w-full justify-start" asChild>
@@ -102,20 +145,27 @@ function PainelLayout() {
               ? location.pathname === item.to
               : location.pathname.startsWith(item.to);
             const Icon = item.icon;
+            const badge = badgeFor(item.to);
             return (
               <Link
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 py-2 text-xs",
+                  "relative flex flex-1 flex-col items-center gap-1 py-2 text-xs",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
               >
                 <Icon className="h-5 w-5" />
                 {item.label.split(" ")[0]}
+                {badge !== null && (
+                  <span className="absolute right-3 top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
               </Link>
             );
           })}
+
         </nav>
 
         <div className="p-4 pb-20 sm:p-6 md:pb-6 lg:p-8">
