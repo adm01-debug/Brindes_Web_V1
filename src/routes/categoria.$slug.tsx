@@ -115,7 +115,7 @@ export const Route = createFileRoute("/categoria/$slug")({
   notFoundComponent: () => (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      <main className="flex flex-1 items-center justify-center px-4 py-16">
+      <main id="conteudo" className="flex flex-1 items-center justify-center px-4 py-16">
         <div className="text-center">
           <Tag className="mx-auto h-10 w-10 text-muted-foreground" />
           <h1 className="mt-4 text-2xl font-semibold">Categoria não encontrada</h1>

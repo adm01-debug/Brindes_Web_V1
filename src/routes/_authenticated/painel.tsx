@@ -146,7 +146,7 @@ function PainelLayout() {
       </aside>
 
       {/* Content */}
-      <main className="flex-1 overflow-x-hidden">
+      <main id="conteudo" className="flex-1 overflow-x-hidden">
         {/* Mobile top bar */}
         <div className="flex items-center justify-between border-b bg-card p-4 md:hidden">
           <Link to="/painel" className="flex items-center gap-2 font-semibold">
