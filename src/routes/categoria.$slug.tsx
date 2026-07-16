@@ -181,17 +181,7 @@ function CategoryPage() {
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {products.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  id={p.id}
-                  name={p.name}
-                  price={p.price}
-                  priceOnRequest={p.price_on_request}
-                  shortDescription={p.short_description}
-                  companyName={p.company?.name}
-                  companySlug={p.company?.slug}
-                  imageUrl={p.images?.[0]?.url}
-                />
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           )}
