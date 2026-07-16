@@ -59,7 +59,7 @@ export const Route = createFileRoute("/sitemap.xml")({
               .limit(10000),
             supabase
               .from("categories")
-              .select("slug, updated_at")
+              .select("slug")
               .order("sort_order", { ascending: true })
               .limit(500),
           ]);
