@@ -15,9 +15,13 @@ import {
   ShieldOff,
   Activity,
   ArrowRight,
+  MessageSquare,
+  Inbox,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/painel/admin/")({
   component: AdminDashboard,
@@ -34,6 +38,10 @@ type KPI = {
   categoriesActive: number;
   companiesLast7d: number;
   productsLast7d: number;
+  leadsTotal: number;
+  leadsNew: number;
+  leadsLast7d: number;
+  series: { date: string; leads: number; products: number }[];
 };
 
 type AuditRow = {
@@ -56,13 +64,15 @@ function AdminDashboard() {
     queryFn: async (): Promise<KPI> => {
       const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const countBy = async (
-        table: "companies" | "products" | "categories",
+        table: "companies" | "products" | "categories" | "leads",
         filter: (q: ReturnType<typeof supabase.from>) => any,
       ) => {
         const q = supabase.from(table).select("id", { count: "exact", head: true });
         const { count } = await filter(q);
         return count ?? 0;
       };
+
+      const since30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
       const [
         companiesPending,
@@ -75,6 +85,11 @@ function AdminDashboard() {
         categoriesActive,
         companiesLast7d,
         productsLast7d,
+        leadsTotal,
+        leadsNew,
+        leadsLast7d,
+        leadsSeriesRes,
+        productsSeriesRes,
       ] = await Promise.all([
         countBy("companies", (q) => q.eq("status", "pending")),
         countBy("companies", (q) => q.eq("status", "approved")),
@@ -86,7 +101,26 @@ function AdminDashboard() {
         countBy("categories", (q) => q.eq("is_active", true)),
         countBy("companies", (q) => q.gte("created_at", since)),
         countBy("products", (q) => q.gte("created_at", since).is("deleted_at", null)),
+        countBy("leads", (q) => q),
+        countBy("leads", (q) => q.eq("status", "new")),
+        countBy("leads", (q) => q.gte("created_at", since)),
+        supabase.from("leads").select("created_at").gte("created_at", since30).limit(5000),
+        supabase.from("products").select("created_at").gte("created_at", since30).is("deleted_at", null).limit(5000),
       ]);
+
+      const days: Record<string, { date: string; leads: number; products: number }> = {};
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 24 * 3600 * 1000).toISOString().slice(0, 10);
+        days[d] = { date: d, leads: 0, products: 0 };
+      }
+      (leadsSeriesRes.data ?? []).forEach((r: { created_at: string }) => {
+        const d = r.created_at.slice(0, 10);
+        if (days[d]) days[d].leads++;
+      });
+      (productsSeriesRes.data ?? []).forEach((r: { created_at: string }) => {
+        const d = r.created_at.slice(0, 10);
+        if (days[d]) days[d].products++;
+      });
 
       return {
         companiesPending,
@@ -99,6 +133,10 @@ function AdminDashboard() {
         categoriesActive,
         companiesLast7d,
         productsLast7d,
+        leadsTotal,
+        leadsNew,
+        leadsLast7d,
+        series: Object.values(days),
       };
     },
   });
@@ -195,7 +233,64 @@ function AdminDashboard() {
           to="/painel/admin/categorias"
           loading={kpiLoading}
         />
+        <KpiCard
+          title="Leads totais"
+          value={kpi?.leadsTotal}
+          icon={MessageSquare}
+          tone="muted"
+          to="/painel/admin"
+          loading={kpiLoading}
+        />
+        <KpiCard
+          title="Leads novos"
+          value={kpi?.leadsNew}
+          icon={Inbox}
+          tone="warning"
+          to="/painel/admin"
+          loading={kpiLoading}
+        />
       </section>
+
+      {/* Gráfico global 30 dias */}
+      {kpi && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Marketplace — últimos 30 dias
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              config={{
+                leads: { label: "Leads", color: "hsl(var(--primary))" },
+                products: { label: "Produtos novos", color: "hsl(var(--accent-foreground))" },
+              }}
+              className="h-64 w-full"
+            >
+              <ResponsiveContainer>
+                <AreaChart data={kpi.series} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="admLeads" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="admProd" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--accent-foreground))" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="hsl(var(--accent-foreground))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5)} className="text-xs" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis allowDecimals={false} className="text-xs" stroke="hsl(var(--muted-foreground))" width={30} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="leads" stroke="hsl(var(--primary))" fill="url(#admLeads)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="products" stroke="hsl(var(--accent-foreground))" fill="url(#admProd)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Últimos 7 dias */}
       <section className="grid gap-3 md:grid-cols-2">
@@ -205,9 +300,10 @@ function AdminDashboard() {
               Últimos 7 dias
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4">
-            <Metric icon={Building2} label="Novas empresas" value={kpi?.companiesLast7d} loading={kpiLoading} />
-            <Metric icon={Package} label="Novos produtos" value={kpi?.productsLast7d} loading={kpiLoading} />
+          <CardContent className="grid grid-cols-3 gap-4">
+            <Metric icon={Building2} label="Empresas" value={kpi?.companiesLast7d} loading={kpiLoading} />
+            <Metric icon={Package} label="Produtos" value={kpi?.productsLast7d} loading={kpiLoading} />
+            <Metric icon={MessageSquare} label="Leads" value={kpi?.leadsLast7d} loading={kpiLoading} />
           </CardContent>
         </Card>
         <Card>
