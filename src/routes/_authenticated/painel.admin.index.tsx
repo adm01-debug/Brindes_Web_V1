@@ -343,7 +343,7 @@ function AdminDashboard() {
           <CardHeader className="pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium text-muted-foreground">Ações rápidas</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <CardContent className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Button variant="outline" asChild>
               <Link to="/painel/admin/empresas">Empresas</Link>
             </Button>
@@ -352,6 +352,11 @@ function AdminDashboard() {
             </Button>
             <Button variant="outline" asChild>
               <Link to="/painel/admin/categorias">Categorias</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/painel/admin/observabilidade">
+                <Activity className="mr-2 h-4 w-4" /> Observabilidade
+              </Link>
             </Button>
           </CardContent>
         </Card>
