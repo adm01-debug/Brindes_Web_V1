@@ -224,6 +224,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "leads_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "mv_company_stats"
+            referencedColumns: ["company_id"]
+          },
+          {
             foreignKeyName: "leads_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
@@ -488,6 +495,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "mv_company_stats"
+            referencedColumns: ["company_id"]
+          },
         ]
       }
       user_roles: {
@@ -513,10 +527,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      mv_company_stats: {
+        Row: {
+          company_id: string | null
+          leads_30d: number | null
+          leads_total: number | null
+          products_approved: number | null
+          products_total: number | null
+          refreshed_at: string | null
+          slug: string | null
+          total_views: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       audit_log_purge: { Args: { _older_than_days?: number }; Returns: number }
+      get_company_stats: {
+        Args: { _slug: string }
+        Returns: {
+          leads_30d: number
+          leads_total: number
+          products_approved: number
+          products_total: number
+          refreshed_at: string
+          total_views: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -529,6 +566,7 @@ export type Database = {
         Args: { _older_than_days?: number }
         Returns: number
       }
+      refresh_company_stats: { Args: never; Returns: undefined }
       search_companies: {
         Args: {
           _city?: string

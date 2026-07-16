@@ -65,7 +65,7 @@ function AdminDashboard() {
       const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const countBy = async (
         table: "companies" | "products" | "categories" | "leads",
-        filter: (q: ReturnType<typeof supabase.from>) => any,
+        filter: (q: any) => any,
       ) => {
         const q = supabase.from(table).select("id", { count: "exact", head: true });
         const { count } = await filter(q);
