@@ -584,6 +584,7 @@ export type Database = {
         Returns: boolean
       }
       leads_purge: { Args: { _older_than_days?: number }; Returns: number }
+      mark_leads_read: { Args: { _ids: string[] }; Returns: number }
       metrics_daily_snapshot:
         | { Args: never; Returns: undefined }
         | { Args: { _day?: string }; Returns: undefined }
