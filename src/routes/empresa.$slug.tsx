@@ -179,7 +179,7 @@ function CompanyPage() {
         {/* Banner */}
         <div className="relative h-48 sm:h-64 bg-gradient-to-br from-primary/30 to-accent/30">
           {bannerUrl && (
-            <img src={bannerUrl} alt="" className="h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={bannerUrl} alt="" className="h-full w-full object-cover" />
           )}
         </div>
 
@@ -188,7 +188,7 @@ function CompanyPage() {
           <div className="-mt-16 flex flex-col gap-6 rounded-2xl border bg-card p-6 shadow-sm sm:flex-row sm:items-end">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-background bg-primary/10 text-primary shadow-sm">
               {logoUrl ? (
-                <img src={logoUrl} alt={company.name} className="h-full w-full object-cover" />
+                <img loading="lazy" decoding="async" src={logoUrl} alt={company.name} className="h-full w-full object-cover" />
               ) : (
                 <Building2 className="h-10 w-10" />
               )}

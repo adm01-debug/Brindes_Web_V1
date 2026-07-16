@@ -168,7 +168,7 @@ function ProductRow({
         <div className="flex items-center gap-4">
           <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
             {imgUrl ? (
-              <img src={imgUrl} alt={product.name} className="h-full w-full object-cover" />
+              <img loading="lazy" decoding="async" src={imgUrl} alt={product.name} className="h-full w-full object-cover" />
             ) : (
               <div className="flex h-full items-center justify-center text-muted-foreground">
                 <Package className="h-6 w-6" />
