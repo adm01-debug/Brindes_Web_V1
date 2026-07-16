@@ -4,10 +4,14 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck, Tag, Gauge, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/painel")({
   component: PainelLayout,
 });
+
 
 type NavItem = { to: string; label: string; icon: React.ElementType; exact?: boolean };
 const BASE_NAV: NavItem[] = [
