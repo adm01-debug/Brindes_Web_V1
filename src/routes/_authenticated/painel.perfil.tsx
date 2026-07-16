@@ -201,7 +201,7 @@ function ImageUploader({
       <div className="flex items-center gap-4">
         <div className={`overflow-hidden rounded-lg border bg-muted flex items-center justify-center text-muted-foreground ${aspectClass}`}>
           {currentUrl ? (
-            <img src={currentUrl} alt="" className="h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={currentUrl} alt="" className="h-full w-full object-cover" />
           ) : (
             fallback
           )}

@@ -323,7 +323,7 @@ function ProductRowCard({
       <CardContent className="flex flex-col gap-4 p-4 sm:flex-row">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
           {thumb ? (
-            <img src={thumb} alt={product.name} className="h-full w-full object-cover" />
+            <img loading="lazy" decoding="async" src={thumb} alt={product.name} className="h-full w-full object-cover" />
           ) : (
             <Package className="h-8 w-8 text-muted-foreground" />
           )}
