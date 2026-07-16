@@ -187,34 +187,51 @@ function ProductRow({
             </div>
             <p className="mt-1 text-sm text-muted-foreground">{priceLabel}</p>
           </div>
-        <div className="hidden items-center gap-2 sm:flex">
-          <Switch checked={product.is_active} onCheckedChange={() => onToggle(product.id, product.is_active)} />
+          <div className="hidden items-center gap-2 sm:flex">
+            <Switch checked={product.is_active} onCheckedChange={() => onToggle(product.id, product.is_active)} />
+          </div>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/painel/produtos/$id/editar" params={{ id: product.id }}>
+              <Pencil className="h-4 w-4" />
+            </Link>
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remover produto?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  O produto será arquivado e não aparecerá mais no portal.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onDelete(product.id)}>Remover</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/painel/produtos/$id/editar" params={{ id: product.id }}>
-            <Pencil className="h-4 w-4" />
-          </Link>
-        </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Remover produto?</AlertDialogTitle>
-              <AlertDialogDescription>
-                O produto será arquivado e não aparecerá mais no portal.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(product.id)}>Remover</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
+        {rejected && product.moderation_reason && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Rejeitado pela moderação</AlertTitle>
+            <AlertDescription className="mt-1 space-y-2">
+              <p>{product.moderation_reason}</p>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/painel/produtos/$id/editar" params={{ id: product.id }}>
+                  Corrigir e reenviar
+                </Link>
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
       </CardContent>
     </Card>
   );
+}
 }
