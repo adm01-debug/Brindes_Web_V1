@@ -84,6 +84,24 @@ function DashboardPage() {
         </CardContent>
       </Card>
 
+      {/* Rejection reason banner */}
+      {(company.status === "rejected" || company.status === "suspended") && company.rejection_reason && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>
+            {company.status === "rejected" ? "Cadastro rejeitado" : "Empresa suspensa"}
+          </AlertTitle>
+          <AlertDescription className="mt-2 space-y-3">
+            <p><strong>Motivo:</strong> {company.rejection_reason}</p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/painel/perfil">Ajustar perfil e reenviar</Link>
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard label="Produtos ativos" value={stats?.activeProducts ?? 0} icon={<Package className="h-4 w-4" />} />
