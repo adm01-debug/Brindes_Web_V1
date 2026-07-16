@@ -127,8 +127,18 @@ type ProductRowData = {
   price_on_request: boolean;
   is_active: boolean;
   views_count: number;
+  moderation_status: "pending" | "approved" | "rejected";
+  moderation_reason: string | null;
   product_images: { url: string; sort_order: number }[] | null;
 };
+
+function ModerationBadge({ status }: { status: ProductRowData["moderation_status"] }) {
+  if (status === "approved")
+    return <Badge variant="default" className="gap-1"><CheckCircle2 className="h-3 w-3" />Aprovado</Badge>;
+  if (status === "pending")
+    return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />Em análise</Badge>;
+  return <Badge variant="destructive" className="gap-1"><XCircle className="h-3 w-3" />Rejeitado</Badge>;
+}
 
 function ProductRow({
   product,
@@ -150,29 +160,33 @@ function ProductRow({
     ? "Sob consulta"
     : formatBRL(Number(product.price));
 
+  const rejected = product.moderation_status === "rejected";
+
   return (
-    <Card>
-      <CardContent className="flex items-center gap-4 p-4">
-        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
-          {imgUrl ? (
-            <img src={imgUrl} alt={product.name} className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <Package className="h-6 w-6" />
-            </div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="truncate font-semibold">{product.name}</h3>
-            {product.is_active ? (
-              <Badge variant="secondary" className="gap-1"><Eye className="h-3 w-3" />Ativo</Badge>
+    <Card className={rejected ? "border-destructive/40" : undefined}>
+      <CardContent className="flex flex-col gap-3 p-4">
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+            {imgUrl ? (
+              <img src={imgUrl} alt={product.name} className="h-full w-full object-cover" />
             ) : (
-              <Badge variant="outline" className="gap-1"><EyeOff className="h-3 w-3" />Inativo</Badge>
+              <div className="flex h-full items-center justify-center text-muted-foreground">
+                <Package className="h-6 w-6" />
+              </div>
             )}
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{priceLabel}</p>
-        </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="truncate font-semibold">{product.name}</h3>
+              <ModerationBadge status={product.moderation_status} />
+              {product.is_active ? (
+                <Badge variant="outline" className="gap-1"><Eye className="h-3 w-3" />Ativo</Badge>
+              ) : (
+                <Badge variant="outline" className="gap-1"><EyeOff className="h-3 w-3" />Inativo</Badge>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">{priceLabel}</p>
+          </div>
         <div className="hidden items-center gap-2 sm:flex">
           <Switch checked={product.is_active} onCheckedChange={() => onToggle(product.id, product.is_active)} />
         </div>
