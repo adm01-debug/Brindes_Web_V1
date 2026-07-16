@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -64,6 +65,26 @@ function LeadsPage() {
       return (data ?? []) as unknown as LeadRow[];
     },
   });
+
+  const autoReadRef = useRef(false);
+  useEffect(() => {
+    if (autoReadRef.current || !data) return;
+    const unreadIds = data.filter((l) => !l.read_at).map((l) => l.id);
+    if (unreadIds.length === 0) return;
+    autoReadRef.current = true;
+    const now = new Date().toISOString();
+    supabase
+      .from("leads")
+      .update({ read_at: now })
+      .in("id", unreadIds)
+      .then(({ error }) => {
+        if (!error) {
+          queryClient.invalidateQueries({ queryKey: ["leads"] });
+          queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] });
+        }
+      });
+  }, [data, queryClient]);
+
 
   const mutation = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Partial<Pick<LeadRow, "status" | "read_at">> }) => {
