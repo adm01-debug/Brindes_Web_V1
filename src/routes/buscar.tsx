@@ -29,6 +29,8 @@ const searchSchema = z.object({
 
 const PAGE_SIZE = 24;
 
+const BUSCAR_URL = "https://brinde-gallery.lovable.app/buscar";
+
 export const Route = createFileRoute("/buscar")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
@@ -43,6 +45,34 @@ export const Route = createFileRoute("/buscar")({
       {
         property: "og:description",
         content: "Catálogo completo de brindes corporativos com filtros por categoria, preço e mais.",
+      },
+      { property: "og:url", content: BUSCAR_URL },
+      { property: "og:type", content: "website" },
+      { name: "twitter:title", content: "Buscar brindes personalizados — BrindesHub" },
+      { name: "twitter:description", content: "Catálogo completo de brindes corporativos com filtros." },
+    ],
+    links: [{ rel: "canonical", href: BUSCAR_URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SearchResultsPage",
+          name: "Buscar brindes personalizados",
+          url: BUSCAR_URL,
+          isPartOf: { "@id": "https://brinde-gallery.lovable.app/#website" },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Início", item: "https://brinde-gallery.lovable.app/" },
+            { "@type": "ListItem", position: 2, name: "Buscar", item: BUSCAR_URL },
+          ],
+        }),
       },
     ],
   }),
