@@ -94,7 +94,7 @@ function LeadsPage() {
   }, [data]);
 
   function exportCsv() {
-    if (!data || data.length === 0) {
+    if (!filtered || filtered.length === 0) {
       toast.error("Nada para exportar");
       return;
     }
@@ -103,7 +103,7 @@ function LeadsPage() {
       const s = v == null ? "" : String(v);
       return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const rows = data.map((l) =>
+    const rows = filtered.map((l) =>
       [
         new Date(l.created_at).toISOString(),
         l.name,
@@ -115,7 +115,6 @@ function LeadsPage() {
         l.message.replace(/\s+/g, " ").trim(),
       ].map(escape).join(","),
     );
-    // BOM for Excel UTF-8 compatibility
     const csv = "\ufeff" + [header.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -124,8 +123,9 @@ function LeadsPage() {
     a.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`${data.length} leads exportados`);
+    toast.success(`${filtered.length} leads exportados`);
   }
+
 
   return (
     <div className="space-y-6">
