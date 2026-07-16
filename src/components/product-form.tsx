@@ -1,6 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,33 +13,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { getSignedUrl, uploadFile, deleteFile } from "@/lib/portal";
-import { Loader2, Upload, X, GripVertical } from "lucide-react";
-
-export type ProductInput = {
-  id?: string;
-  name: string;
-  category_id: string | null;
-  short_description: string | null;
-  description: string | null;
-  price: number | null;
-  price_on_request: boolean;
-  material: string | null;
-  dimensions: string | null;
-  colors: string[] | null;
-  min_order_quantity: number | null;
-  production_time_days: number | null;
-  customization_options: string | null;
-  is_active: boolean;
-};
+import { productSchema, type ProductInput } from "@/lib/schemas";
+import { pgErrorMessage } from "@/lib/pg-errors";
+import { Loader2, Upload, X } from "lucide-react";
 
 type ImageState = {
-  id?: string; // db row id when existing
-  path: string; // storage path
+  id?: string;
+  path: string;
   previewUrl: string | null;
   sort_order: number;
   isNew?: boolean;
   file?: File;
 };
+
+type FormValues = {
+  name: string;
+  category_id: string | null;
+  short_description: string;
+  description: string;
+  price: string;
+  price_on_request: boolean;
+  material: string;
+  dimensions: string;
+  colors: string;
+  min_order_quantity: string;
+  production_time_days: string;
+  customization_options: string;
+  is_active: boolean;
+};
+
+function toFormValues(initial?: Partial<ProductInput>): FormValues {
+  return {
+    name: initial?.name ?? "",
+    category_id: initial?.category_id ?? null,
+    short_description: initial?.short_description ?? "",
+    description: initial?.description ?? "",
+    price: initial?.price != null ? String(initial.price) : "",
+    price_on_request: initial?.price_on_request ?? false,
+    material: initial?.material ?? "",
+    dimensions: initial?.dimensions ?? "",
+    colors: initial?.colors?.join(", ") ?? "",
+    min_order_quantity: initial?.min_order_quantity != null ? String(initial.min_order_quantity) : "",
+    production_time_days: initial?.production_time_days != null ? String(initial.production_time_days) : "",
+    customization_options: initial?.customization_options ?? "",
+    is_active: initial?.is_active ?? true,
+  };
+}
 
 export function ProductForm({
   companyId,
@@ -59,13 +80,30 @@ export function ProductForm({
     },
   });
 
-  const [saving, setSaving] = useState(false);
   const [images, setImages] = useState<ImageState[]>([]);
   const [initialLoaded, setInitialLoaded] = useState(!productId);
-  const [priceOnRequest, setPriceOnRequest] = useState(initial?.price_on_request ?? false);
-  const [isActive, setIsActive] = useState(initial?.is_active ?? true);
 
-  // Load existing images
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    defaultValues: toFormValues(initial),
+    resolver: zodResolver(
+      productSchema
+        .extend({
+          price: productSchema.shape.price,
+        })
+        .transform((v) => v),
+      // custom preprocess handled below via handleSubmit callback
+    ) as never,
+    // We won't rely on zodResolver for coercion; do manual parse in submit.
+  });
+
+  const priceOnRequest = watch("price_on_request");
+
   useEffect(() => {
     if (!productId) return;
     (async () => {
@@ -111,43 +149,37 @@ export function ProductForm({
     setImages((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSaving(true);
-    const form = new FormData(e.currentTarget);
-    const priceRaw = String(form.get("price") ?? "").replace(",", ".");
-    const price = priceOnRequest || !priceRaw ? null : Number(priceRaw);
-    if (price !== null && (Number.isNaN(price) || price < 0)) {
-      setSaving(false);
+  const onSubmit = handleSubmit(async (values) => {
+    const priceRaw = values.price.replace(",", ".").trim();
+    const priceNum = values.price_on_request || !priceRaw ? null : Number(priceRaw);
+    if (priceNum !== null && (Number.isNaN(priceNum) || priceNum < 0)) {
       return toast.error("Preço inválido");
     }
-    const colorsRaw = String(form.get("colors") ?? "").trim();
 
-    const payload = {
-      company_id: companyId,
-      name: String(form.get("name") ?? "").trim(),
-      category_id: (form.get("category_id") as string) || null,
-      short_description: String(form.get("short_description") ?? "").trim() || null,
-      description: String(form.get("description") ?? "").trim() || null,
-      price,
-      price_on_request: priceOnRequest,
-      material: String(form.get("material") ?? "").trim() || null,
-      dimensions: String(form.get("dimensions") ?? "").trim() || null,
-      colors: colorsRaw ? colorsRaw.split(",").map((c) => c.trim()).filter(Boolean) : null,
-      min_order_quantity: form.get("min_order_quantity")
-        ? Number(form.get("min_order_quantity"))
+    const parsed = productSchema.safeParse({
+      name: values.name,
+      category_id: values.category_id || null,
+      short_description: values.short_description.trim() || null,
+      description: values.description.trim() || null,
+      price: priceNum,
+      price_on_request: values.price_on_request,
+      material: values.material.trim() || null,
+      dimensions: values.dimensions.trim() || null,
+      colors: values.colors.trim()
+        ? values.colors.split(",").map((c) => c.trim()).filter(Boolean)
         : null,
-      production_time_days: form.get("production_time_days")
-        ? Number(form.get("production_time_days"))
-        : null,
-      customization_options: String(form.get("customization_options") ?? "").trim() || null,
-      is_active: isActive,
-    };
+      min_order_quantity: values.min_order_quantity ? Number(values.min_order_quantity) : null,
+      production_time_days: values.production_time_days ? Number(values.production_time_days) : null,
+      customization_options: values.customization_options.trim() || null,
+      is_active: values.is_active,
+    });
 
-    if (!payload.name) {
-      setSaving(false);
-      return toast.error("Nome é obrigatório");
+    if (!parsed.success) {
+      const first = parsed.error.issues[0];
+      return toast.error(first?.message ?? "Dados inválidos");
     }
+
+    const payload = { ...parsed.data, company_id: companyId };
 
     try {
       let finalProductId = productId;
@@ -160,7 +192,6 @@ export function ProductForm({
         finalProductId = data.id;
       }
 
-      // Upload new images + insert rows
       for (const img of images) {
         if (img.isNew && img.file) {
           await uploadFile("product-images", img.path, img.file);
@@ -179,16 +210,14 @@ export function ProductForm({
       qc.invalidateQueries({ queryKey: ["my-products"] });
       navigate({ to: "/painel/produtos" });
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Erro ao salvar");
-    } finally {
-      setSaving(false);
+      toast.error(pgErrorMessage(err, "Erro ao salvar produto"));
     }
-  };
+  });
 
   if (!initialLoaded) return <div className="h-64 animate-pulse rounded-lg bg-card" />;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-6" noValidate>
       {/* Images */}
       <Card>
         <CardHeader>
@@ -229,22 +258,41 @@ export function ProductForm({
       <Card>
         <CardHeader><CardTitle className="text-base">Informações do produto</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <Field label="Nome" name="name" defaultValue={initial?.name ?? ""} required maxLength={200} />
+          <div className="space-y-1.5">
+            <Label htmlFor="name">Nome</Label>
+            <Input id="name" maxLength={200} {...register("name")} aria-invalid={!!errors.name} />
+            {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+          </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="category_id">Categoria</Label>
-            <Select name="category_id" defaultValue={initial?.category_id ?? undefined}>
-              <SelectTrigger id="category_id">
-                <SelectValue placeholder="Selecione..." />
-              </SelectTrigger>
-              <SelectContent>
-                {categories?.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Controller
+              control={control}
+              name="category_id"
+              render={({ field }) => (
+                <Select value={field.value ?? undefined} onValueChange={(v) => field.onChange(v || null)}>
+                  <SelectTrigger id="category_id">
+                    <SelectValue placeholder="Selecione..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories?.map((c) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
-          <TextField label="Descrição curta (uma linha)" name="short_description" defaultValue={initial?.short_description ?? ""} rows={2} maxLength={300} />
-          <TextField label="Descrição completa" name="description" defaultValue={initial?.description ?? ""} rows={6} />
+
+          <div className="space-y-1.5">
+            <Label htmlFor="short_description">Descrição curta (uma linha)</Label>
+            <Textarea id="short_description" rows={2} maxLength={300} {...register("short_description")} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="description">Descrição completa</Label>
+            <Textarea id="description" rows={6} {...register("description")} />
+          </div>
         </CardContent>
       </Card>
 
@@ -252,15 +300,30 @@ export function ProductForm({
         <CardHeader><CardTitle className="text-base">Preço e pedido</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
-            <Switch id="price_on_request" checked={priceOnRequest} onCheckedChange={setPriceOnRequest} />
+            <Controller
+              control={control}
+              name="price_on_request"
+              render={({ field }) => (
+                <Switch id="price_on_request" checked={field.value} onCheckedChange={field.onChange} />
+              )}
+            />
             <Label htmlFor="price_on_request" className="cursor-pointer">Preço sob consulta</Label>
           </div>
           {!priceOnRequest && (
-            <Field label="Preço (R$)" name="price" type="text" defaultValue={initial?.price?.toString() ?? ""} placeholder="Ex: 15.90" />
+            <div className="space-y-1.5">
+              <Label htmlFor="price">Preço (R$)</Label>
+              <Input id="price" type="text" placeholder="Ex: 15.90" {...register("price")} />
+            </div>
           )}
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Pedido mínimo" name="min_order_quantity" type="number" min={1} defaultValue={initial?.min_order_quantity?.toString() ?? ""} />
-            <Field label="Prazo de produção (dias)" name="production_time_days" type="number" min={1} defaultValue={initial?.production_time_days?.toString() ?? ""} />
+            <div className="space-y-1.5">
+              <Label htmlFor="min_order_quantity">Pedido mínimo</Label>
+              <Input id="min_order_quantity" type="number" min={1} {...register("min_order_quantity")} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="production_time_days">Prazo de produção (dias)</Label>
+              <Input id="production_time_days" type="number" min={1} {...register("production_time_days")} />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -268,16 +331,34 @@ export function ProductForm({
       <Card>
         <CardHeader><CardTitle className="text-base">Especificações</CardTitle></CardHeader>
         <CardContent className="space-y-4">
-          <Field label="Material" name="material" defaultValue={initial?.material ?? ""} placeholder="Ex: Plástico ABS" />
-          <Field label="Dimensões" name="dimensions" defaultValue={initial?.dimensions ?? ""} placeholder="Ex: 10 x 5 x 2 cm" />
-          <Field label="Cores (separadas por vírgula)" name="colors" defaultValue={initial?.colors?.join(", ") ?? ""} placeholder="Ex: Azul, Vermelho, Preto" />
-          <TextField label="Opções de personalização" name="customization_options" defaultValue={initial?.customization_options ?? ""} rows={3} placeholder="Ex: Logo em silk-screen, gravação a laser..." />
+          <div className="space-y-1.5">
+            <Label htmlFor="material">Material</Label>
+            <Input id="material" placeholder="Ex: Plástico ABS" {...register("material")} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="dimensions">Dimensões</Label>
+            <Input id="dimensions" placeholder="Ex: 10 x 5 x 2 cm" {...register("dimensions")} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="colors">Cores (separadas por vírgula)</Label>
+            <Input id="colors" placeholder="Ex: Azul, Vermelho, Preto" {...register("colors")} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="customization_options">Opções de personalização</Label>
+            <Textarea id="customization_options" rows={3} placeholder="Ex: Logo em silk-screen, gravação a laser..." {...register("customization_options")} />
+          </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="flex items-center gap-3 p-5">
-          <Switch id="is_active" checked={isActive} onCheckedChange={setIsActive} />
+          <Controller
+            control={control}
+            name="is_active"
+            render={({ field }) => (
+              <Switch id="is_active" checked={field.value} onCheckedChange={field.onChange} />
+            )}
+          />
           <Label htmlFor="is_active" className="cursor-pointer">Produto ativo (visível no portal)</Label>
         </CardContent>
       </Card>
@@ -286,31 +367,11 @@ export function ProductForm({
         <Button type="button" variant="outline" onClick={() => navigate({ to: "/painel/produtos" })}>
           Cancelar
         </Button>
-        <Button type="submit" size="lg" disabled={saving}>
-          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" size="lg" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {productId ? "Salvar alterações" : "Criar produto"}
         </Button>
       </div>
     </form>
-  );
-}
-
-function Field(props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  const { label, name, ...rest } = props;
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={name}>{label}</Label>
-      <Input id={name} name={name} {...rest} />
-    </div>
-  );
-}
-
-function TextField(props: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
-  const { label, name, ...rest } = props;
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={name}>{label}</Label>
-      <Textarea id={name} name={name} {...rest} />
-    </div>
   );
 }
