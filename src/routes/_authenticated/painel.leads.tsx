@@ -49,6 +49,7 @@ const STATUS_META: Record<LeadStatus, { label: string; className: string }> = {
 function LeadsPage() {
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
+  const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["leads", statusFilter],
