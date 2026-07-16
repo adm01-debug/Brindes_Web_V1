@@ -141,6 +141,38 @@ function AdminDashboard() {
     },
   });
 
+  const { data: tops, isLoading: topsLoading } = useQuery({
+    queryKey: ["admin-tops"],
+    enabled: !!isAdmin,
+    queryFn: async () => {
+      const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data, error } = await supabase
+        .from("leads")
+        .select("company_id, product_id, company:companies(name, slug), product:products(name, slug, id)")
+        .gte("created_at", since)
+        .limit(5000);
+      if (error) throw error;
+      const companies = new Map<string, { name: string; slug: string; count: number }>();
+      const products = new Map<string, { name: string; slug: string; id: string; count: number }>();
+      (data ?? []).forEach((r: any) => {
+        if (r.company_id && r.company) {
+          const c = companies.get(r.company_id) ?? { name: r.company.name, slug: r.company.slug, count: 0 };
+          c.count++;
+          companies.set(r.company_id, c);
+        }
+        if (r.product_id && r.product) {
+          const p = products.get(r.product_id) ?? { name: r.product.name, slug: r.product.slug, id: r.product.id, count: 0 };
+          p.count++;
+          products.set(r.product_id, p);
+        }
+      });
+      return {
+        topCompanies: [...companies.values()].sort((a, b) => b.count - a.count).slice(0, 10),
+        topProducts: [...products.values()].sort((a, b) => b.count - a.count).slice(0, 10),
+      };
+    },
+  });
+
   const { data: audit, isLoading: auditLoading } = useQuery({
     queryKey: ["admin-audit"],
     enabled: !!isAdmin,
@@ -154,6 +186,7 @@ function AdminDashboard() {
       return (data ?? []) as AuditRow[];
     },
   });
+
 
   if (adminLoading) return <div className="p-6 text-muted-foreground">Carregando…</div>;
   if (!isAdmin) return <Navigate to="/painel" />;
@@ -324,7 +357,66 @@ function AdminDashboard() {
         </Card>
       </section>
 
+      {/* Rankings top 10 */}
+      <section className="grid gap-3 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Building2 className="h-4 w-4" /> Top empresas por leads (30 dias)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {topsLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
+            {!topsLoading && (!tops || tops.topCompanies.length === 0) && (
+              <p className="text-sm text-muted-foreground">Nenhum lead nos últimos 30 dias.</p>
+            )}
+            {tops?.topCompanies.map((c, i) => (
+              <Link
+                key={c.slug}
+                to="/empresa/$slug"
+                params={{ slug: c.slug }}
+                className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+              >
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="w-5 text-xs text-muted-foreground tabular-nums">{i + 1}.</span>
+                  <span className="truncate">{c.name}</span>
+                </span>
+                <Badge variant="secondary" className="tabular-nums">{c.count}</Badge>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Package className="h-4 w-4" /> Top produtos por leads (30 dias)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {topsLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
+            {!topsLoading && (!tops || tops.topProducts.length === 0) && (
+              <p className="text-sm text-muted-foreground">Nenhum lead nos últimos 30 dias.</p>
+            )}
+            {tops?.topProducts.map((p, i) => (
+              <Link
+                key={p.id}
+                to="/produto/$id"
+                params={{ id: p.id }}
+                className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+              >
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="w-5 text-xs text-muted-foreground tabular-nums">{i + 1}.</span>
+                  <span className="truncate">{p.name}</span>
+                </span>
+                <Badge variant="secondary" className="tabular-nums">{p.count}</Badge>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+      </section>
+
       {/* Trilha de auditoria */}
+
       <section>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-3">
