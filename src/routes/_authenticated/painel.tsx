@@ -145,20 +145,27 @@ function PainelLayout() {
               ? location.pathname === item.to
               : location.pathname.startsWith(item.to);
             const Icon = item.icon;
+            const badge = badgeFor(item.to);
             return (
               <Link
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 py-2 text-xs",
+                  "relative flex flex-1 flex-col items-center gap-1 py-2 text-xs",
                   active ? "text-primary" : "text-muted-foreground",
                 )}
               >
                 <Icon className="h-5 w-5" />
                 {item.label.split(" ")[0]}
+                {badge !== null && (
+                  <span className="absolute right-3 top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
               </Link>
             );
           })}
+
         </nav>
 
         <div className="p-4 pb-20 sm:p-6 md:pb-6 lg:p-8">
