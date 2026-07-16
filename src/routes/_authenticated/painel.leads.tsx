@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -13,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Mail, Phone, Package, Inbox, ExternalLink, Download } from "lucide-react";
+import { Mail, Phone, Package, Inbox, ExternalLink, Download, Search } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
@@ -48,6 +49,7 @@ const STATUS_META: Record<LeadStatus, { label: string; className: string }> = {
 function LeadsPage() {
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
+  const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["leads", statusFilter],
@@ -74,6 +76,15 @@ function LeadsPage() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const filtered = useMemo(() => {
+    if (!data) return [];
+    const q = search.trim().toLowerCase();
+    if (!q) return data;
+    return data.filter((l) =>
+      [l.name, l.email, l.phone ?? "", l.message, l.product?.name ?? ""].some((f) => f.toLowerCase().includes(q)),
+    );
+  }, [data, search]);
+
   const counts = useMemo(() => {
     const c = { total: data?.length ?? 0, new: 0, contacted: 0, won: 0, lost: 0 };
     data?.forEach((l) => {
@@ -83,7 +94,7 @@ function LeadsPage() {
   }, [data]);
 
   function exportCsv() {
-    if (!data || data.length === 0) {
+    if (!filtered || filtered.length === 0) {
       toast.error("Nada para exportar");
       return;
     }
@@ -92,7 +103,7 @@ function LeadsPage() {
       const s = v == null ? "" : String(v);
       return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const rows = data.map((l) =>
+    const rows = filtered.map((l) =>
       [
         new Date(l.created_at).toISOString(),
         l.name,
@@ -104,7 +115,6 @@ function LeadsPage() {
         l.message.replace(/\s+/g, " ").trim(),
       ].map(escape).join(","),
     );
-    // BOM for Excel UTF-8 compatibility
     const csv = "\ufeff" + [header.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -113,8 +123,9 @@ function LeadsPage() {
     a.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`${data.length} leads exportados`);
+    toast.success(`${filtered.length} leads exportados`);
   }
+
 
   return (
     <div className="space-y-6">
@@ -144,6 +155,15 @@ function LeadsPage() {
         </div>
       </header>
 
+      <div className="relative max-w-md">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por nome, email, telefone, produto ou mensagem…"
+          className="pl-9"
+        />
+      </div>
 
       {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
 
@@ -159,8 +179,12 @@ function LeadsPage() {
         </Card>
       )}
 
+      {!isLoading && data && data.length > 0 && filtered.length === 0 && (
+        <p className="text-sm text-muted-foreground">Nenhum lead corresponde à busca.</p>
+      )}
+
       <div className="space-y-3">
-        {data?.map((lead) => {
+        {filtered.map((lead) => {
           const meta = STATUS_META[lead.status];
           const isUnread = !lead.read_at;
           return (
