@@ -109,6 +109,40 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://brinde-gallery.lovable.app/#organization",
+              name: "BrindesHub",
+              url: "https://brinde-gallery.lovable.app",
+              logo: "https://brinde-gallery.lovable.app/favicon.ico",
+              sameAs: [],
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://brinde-gallery.lovable.app/#website",
+              url: "https://brinde-gallery.lovable.app",
+              name: "BrindesHub",
+              publisher: { "@id": "https://brinde-gallery.lovable.app/#organization" },
+              inLanguage: "pt-BR",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: "https://brinde-gallery.lovable.app/buscar?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            },
+          ],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

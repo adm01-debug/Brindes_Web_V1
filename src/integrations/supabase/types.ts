@@ -267,6 +267,7 @@ export type Database = {
           price: number | null
           price_on_request: boolean
           production_time_days: number | null
+          search_vector: unknown
           short_description: string | null
           sku: string | null
           slug: string | null
@@ -296,6 +297,7 @@ export type Database = {
           price?: number | null
           price_on_request?: boolean
           production_time_days?: number | null
+          search_vector?: unknown
           short_description?: string | null
           sku?: string | null
           slug?: string | null
@@ -325,6 +327,7 @@ export type Database = {
           price?: number | null
           price_on_request?: boolean
           production_time_days?: number | null
+          search_vector?: unknown
           short_description?: string | null
           sku?: string | null
           slug?: string | null
@@ -382,6 +385,37 @@ export type Database = {
         }
         Returns: boolean
       }
+      search_products: {
+        Args: {
+          _category_slug?: string
+          _page?: number
+          _page_size?: number
+          _price_max?: number
+          _price_min?: number
+          _q?: string
+          _sort?: string
+        }
+        Returns: {
+          category_name: string
+          category_slug: string
+          company_id: string
+          company_name: string
+          company_slug: string
+          created_at: string
+          currency: string
+          id: string
+          name: string
+          price: number
+          price_on_request: boolean
+          primary_image_url: string
+          short_description: string
+          slug: string
+          total_count: number
+          views_count: number
+        }[]
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       unaccent_safe: { Args: { input: string }; Returns: string }
     }
     Enums: {
