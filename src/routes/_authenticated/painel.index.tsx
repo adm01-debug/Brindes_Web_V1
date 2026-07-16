@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Package, Eye, Building2, Plus, ArrowRight, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Package, Eye, Building2, Plus, ArrowRight, CheckCircle2, Clock, XCircle, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/painel/")({
   component: DashboardPage,
