@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Mail, Phone, Package, Inbox, ExternalLink } from "lucide-react";
+import { Mail, Phone, Package, Inbox, ExternalLink, Download } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
@@ -82,6 +82,40 @@ function LeadsPage() {
     return c;
   }, [data]);
 
+  function exportCsv() {
+    if (!data || data.length === 0) {
+      toast.error("Nada para exportar");
+      return;
+    }
+    const header = ["Data", "Nome", "Email", "Telefone", "Qtd", "Produto", "Status", "Mensagem"];
+    const escape = (v: unknown) => {
+      const s = v == null ? "" : String(v);
+      return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = data.map((l) =>
+      [
+        new Date(l.created_at).toISOString(),
+        l.name,
+        l.email,
+        l.phone ?? "",
+        l.quantity ?? "",
+        l.product?.name ?? "",
+        STATUS_META[l.status].label,
+        l.message.replace(/\s+/g, " ").trim(),
+      ].map(escape).join(","),
+    );
+    // BOM for Excel UTF-8 compatibility
+    const csv = "\ufeff" + [header.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`${data.length} leads exportados`);
+  }
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -91,19 +125,25 @@ function LeadsPage() {
             Leads enviados pelos visitantes através do catálogo público.
           </p>
         </div>
-        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as LeadStatus | "all")}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos ({counts.total})</SelectItem>
-            <SelectItem value="new">Novos ({counts.new})</SelectItem>
-            <SelectItem value="contacted">Em contato ({counts.contacted})</SelectItem>
-            <SelectItem value="won">Ganhos ({counts.won})</SelectItem>
-            <SelectItem value="lost">Perdidos ({counts.lost})</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={exportCsv} disabled={!data?.length}>
+            <Download className="mr-2 h-4 w-4" /> Exportar CSV
+          </Button>
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as LeadStatus | "all")}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos ({counts.total})</SelectItem>
+              <SelectItem value="new">Novos ({counts.new})</SelectItem>
+              <SelectItem value="contacted">Em contato ({counts.contacted})</SelectItem>
+              <SelectItem value="won">Ganhos ({counts.won})</SelectItem>
+              <SelectItem value="lost">Perdidos ({counts.lost})</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </header>
+
 
       {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
 
