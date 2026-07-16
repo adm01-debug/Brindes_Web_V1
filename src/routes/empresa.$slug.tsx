@@ -159,7 +159,7 @@ function CompanyPage() {
     return (
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
-        <main className="flex-1 animate-pulse bg-muted/30" />
+        <main id="conteudo" className="flex-1 animate-pulse bg-muted/30" />
       </div>
     );
   }

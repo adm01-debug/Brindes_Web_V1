@@ -79,7 +79,7 @@ function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      <main className="flex-1">
+      <main id="conteudo" className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden border-b bg-gradient-to-br from-primary/10 via-background to-accent/10">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
