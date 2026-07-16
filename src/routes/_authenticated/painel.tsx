@@ -83,6 +83,7 @@ function PainelLayout() {
               ? location.pathname === item.to
               : location.pathname.startsWith(item.to);
             const Icon = item.icon;
+            const badge = badgeFor(item.to);
             return (
               <Link
                 key={item.to}
@@ -95,10 +96,19 @@ function PainelLayout() {
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {badge !== null && (
+                  <span className={cn(
+                    "ml-auto inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-semibold",
+                    active ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary text-primary-foreground",
+                  )}>
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
               </Link>
             );
           })}
+
         </nav>
         <div className="border-t p-3 space-y-1">
           <Button variant="ghost" className="w-full justify-start" asChild>
