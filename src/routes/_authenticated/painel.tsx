@@ -41,11 +41,12 @@ function PainelLayout() {
       const { count } = await supabase
         .from("leads")
         .select("id", { count: "exact", head: true })
-        .eq("status", "new");
+        .is("read_at", null);
       return count ?? 0;
     },
     refetchInterval: 60_000,
   });
+
 
   useEffect(() => {
     const channel = supabase
