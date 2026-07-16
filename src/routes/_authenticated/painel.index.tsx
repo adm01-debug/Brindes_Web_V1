@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Package, Eye, Building2, Plus, ArrowRight, CheckCircle2, Clock, XCircle, AlertTriangle } from "lucide-react";
+import { Package, Eye, Building2, Plus, ArrowRight, CheckCircle2, Clock, XCircle, AlertTriangle, MessageSquare, TrendingUp } from "lucide-react";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/painel/")({
   component: DashboardPage,
