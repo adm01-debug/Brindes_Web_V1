@@ -234,4 +234,3 @@ function ProductRow({
     </Card>
   );
 }
-}
