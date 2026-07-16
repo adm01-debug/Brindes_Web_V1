@@ -217,16 +217,17 @@ function DashboardPage() {
   );
 }
 
-function StatCard({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
+function StatCard({ label, value, icon, highlight }: { label: string; value: number; icon: React.ReactNode; highlight?: boolean }) {
   return (
-    <Card>
+    <Card className={highlight ? "border-primary/50 bg-primary/5" : undefined}>
       <CardContent className="p-5">
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">{label}</p>
-          <div className="text-muted-foreground">{icon}</div>
+          <div className={highlight ? "text-primary" : "text-muted-foreground"}>{icon}</div>
         </div>
         <p className="mt-2 text-3xl font-bold">{value}</p>
       </CardContent>
     </Card>
   );
 }
+
