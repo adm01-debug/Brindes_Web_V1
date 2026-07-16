@@ -300,9 +300,10 @@ function AdminDashboard() {
               Últimos 7 dias
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4">
-            <Metric icon={Building2} label="Novas empresas" value={kpi?.companiesLast7d} loading={kpiLoading} />
-            <Metric icon={Package} label="Novos produtos" value={kpi?.productsLast7d} loading={kpiLoading} />
+          <CardContent className="grid grid-cols-3 gap-4">
+            <Metric icon={Building2} label="Empresas" value={kpi?.companiesLast7d} loading={kpiLoading} />
+            <Metric icon={Package} label="Produtos" value={kpi?.productsLast7d} loading={kpiLoading} />
+            <Metric icon={MessageSquare} label="Leads" value={kpi?.leadsLast7d} loading={kpiLoading} />
           </CardContent>
         </Card>
         <Card>
