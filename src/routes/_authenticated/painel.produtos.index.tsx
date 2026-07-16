@@ -66,6 +66,33 @@ function ProductsPage() {
         </Button>
       </div>
 
+      {(() => {
+        const rejected = products?.filter((p) => p.moderation_status === "rejected") ?? [];
+        const pending = products?.filter((p) => p.moderation_status === "pending") ?? [];
+        return (
+          <>
+            {rejected.length > 0 && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{rejected.length} produto(s) rejeitado(s) pela moderação</AlertTitle>
+                <AlertDescription>
+                  Ajuste os itens sinalizados abaixo e salve novamente para reenviar à análise.
+                </AlertDescription>
+              </Alert>
+            )}
+            {pending.length > 0 && (
+              <Alert>
+                <Clock className="h-4 w-4" />
+                <AlertTitle>{pending.length} produto(s) em análise</AlertTitle>
+                <AlertDescription>
+                  Novos produtos ficam visíveis no portal público após aprovação da equipe.
+                </AlertDescription>
+              </Alert>
+            )}
+          </>
+        );
+      })()}
+
       {isLoading && <div className="h-40 animate-pulse rounded-lg bg-card" />}
 
       {products && products.length === 0 && (
