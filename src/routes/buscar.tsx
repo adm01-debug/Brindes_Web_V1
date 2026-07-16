@@ -117,10 +117,12 @@ function SearchPage() {
   const total = data?.[0]?.total_count ?? 0;
   const totalPages = Math.max(1, Math.ceil(Number(total) / PAGE_SIZE));
 
+  type SearchState = typeof search;
+
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     navigate({
-      search: (prev) => ({
+      search: (prev: SearchState) => ({
         ...prev,
         q: term,
         min: priceMin ? Number(priceMin) : 0,
@@ -130,8 +132,8 @@ function SearchPage() {
     });
   };
 
-  const setFilter = <K extends keyof typeof search>(key: K, value: (typeof search)[K]) => {
-    navigate({ search: (prev) => ({ ...prev, [key]: value, page: 1 }) });
+  const setFilter = <K extends keyof SearchState>(key: K, value: SearchState[K]) => {
+    navigate({ search: (prev: SearchState) => ({ ...prev, [key]: value, page: 1 }) });
   };
 
   return (
