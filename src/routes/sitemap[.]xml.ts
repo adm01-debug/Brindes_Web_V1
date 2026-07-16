@@ -94,6 +94,18 @@ export const Route = createFileRoute("/sitemap.xml")({
             );
           }
 
+          for (const c of categoriesRes.data ?? []) {
+            parts.push(
+              urlEntry(
+                `${SITE_URL}/categoria/${c.slug}`,
+                c.updated_at ? new Date(c.updated_at).toISOString() : undefined,
+                "weekly",
+                "0.7",
+              ),
+            );
+          }
+
+
           parts.push("</urlset>");
 
           return new Response(parts.join("\n"), {
