@@ -357,7 +357,66 @@ function AdminDashboard() {
         </Card>
       </section>
 
+      {/* Rankings top 10 */}
+      <section className="grid gap-3 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Building2 className="h-4 w-4" /> Top empresas por leads (30 dias)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {topsLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
+            {!topsLoading && (!tops || tops.topCompanies.length === 0) && (
+              <p className="text-sm text-muted-foreground">Nenhum lead nos últimos 30 dias.</p>
+            )}
+            {tops?.topCompanies.map((c, i) => (
+              <Link
+                key={c.slug}
+                to="/empresa/$slug"
+                params={{ slug: c.slug }}
+                className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+              >
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="w-5 text-xs text-muted-foreground tabular-nums">{i + 1}.</span>
+                  <span className="truncate">{c.name}</span>
+                </span>
+                <Badge variant="secondary" className="tabular-nums">{c.count}</Badge>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Package className="h-4 w-4" /> Top produtos por leads (30 dias)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            {topsLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
+            {!topsLoading && (!tops || tops.topProducts.length === 0) && (
+              <p className="text-sm text-muted-foreground">Nenhum lead nos últimos 30 dias.</p>
+            )}
+            {tops?.topProducts.map((p, i) => (
+              <Link
+                key={p.id}
+                to="/produto/$id"
+                params={{ id: p.id }}
+                className="flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+              >
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="w-5 text-xs text-muted-foreground tabular-nums">{i + 1}.</span>
+                  <span className="truncate">{p.name}</span>
+                </span>
+                <Badge variant="secondary" className="tabular-nums">{p.count}</Badge>
+              </Link>
+            ))}
+          </CardContent>
+        </Card>
+      </section>
+
       {/* Trilha de auditoria */}
+
       <section>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-3">
