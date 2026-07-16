@@ -28,6 +28,7 @@ import { Route as AuthenticatedPainelAdminProdutosRouteImport } from './routes/_
 import { Route as AuthenticatedPainelAdminObservabilidadeRouteImport } from './routes/_authenticated/painel.admin.observabilidade'
 import { Route as AuthenticatedPainelAdminEmpresasRouteImport } from './routes/_authenticated/painel.admin.empresas'
 import { Route as AuthenticatedPainelAdminCategoriasRouteImport } from './routes/_authenticated/painel.admin.categorias'
+import { Route as ApiPublicOgProdutoIdRouteImport } from './routes/api/public/og.produto.$id'
 import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -134,6 +135,11 @@ const AuthenticatedPainelAdminCategoriasRoute =
     path: '/admin/categorias',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const ApiPublicOgProdutoIdRoute = ApiPublicOgProdutoIdRouteImport.update({
+  id: '/api/public/og/produto/$id',
+  path: '/api/public/og/produto/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPainelProdutosIdEditarRoute =
   AuthenticatedPainelProdutosIdEditarRouteImport.update({
     id: '/produtos/$id/editar',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
+  '/api/public/og/produto/$id': typeof ApiPublicOgProdutoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/painel/admin': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
+  '/api/public/og/produto/$id': typeof ApiPublicOgProdutoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/_authenticated/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/_authenticated/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
+  '/api/public/og/produto/$id': typeof ApiPublicOgProdutoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -227,6 +236,7 @@ export interface FileRouteTypes {
     | '/painel/admin/'
     | '/painel/produtos/'
     | '/painel/produtos/$id/editar'
+    | '/api/public/og/produto/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/painel/admin'
     | '/painel/produtos'
     | '/painel/produtos/$id/editar'
+    | '/api/public/og/produto/$id'
   id:
     | '__root__'
     | '/'
@@ -269,6 +280,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/admin/'
     | '/_authenticated/painel/produtos/'
     | '/_authenticated/painel/produtos/$id/editar'
+    | '/api/public/og/produto/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -280,6 +292,7 @@ export interface RootRouteChildren {
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
+  ApiPublicOgProdutoIdRoute: typeof ApiPublicOgProdutoIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -417,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelAdminCategoriasRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/api/public/og/produto/$id': {
+      id: '/api/public/og/produto/$id'
+      path: '/api/public/og/produto/$id'
+      fullPath: '/api/public/og/produto/$id'
+      preLoaderRoute: typeof ApiPublicOgProdutoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/painel/produtos/$id/editar': {
       id: '/_authenticated/painel/produtos/$id/editar'
       path: '/produtos/$id/editar'
@@ -481,6 +501,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaSlugRoute: EmpresaSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
+  ApiPublicOgProdutoIdRoute: ApiPublicOgProdutoIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
