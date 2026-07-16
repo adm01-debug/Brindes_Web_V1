@@ -32,11 +32,40 @@ function PainelLayout() {
   const navigate = useNavigate();
   const { data: isAdmin } = useIsAdmin();
   const NAV = isAdmin ? [...BASE_NAV, ...ADMIN_NAV] : BASE_NAV;
+  const queryClient = useQueryClient();
+
+  const { data: unreadLeads = 0 } = useQuery({
+    queryKey: ["leads-unread-count"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("leads")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "new");
+      return count ?? 0;
+    },
+    refetchInterval: 60_000,
+  });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("leads-nav")
+      .on("postgres_changes", { event: "*", schema: "public", table: "leads" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  const badgeFor = (to: string) =>
+    to === "/painel/leads" && unreadLeads > 0 ? unreadLeads : null;
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate({ to: "/" });
   };
+
 
   return (
     <div className="flex min-h-screen bg-muted/30">
