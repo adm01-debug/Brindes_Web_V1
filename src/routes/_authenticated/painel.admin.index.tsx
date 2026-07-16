@@ -38,6 +38,10 @@ type KPI = {
   categoriesActive: number;
   companiesLast7d: number;
   productsLast7d: number;
+  leadsTotal: number;
+  leadsNew: number;
+  leadsLast7d: number;
+  series: { date: string; leads: number; products: number }[];
 };
 
 type AuditRow = {
