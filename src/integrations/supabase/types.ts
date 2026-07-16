@@ -504,6 +504,30 @@ export type Database = {
           },
         ]
       }
+      security_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          subject?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -537,6 +561,18 @@ export type Database = {
           refreshed_at: string | null
           slug: string | null
           total_views: number | null
+        }
+        Relationships: []
+      }
+      v_slow_queries: {
+        Row: {
+          calls: number | null
+          max_exec_time: number | null
+          mean_exec_time: number | null
+          query: string | null
+          queryid: number | null
+          rows: number | null
+          total_exec_time: number | null
         }
         Relationships: []
       }
@@ -580,6 +616,34 @@ export type Database = {
           total_views: number
         }[]
       }
+      get_security_events: {
+        Args: { _from?: string; _limit?: number; _to?: string }
+        Returns: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          subject: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "security_events"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_slow_queries: {
+        Args: { _limit?: number }
+        Returns: {
+          calls: number
+          max_exec_time: number
+          mean_exec_time: number
+          query: string
+          queryid: number
+          rows: number
+          total_exec_time: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -597,6 +661,7 @@ export type Database = {
         Returns: number
       }
       refresh_company_stats: { Args: never; Returns: undefined }
+      reset_query_stats: { Args: never; Returns: undefined }
       search_companies: {
         Args: {
           _city?: string
@@ -648,6 +713,10 @@ export type Database = {
           total_count: number
           views_count: number
         }[]
+      }
+      security_events_purge: {
+        Args: { _older_than_days?: number }
+        Returns: number
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
