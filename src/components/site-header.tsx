@@ -3,6 +3,7 @@ import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon } from "luc
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +41,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="icon" asChild>
             <Link to="/buscar" aria-label="Buscar">
               <Search className="h-4 w-4" />
