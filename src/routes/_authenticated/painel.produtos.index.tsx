@@ -11,8 +11,9 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
-import { Plus, Package, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Plus, Package, Pencil, Trash2, Eye, EyeOff, Clock, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/painel/produtos/")({
   component: ProductsPage,
@@ -25,7 +26,7 @@ function ProductsPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("id, name, price, price_on_request, is_active, views_count, product_images(url, sort_order)")
+        .select("id, name, price, price_on_request, is_active, views_count, moderation_status, moderation_reason, product_images(url, sort_order)")
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -65,6 +66,33 @@ function ProductsPage() {
         </Button>
       </div>
 
+      {(() => {
+        const rejected = products?.filter((p) => p.moderation_status === "rejected") ?? [];
+        const pending = products?.filter((p) => p.moderation_status === "pending") ?? [];
+        return (
+          <>
+            {rejected.length > 0 && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>{rejected.length} produto(s) rejeitado(s) pela moderação</AlertTitle>
+                <AlertDescription>
+                  Ajuste os itens sinalizados abaixo e salve novamente para reenviar à análise.
+                </AlertDescription>
+              </Alert>
+            )}
+            {pending.length > 0 && (
+              <Alert>
+                <Clock className="h-4 w-4" />
+                <AlertTitle>{pending.length} produto(s) em análise</AlertTitle>
+                <AlertDescription>
+                  Novos produtos ficam visíveis no portal público após aprovação da equipe.
+                </AlertDescription>
+              </Alert>
+            )}
+          </>
+        );
+      })()}
+
       {isLoading && <div className="h-40 animate-pulse rounded-lg bg-card" />}
 
       {products && products.length === 0 && (
@@ -99,8 +127,18 @@ type ProductRowData = {
   price_on_request: boolean;
   is_active: boolean;
   views_count: number;
+  moderation_status: "pending" | "approved" | "rejected";
+  moderation_reason: string | null;
   product_images: { url: string; sort_order: number }[] | null;
 };
+
+function ModerationBadge({ status }: { status: ProductRowData["moderation_status"] }) {
+  if (status === "approved")
+    return <Badge variant="default" className="gap-1"><CheckCircle2 className="h-3 w-3" />Aprovado</Badge>;
+  if (status === "pending")
+    return <Badge variant="secondary" className="gap-1"><Clock className="h-3 w-3" />Em análise</Badge>;
+  return <Badge variant="destructive" className="gap-1"><XCircle className="h-3 w-3" />Rejeitado</Badge>;
+}
 
 function ProductRow({
   product,
@@ -122,56 +160,76 @@ function ProductRow({
     ? "Sob consulta"
     : formatBRL(Number(product.price));
 
+  const rejected = product.moderation_status === "rejected";
+
   return (
-    <Card>
-      <CardContent className="flex items-center gap-4 p-4">
-        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
-          {imgUrl ? (
-            <img src={imgUrl} alt={product.name} className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
-              <Package className="h-6 w-6" />
-            </div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="truncate font-semibold">{product.name}</h3>
-            {product.is_active ? (
-              <Badge variant="secondary" className="gap-1"><Eye className="h-3 w-3" />Ativo</Badge>
+    <Card className={rejected ? "border-destructive/40" : undefined}>
+      <CardContent className="flex flex-col gap-3 p-4">
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+            {imgUrl ? (
+              <img src={imgUrl} alt={product.name} className="h-full w-full object-cover" />
             ) : (
-              <Badge variant="outline" className="gap-1"><EyeOff className="h-3 w-3" />Inativo</Badge>
+              <div className="flex h-full items-center justify-center text-muted-foreground">
+                <Package className="h-6 w-6" />
+              </div>
             )}
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{priceLabel}</p>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="truncate font-semibold">{product.name}</h3>
+              <ModerationBadge status={product.moderation_status} />
+              {product.is_active ? (
+                <Badge variant="outline" className="gap-1"><Eye className="h-3 w-3" />Ativo</Badge>
+              ) : (
+                <Badge variant="outline" className="gap-1"><EyeOff className="h-3 w-3" />Inativo</Badge>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">{priceLabel}</p>
+          </div>
+          <div className="hidden items-center gap-2 sm:flex">
+            <Switch checked={product.is_active} onCheckedChange={() => onToggle(product.id, product.is_active)} />
+          </div>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/painel/produtos/$id/editar" params={{ id: product.id }}>
+              <Pencil className="h-4 w-4" />
+            </Link>
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remover produto?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  O produto será arquivado e não aparecerá mais no portal.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onDelete(product.id)}>Remover</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
-        <div className="hidden items-center gap-2 sm:flex">
-          <Switch checked={product.is_active} onCheckedChange={() => onToggle(product.id, product.is_active)} />
-        </div>
-        <Button variant="ghost" size="icon" asChild>
-          <Link to="/painel/produtos/$id/editar" params={{ id: product.id }}>
-            <Pencil className="h-4 w-4" />
-          </Link>
-        </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Remover produto?</AlertDialogTitle>
-              <AlertDialogDescription>
-                O produto será arquivado e não aparecerá mais no portal.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(product.id)}>Remover</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
+        {rejected && product.moderation_reason && (
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Rejeitado pela moderação</AlertTitle>
+            <AlertDescription className="mt-1 space-y-2">
+              <p>{product.moderation_reason}</p>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/painel/produtos/$id/editar" params={{ id: product.id }}>
+                  Corrigir e reenviar
+                </Link>
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
       </CardContent>
     </Card>
   );
