@@ -26,7 +26,7 @@ function ProductsPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("id, name, price, price_on_request, is_active, views_count, product_images(url, sort_order)")
+        .select("id, name, price, price_on_request, is_active, views_count, moderation_status, moderation_reason, product_images(url, sort_order)")
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
       return data ?? [];
