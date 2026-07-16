@@ -8,11 +8,43 @@ import { Input } from "@/components/ui/input";
 import { Building2, Search, MapPin } from "lucide-react";
 import { useState } from "react";
 
+const EMPRESAS_URL = "https://brinde-gallery.lovable.app/empresas";
+
 export const Route = createFileRoute("/empresas/")({
   head: () => ({
     meta: [
       { title: "Empresas de Brindes — BrindesHub" },
-      { name: "description", content: "Descubra todas as empresas de brindes cadastradas no BrindesHub." },
+      { name: "description", content: "Descubra todas as empresas de brindes corporativos cadastradas no BrindesHub." },
+      { property: "og:title", content: "Empresas de Brindes — BrindesHub" },
+      { property: "og:description", content: "Descubra todas as empresas de brindes corporativos cadastradas no BrindesHub." },
+      { property: "og:url", content: EMPRESAS_URL },
+      { property: "og:type", content: "website" },
+      { name: "twitter:title", content: "Empresas de Brindes — BrindesHub" },
+      { name: "twitter:description", content: "Descubra todas as empresas de brindes corporativos cadastradas no BrindesHub." },
+    ],
+    links: [{ rel: "canonical", href: EMPRESAS_URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Empresas de Brindes",
+          url: EMPRESAS_URL,
+          isPartOf: { "@id": "https://brinde-gallery.lovable.app/#website" },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Início", item: "https://brinde-gallery.lovable.app/" },
+            { "@type": "ListItem", position: 2, name: "Empresas", item: EMPRESAS_URL },
+          ],
+        }),
+      },
     ],
   }),
   component: CompaniesPage,
