@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock } from "lucide-react";
+import { LeadForm } from "@/components/lead-form";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
