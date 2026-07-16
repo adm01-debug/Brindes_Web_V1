@@ -64,13 +64,15 @@ function AdminDashboard() {
     queryFn: async (): Promise<KPI> => {
       const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const countBy = async (
-        table: "companies" | "products" | "categories",
+        table: "companies" | "products" | "categories" | "leads",
         filter: (q: ReturnType<typeof supabase.from>) => any,
       ) => {
         const q = supabase.from(table).select("id", { count: "exact", head: true });
         const { count } = await filter(q);
         return count ?? 0;
       };
+
+      const since30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
       const [
         companiesPending,
@@ -83,6 +85,11 @@ function AdminDashboard() {
         categoriesActive,
         companiesLast7d,
         productsLast7d,
+        leadsTotal,
+        leadsNew,
+        leadsLast7d,
+        leadsSeriesRes,
+        productsSeriesRes,
       ] = await Promise.all([
         countBy("companies", (q) => q.eq("status", "pending")),
         countBy("companies", (q) => q.eq("status", "approved")),
@@ -94,7 +101,26 @@ function AdminDashboard() {
         countBy("categories", (q) => q.eq("is_active", true)),
         countBy("companies", (q) => q.gte("created_at", since)),
         countBy("products", (q) => q.gte("created_at", since).is("deleted_at", null)),
+        countBy("leads", (q) => q),
+        countBy("leads", (q) => q.eq("status", "new")),
+        countBy("leads", (q) => q.gte("created_at", since)),
+        supabase.from("leads").select("created_at").gte("created_at", since30).limit(5000),
+        supabase.from("products").select("created_at").gte("created_at", since30).is("deleted_at", null).limit(5000),
       ]);
+
+      const days: Record<string, { date: string; leads: number; products: number }> = {};
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 24 * 3600 * 1000).toISOString().slice(0, 10);
+        days[d] = { date: d, leads: 0, products: 0 };
+      }
+      (leadsSeriesRes.data ?? []).forEach((r: { created_at: string }) => {
+        const d = r.created_at.slice(0, 10);
+        if (days[d]) days[d].leads++;
+      });
+      (productsSeriesRes.data ?? []).forEach((r: { created_at: string }) => {
+        const d = r.created_at.slice(0, 10);
+        if (days[d]) days[d].products++;
+      });
 
       return {
         companiesPending,
@@ -107,6 +133,10 @@ function AdminDashboard() {
         categoriesActive,
         companiesLast7d,
         productsLast7d,
+        leadsTotal,
+        leadsNew,
+        leadsLast7d,
+        series: Object.values(days),
       };
     },
   });
