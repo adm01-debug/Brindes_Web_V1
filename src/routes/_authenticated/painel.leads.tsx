@@ -155,6 +155,15 @@ function LeadsPage() {
         </div>
       </header>
 
+      <div className="relative max-w-md">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por nome, email, telefone, produto ou mensagem…"
+          className="pl-9"
+        />
+      </div>
 
       {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
 
@@ -170,8 +179,12 @@ function LeadsPage() {
         </Card>
       )}
 
+      {!isLoading && data && data.length > 0 && filtered.length === 0 && (
+        <p className="text-sm text-muted-foreground">Nenhum lead corresponde à busca.</p>
+      )}
+
       <div className="space-y-3">
-        {data?.map((lead) => {
+        {filtered.map((lead) => {
           const meta = STATUS_META[lead.status];
           const isUnread = !lead.read_at;
           return (
