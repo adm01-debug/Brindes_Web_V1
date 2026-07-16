@@ -1,0 +1,13 @@
+{
+  "name": "BrindesHub — Marketplace de Brindes Corporativos",
+  "short_name": "BrindesHub",
+  "description": "Encontre fornecedores e produtos de brindes corporativos personalizados no Brasil.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}
