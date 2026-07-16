@@ -543,6 +543,10 @@ export type Database = {
     }
     Functions: {
       audit_log_purge: { Args: { _older_than_days?: number }; Returns: number }
+      extract_storage_path: {
+        Args: { _bucket: string; _url: string }
+        Returns: string
+      }
       get_admin_metrics_range: {
         Args: { _from?: string; _to?: string }
         Returns: {
@@ -647,6 +651,10 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      storage_purge_orphans: {
+        Args: { _bucket?: string; _limit?: number }
+        Returns: number
+      }
       strip_dangerous_html: { Args: { input: string }; Returns: string }
       unaccent_safe: { Args: { input: string }; Returns: string }
     }
