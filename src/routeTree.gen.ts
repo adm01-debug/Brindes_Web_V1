@@ -20,6 +20,7 @@ import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
+import { Route as AuthenticatedPainelLeadsRouteImport } from './routes/_authenticated/painel.leads'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
 import { Route as AuthenticatedPainelAdminIndexRouteImport } from './routes/_authenticated/painel.admin.index'
 import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
@@ -84,6 +85,12 @@ const AuthenticatedPainelPerfilRoute =
     path: '/perfil',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelLeadsRoute =
+  AuthenticatedPainelLeadsRouteImport.update({
+    id: '/leads',
+    path: '/leads',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 const AuthenticatedPainelProdutosIndexRoute =
   AuthenticatedPainelProdutosIndexRouteImport.update({
     id: '/produtos/',
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel/': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas': typeof EmpresasIndexRoute
+  '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
@@ -175,6 +184,7 @@ export interface FileRoutesById {
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/_authenticated/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
   '/_authenticated/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
+    | '/painel/leads'
     | '/painel/perfil'
     | '/painel/'
     | '/painel/admin/categorias'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas'
+    | '/painel/leads'
     | '/painel/perfil'
     | '/painel'
     | '/painel/admin/categorias'
@@ -234,6 +246,7 @@ export interface FileRouteTypes {
     | '/empresa/$slug'
     | '/produto/$id'
     | '/empresas/'
+    | '/_authenticated/painel/leads'
     | '/_authenticated/painel/perfil'
     | '/_authenticated/painel/'
     | '/_authenticated/painel/admin/categorias'
@@ -335,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelPerfilRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/leads': {
+      id: '/_authenticated/painel/leads'
+      path: '/leads'
+      fullPath: '/painel/leads'
+      preLoaderRoute: typeof AuthenticatedPainelLeadsRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
     '/_authenticated/painel/produtos/': {
       id: '/_authenticated/painel/produtos/'
       path: '/produtos'
@@ -388,6 +408,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedPainelRouteChildren {
+  AuthenticatedPainelLeadsRoute: typeof AuthenticatedPainelLeadsRoute
   AuthenticatedPainelPerfilRoute: typeof AuthenticatedPainelPerfilRoute
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
   AuthenticatedPainelAdminCategoriasRoute: typeof AuthenticatedPainelAdminCategoriasRoute
@@ -400,6 +421,7 @@ interface AuthenticatedPainelRouteChildren {
 }
 
 const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
+  AuthenticatedPainelLeadsRoute: AuthenticatedPainelLeadsRoute,
   AuthenticatedPainelPerfilRoute: AuthenticatedPainelPerfilRoute,
   AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
   AuthenticatedPainelAdminCategoriasRoute:
