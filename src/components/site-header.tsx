@@ -41,6 +41,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button variant="ghost" size="icon" asChild>
             <Link to="/buscar" aria-label="Buscar">
               <Search className="h-4 w-4" />
