@@ -126,11 +126,57 @@ function DashboardPage() {
       )}
 
       {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Produtos ativos" value={stats?.activeProducts ?? 0} icon={<Package className="h-4 w-4" />} />
-        <StatCard label="Total de produtos" value={stats?.totalProducts ?? 0} icon={<Package className="h-4 w-4" />} />
-        <StatCard label="Visualizações" value={stats?.totalViews ?? 0} icon={<Eye className="h-4 w-4" />} />
+        <StatCard label="Visualizações (30d)" value={stats?.totalViews ?? 0} icon={<Eye className="h-4 w-4" />} />
+        <StatCard label="Leads (30d)" value={stats?.totalLeads ?? 0} icon={<MessageSquare className="h-4 w-4" />} />
+        <StatCard label="Leads não lidos" value={stats?.newLeads ?? 0} icon={<TrendingUp className="h-4 w-4" />} highlight={!!stats?.newLeads} />
       </div>
+
+      {/* Chart */}
+      {company.status === "approved" && stats && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Desempenho dos últimos 30 dias</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              config={{
+                views: { label: "Visualizações", color: "hsl(var(--primary))" },
+                leads: { label: "Leads", color: "hsl(var(--accent-foreground))" },
+              }}
+              className="h-64 w-full"
+            >
+              <ResponsiveContainer>
+                <AreaChart data={stats.series} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="gv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="gl" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--accent-foreground))" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="hsl(var(--accent-foreground))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={(d: string) => d.slice(5)}
+                    className="text-xs"
+                    stroke="hsl(var(--muted-foreground))"
+                  />
+                  <YAxis allowDecimals={false} className="text-xs" stroke="hsl(var(--muted-foreground))" width={30} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="views" stroke="hsl(var(--primary))" fill="url(#gv)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="leads" stroke="hsl(var(--accent-foreground))" fill="url(#gl)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
+
 
       {/* Actions */}
       <div className="grid gap-4 sm:grid-cols-2">
