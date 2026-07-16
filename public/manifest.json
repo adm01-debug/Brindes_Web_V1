@@ -3,11 +3,17 @@
   "short_name": "BrindesHub",
   "description": "Encontre fornecedores e produtos de brindes corporativos personalizados no Brasil.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "lang": "pt-BR",
+  "categories": ["business", "shopping", "productivity"],
   "icons": [
-    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" },
+    { "src": "/icon-512.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
