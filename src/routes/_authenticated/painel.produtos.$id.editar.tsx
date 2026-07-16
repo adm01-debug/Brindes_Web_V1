@@ -1,7 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ProductForm, type ProductInput } from "@/components/product-form";
+import { ProductForm } from "@/components/product-form";
+import type { ProductInput } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
