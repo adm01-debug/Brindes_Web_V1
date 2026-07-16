@@ -645,6 +645,7 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      strip_dangerous_html: { Args: { input: string }; Returns: string }
       unaccent_safe: { Args: { input: string }; Returns: string }
     }
     Enums: {
