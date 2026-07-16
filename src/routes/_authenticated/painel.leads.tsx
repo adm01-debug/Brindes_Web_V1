@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Mail, Phone, Package, Inbox, ExternalLink, Download } from "lucide-react";
+import { Mail, Phone, Package, Inbox, ExternalLink, Download, Search } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
