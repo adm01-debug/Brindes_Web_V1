@@ -26,18 +26,39 @@ function DashboardPage() {
     queryKey: ["dashboard-stats", company?.id],
     enabled: !!company?.id,
     queryFn: async () => {
-      const [{ count: totalProducts }, { count: activeProducts }, { data: views }] = await Promise.all([
+      const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
+      const [{ count: totalProducts }, { count: activeProducts }, { data: views }, { data: leads }, { count: newLeads }] = await Promise.all([
         supabase.from("products").select("id", { count: "exact", head: true }).eq("company_id", company!.id).is("deleted_at", null),
         supabase.from("products").select("id", { count: "exact", head: true }).eq("company_id", company!.id).eq("is_active", true).is("deleted_at", null),
-        supabase.from("product_views").select("id, product_id, products!inner(company_id)").eq("products.company_id", company!.id).limit(1000),
+        supabase.from("product_views").select("viewed_at, products!inner(company_id)").eq("products.company_id", company!.id).gte("viewed_at", since).limit(5000),
+        supabase.from("leads").select("created_at").eq("company_id", company!.id).gte("created_at", since).limit(2000),
+        supabase.from("leads").select("id", { count: "exact", head: true }).eq("company_id", company!.id).eq("status", "new"),
       ]);
+      // Build 30-day series
+      const days: Record<string, { date: string; views: number; leads: number }> = {};
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(Date.now() - i * 24 * 3600 * 1000).toISOString().slice(0, 10);
+        days[d] = { date: d, views: 0, leads: 0 };
+      }
+      views?.forEach((v: { viewed_at: string }) => {
+        const d = v.viewed_at.slice(0, 10);
+        if (days[d]) days[d].views++;
+      });
+      leads?.forEach((l: { created_at: string }) => {
+        const d = l.created_at.slice(0, 10);
+        if (days[d]) days[d].leads++;
+      });
       return {
         totalProducts: totalProducts ?? 0,
         activeProducts: activeProducts ?? 0,
         totalViews: views?.length ?? 0,
+        totalLeads: leads?.length ?? 0,
+        newLeads: newLeads ?? 0,
+        series: Object.values(days),
       };
     },
   });
+
 
   if (!company) return null;
 
