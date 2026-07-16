@@ -76,6 +76,15 @@ function LeadsPage() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const filtered = useMemo(() => {
+    if (!data) return [];
+    const q = search.trim().toLowerCase();
+    if (!q) return data;
+    return data.filter((l) =>
+      [l.name, l.email, l.phone ?? "", l.message, l.product?.name ?? ""].some((f) => f.toLowerCase().includes(q)),
+    );
+  }, [data, search]);
+
   const counts = useMemo(() => {
     const c = { total: data?.length ?? 0, new: 0, contacted: 0, won: 0, lost: 0 };
     data?.forEach((l) => {
