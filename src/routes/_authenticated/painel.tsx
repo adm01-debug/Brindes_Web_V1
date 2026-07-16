@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck, Tag, Gauge, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsAdmin } from "@/hooks/use-is-admin";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/_authenticated/painel")({
   component: PainelLayout,
@@ -49,14 +50,32 @@ function PainelLayout() {
   useEffect(() => {
     const channel = supabase
       .channel("leads-nav")
-      .on("postgres_changes", { event: "*", schema: "public", table: "leads" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] });
-      })
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "leads" },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] });
+          const lead = payload.new as { name?: string } | null;
+          toast.success("Novo pedido de orçamento", {
+            description: lead?.name ? `De ${lead.name}` : "Confira em Pedidos de orçamento.",
+            action: {
+              label: "Abrir",
+              onClick: () => navigate({ to: "/painel/leads" }),
+            },
+          });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "leads" },
+        () => queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] }),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, navigate]);
+
 
   const badgeFor = (to: string) =>
     to === "/painel/leads" && unreadLeads > 0 ? unreadLeads : null;
