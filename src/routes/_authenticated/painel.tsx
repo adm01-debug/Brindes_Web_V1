@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck, Tag, Gauge } from "lucide-react";
+import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck, Tag, Gauge, Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 
@@ -13,6 +13,7 @@ type NavItem = { to: string; label: string; icon: React.ElementType; exact?: boo
 const BASE_NAV: NavItem[] = [
   { to: "/painel", label: "Visão geral", icon: LayoutDashboard, exact: true },
   { to: "/painel/produtos", label: "Produtos", icon: Package },
+  { to: "/painel/leads", label: "Pedidos de orçamento", icon: Inbox },
   { to: "/painel/perfil", label: "Perfil da empresa", icon: User },
 ];
 const ADMIN_NAV: NavItem[] = [
