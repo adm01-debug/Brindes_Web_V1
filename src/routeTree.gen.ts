@@ -29,6 +29,7 @@ import { Route as AuthenticatedPainelAdminObservabilidadeRouteImport } from './r
 import { Route as AuthenticatedPainelAdminEmpresasRouteImport } from './routes/_authenticated/painel.admin.empresas'
 import { Route as AuthenticatedPainelAdminCategoriasRouteImport } from './routes/_authenticated/painel.admin.categorias'
 import { Route as ApiPublicOgProdutoIdRouteImport } from './routes/api/public/og.produto.$id'
+import { Route as ApiPublicOgEmpresaSlugRouteImport } from './routes/api/public/og.empresa.$slug'
 import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -140,6 +141,11 @@ const ApiPublicOgProdutoIdRoute = ApiPublicOgProdutoIdRouteImport.update({
   path: '/api/public/og/produto/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicOgEmpresaSlugRoute = ApiPublicOgEmpresaSlugRouteImport.update({
+  id: '/api/public/og/empresa/$slug',
+  path: '/api/public/og/empresa/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPainelProdutosIdEditarRoute =
   AuthenticatedPainelProdutosIdEditarRouteImport.update({
     id: '/produtos/$id/editar',
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
+  '/api/public/og/empresa/$slug': typeof ApiPublicOgEmpresaSlugRoute
   '/api/public/og/produto/$id': typeof ApiPublicOgProdutoIdRoute
 }
 export interface FileRoutesByTo {
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/painel/admin': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
+  '/api/public/og/empresa/$slug': typeof ApiPublicOgEmpresaSlugRoute
   '/api/public/og/produto/$id': typeof ApiPublicOgProdutoIdRoute
 }
 export interface FileRoutesById {
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/_authenticated/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/_authenticated/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
+  '/api/public/og/empresa/$slug': typeof ApiPublicOgEmpresaSlugRoute
   '/api/public/og/produto/$id': typeof ApiPublicOgProdutoIdRoute
 }
 export interface FileRouteTypes {
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/painel/admin/'
     | '/painel/produtos/'
     | '/painel/produtos/$id/editar'
+    | '/api/public/og/empresa/$slug'
     | '/api/public/og/produto/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -257,6 +267,7 @@ export interface FileRouteTypes {
     | '/painel/admin'
     | '/painel/produtos'
     | '/painel/produtos/$id/editar'
+    | '/api/public/og/empresa/$slug'
     | '/api/public/og/produto/$id'
   id:
     | '__root__'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/admin/'
     | '/_authenticated/painel/produtos/'
     | '/_authenticated/painel/produtos/$id/editar'
+    | '/api/public/og/empresa/$slug'
     | '/api/public/og/produto/$id'
   fileRoutesById: FileRoutesById
 }
@@ -292,6 +304,7 @@ export interface RootRouteChildren {
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
+  ApiPublicOgEmpresaSlugRoute: typeof ApiPublicOgEmpresaSlugRoute
   ApiPublicOgProdutoIdRoute: typeof ApiPublicOgProdutoIdRoute
 }
 
@@ -437,6 +450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicOgProdutoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/og/empresa/$slug': {
+      id: '/api/public/og/empresa/$slug'
+      path: '/api/public/og/empresa/$slug'
+      fullPath: '/api/public/og/empresa/$slug'
+      preLoaderRoute: typeof ApiPublicOgEmpresaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/painel/produtos/$id/editar': {
       id: '/_authenticated/painel/produtos/$id/editar'
       path: '/produtos/$id/editar'
@@ -501,6 +521,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaSlugRoute: EmpresaSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
+  ApiPublicOgEmpresaSlugRoute: ApiPublicOgEmpresaSlugRoute,
   ApiPublicOgProdutoIdRoute: ApiPublicOgProdutoIdRoute,
 }
 export const routeTree = rootRouteImport
