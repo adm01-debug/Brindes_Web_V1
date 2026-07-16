@@ -15,9 +15,13 @@ import {
   ShieldOff,
   Activity,
   ArrowRight,
+  MessageSquare,
+  Inbox,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 
 export const Route = createFileRoute("/_authenticated/painel/admin/")({
   component: AdminDashboard,
