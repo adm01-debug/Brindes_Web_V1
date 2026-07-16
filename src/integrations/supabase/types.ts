@@ -543,6 +543,28 @@ export type Database = {
     }
     Functions: {
       audit_log_purge: { Args: { _older_than_days?: number }; Returns: number }
+      get_admin_metrics_range: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          companies_approved: number
+          companies_pending: number
+          companies_total: number
+          created_at: string
+          day: string
+          leads_created: number
+          product_views: number
+          products_approved: number
+          products_pending: number
+          products_total: number
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "metrics_daily"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_company_stats: {
         Args: { _slug: string }
         Returns: {
