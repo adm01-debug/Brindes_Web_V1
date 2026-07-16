@@ -48,7 +48,11 @@ export const Route = createFileRoute("/produto/$id")({
     return {
       title: product.name,
       companyName: product.company?.name ?? "BrindesHub",
+      companySlug: product.company?.slug ?? "",
       description: `${desc} · Preço: ${priceLabel}.`,
+      price: product.price_on_request ? null : product.price,
+      currency: product.currency ?? "BRL",
+      priceOnRequest: product.price_on_request ?? false,
     };
   },
   head: ({ params, loaderData }) => {
@@ -57,6 +61,48 @@ export const Route = createFileRoute("/produto/$id")({
       ? `${loaderData.title} — ${loaderData.companyName}`
       : "Produto — BrindesHub";
     const description = loaderData?.description ?? "Produto não encontrado no BrindesHub.";
+    const scripts = loaderData
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: loaderData.title,
+              description,
+              url,
+              brand: { "@type": "Brand", name: loaderData.companyName },
+              offers: {
+                "@type": "Offer",
+                url,
+                priceCurrency: loaderData.currency,
+                price: loaderData.price ?? undefined,
+                availability: loaderData.priceOnRequest
+                  ? "https://schema.org/PreOrder"
+                  : "https://schema.org/InStock",
+                seller: { "@type": "Organization", name: loaderData.companyName },
+              },
+            }),
+          },
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                { "@type": "ListItem", position: 1, name: "Início", item: "https://brinde-gallery.lovable.app/" },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: loaderData.companyName,
+                  item: `https://brinde-gallery.lovable.app/empresa/${loaderData.companySlug}`,
+                },
+                { "@type": "ListItem", position: 3, name: loaderData.title, item: url },
+              ],
+            }),
+          },
+        ]
+      : [];
     return {
       meta: [
         { title },
@@ -70,6 +116,7 @@ export const Route = createFileRoute("/produto/$id")({
         ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
       ],
       links: [{ rel: "canonical", href: url }],
+      scripts,
     };
   },
 });
