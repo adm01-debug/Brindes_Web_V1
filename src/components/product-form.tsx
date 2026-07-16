@@ -91,15 +91,6 @@ export function ProductForm({
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: toFormValues(initial),
-    resolver: zodResolver(
-      productSchema
-        .extend({
-          price: productSchema.shape.price,
-        })
-        .transform((v) => v),
-      // custom preprocess handled below via handleSubmit callback
-    ) as never,
-    // We won't rely on zodResolver for coercion; do manual parse in submit.
   });
 
   const priceOnRequest = watch("price_on_request");
