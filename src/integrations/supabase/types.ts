@@ -474,6 +474,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      audit_log_purge: { Args: { _older_than_days?: number }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
