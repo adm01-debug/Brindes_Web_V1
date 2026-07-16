@@ -50,14 +50,32 @@ function PainelLayout() {
   useEffect(() => {
     const channel = supabase
       .channel("leads-nav")
-      .on("postgres_changes", { event: "*", schema: "public", table: "leads" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] });
-      })
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "leads" },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] });
+          const lead = payload.new as { name?: string } | null;
+          toast.success("Novo pedido de orçamento", {
+            description: lead?.name ? `De ${lead.name}` : "Confira em Pedidos de orçamento.",
+            action: {
+              label: "Abrir",
+              onClick: () => navigate({ to: "/painel/leads" }),
+            },
+          });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "leads" },
+        () => queryClient.invalidateQueries({ queryKey: ["leads-unread-count"] }),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [queryClient]);
+  }, [queryClient, navigate]);
+
 
   const badgeFor = (to: string) =>
     to === "/painel/leads" && unreadLeads > 0 ? unreadLeads : null;
