@@ -305,6 +305,14 @@ function ProductPage() {
                   </CardContent>
                 </Card>
               )}
+
+              <div className="mt-6">
+                <LeadForm
+                  companyId={product.company!.id}
+                  productId={product.id}
+                  productName={product.name}
+                />
+              </div>
             </div>
           </div>
         </div>
