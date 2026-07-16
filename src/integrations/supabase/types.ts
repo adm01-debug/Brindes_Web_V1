@@ -482,6 +482,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      product_views_purge: {
+        Args: { _older_than_days?: number }
+        Returns: number
+      }
       search_products: {
         Args: {
           _category_slug?: string
