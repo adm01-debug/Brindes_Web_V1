@@ -232,6 +232,48 @@ export type Database = {
           },
         ]
       }
+      metrics_daily: {
+        Row: {
+          companies_approved: number
+          companies_pending: number
+          companies_total: number
+          created_at: string
+          day: string
+          leads_created: number
+          product_views: number
+          products_approved: number
+          products_pending: number
+          products_total: number
+          updated_at: string
+        }
+        Insert: {
+          companies_approved?: number
+          companies_pending?: number
+          companies_total?: number
+          created_at?: string
+          day: string
+          leads_created?: number
+          product_views?: number
+          products_approved?: number
+          products_pending?: number
+          products_total?: number
+          updated_at?: string
+        }
+        Update: {
+          companies_approved?: number
+          companies_pending?: number
+          companies_total?: number
+          created_at?: string
+          day?: string
+          leads_created?: number
+          product_views?: number
+          products_approved?: number
+          products_pending?: number
+          products_total?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_images: {
         Row: {
           alt_text: string | null
@@ -482,6 +524,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      metrics_daily_snapshot: { Args: never; Returns: undefined }
       product_views_purge: {
         Args: { _older_than_days?: number }
         Returns: number
