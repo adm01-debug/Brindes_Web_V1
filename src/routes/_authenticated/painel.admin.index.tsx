@@ -233,7 +233,64 @@ function AdminDashboard() {
           to="/painel/admin/categorias"
           loading={kpiLoading}
         />
+        <KpiCard
+          title="Leads totais"
+          value={kpi?.leadsTotal}
+          icon={MessageSquare}
+          tone="muted"
+          to="/painel/admin"
+          loading={kpiLoading}
+        />
+        <KpiCard
+          title="Leads novos"
+          value={kpi?.leadsNew}
+          icon={Inbox}
+          tone="warning"
+          to="/painel/admin"
+          loading={kpiLoading}
+        />
       </section>
+
+      {/* Gráfico global 30 dias */}
+      {kpi && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Marketplace — últimos 30 dias
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              config={{
+                leads: { label: "Leads", color: "hsl(var(--primary))" },
+                products: { label: "Produtos novos", color: "hsl(var(--accent-foreground))" },
+              }}
+              className="h-64 w-full"
+            >
+              <ResponsiveContainer>
+                <AreaChart data={kpi.series} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="admLeads" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="admProd" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(var(--accent-foreground))" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="hsl(var(--accent-foreground))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5)} className="text-xs" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis allowDecimals={false} className="text-xs" stroke="hsl(var(--muted-foreground))" width={30} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Area type="monotone" dataKey="leads" stroke="hsl(var(--primary))" fill="url(#admLeads)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="products" stroke="hsl(var(--accent-foreground))" fill="url(#admProd)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Últimos 7 dias */}
       <section className="grid gap-3 md:grid-cols-2">
