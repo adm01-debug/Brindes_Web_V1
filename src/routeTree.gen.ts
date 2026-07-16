@@ -25,6 +25,7 @@ import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_
 import { Route as AuthenticatedPainelAdminIndexRouteImport } from './routes/_authenticated/painel.admin.index'
 import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
 import { Route as AuthenticatedPainelAdminProdutosRouteImport } from './routes/_authenticated/painel.admin.produtos'
+import { Route as AuthenticatedPainelAdminObservabilidadeRouteImport } from './routes/_authenticated/painel.admin.observabilidade'
 import { Route as AuthenticatedPainelAdminEmpresasRouteImport } from './routes/_authenticated/painel.admin.empresas'
 import { Route as AuthenticatedPainelAdminCategoriasRouteImport } from './routes/_authenticated/painel.admin.categorias'
 import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
@@ -115,6 +116,12 @@ const AuthenticatedPainelAdminProdutosRoute =
     path: '/admin/produtos',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelAdminObservabilidadeRoute =
+  AuthenticatedPainelAdminObservabilidadeRouteImport.update({
+    id: '/admin/observabilidade',
+    path: '/admin/observabilidade',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 const AuthenticatedPainelAdminEmpresasRoute =
   AuthenticatedPainelAdminEmpresasRouteImport.update({
     id: '/admin/empresas',
@@ -148,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/painel/': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
+  '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
@@ -167,6 +175,7 @@ export interface FileRoutesByTo {
   '/painel': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
+  '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/painel/admin': typeof AuthenticatedPainelAdminIndexRoute
@@ -189,6 +198,7 @@ export interface FileRoutesById {
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
   '/_authenticated/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/_authenticated/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
+  '/_authenticated/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/_authenticated/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
   '/_authenticated/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/_authenticated/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/painel/'
     | '/painel/admin/categorias'
     | '/painel/admin/empresas'
+    | '/painel/admin/observabilidade'
     | '/painel/admin/produtos'
     | '/painel/produtos/novo'
     | '/painel/admin/'
@@ -230,6 +241,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/painel/admin/categorias'
     | '/painel/admin/empresas'
+    | '/painel/admin/observabilidade'
     | '/painel/admin/produtos'
     | '/painel/produtos/novo'
     | '/painel/admin'
@@ -251,6 +263,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/'
     | '/_authenticated/painel/admin/categorias'
     | '/_authenticated/painel/admin/empresas'
+    | '/_authenticated/painel/admin/observabilidade'
     | '/_authenticated/painel/admin/produtos'
     | '/_authenticated/painel/produtos/novo'
     | '/_authenticated/painel/admin/'
@@ -383,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelAdminProdutosRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/admin/observabilidade': {
+      id: '/_authenticated/painel/admin/observabilidade'
+      path: '/admin/observabilidade'
+      fullPath: '/painel/admin/observabilidade'
+      preLoaderRoute: typeof AuthenticatedPainelAdminObservabilidadeRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
     '/_authenticated/painel/admin/empresas': {
       id: '/_authenticated/painel/admin/empresas'
       path: '/admin/empresas'
@@ -413,6 +433,7 @@ interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
   AuthenticatedPainelAdminCategoriasRoute: typeof AuthenticatedPainelAdminCategoriasRoute
   AuthenticatedPainelAdminEmpresasRoute: typeof AuthenticatedPainelAdminEmpresasRoute
+  AuthenticatedPainelAdminObservabilidadeRoute: typeof AuthenticatedPainelAdminObservabilidadeRoute
   AuthenticatedPainelAdminProdutosRoute: typeof AuthenticatedPainelAdminProdutosRoute
   AuthenticatedPainelProdutosNovoRoute: typeof AuthenticatedPainelProdutosNovoRoute
   AuthenticatedPainelAdminIndexRoute: typeof AuthenticatedPainelAdminIndexRoute
@@ -427,6 +448,8 @@ const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelAdminCategoriasRoute:
     AuthenticatedPainelAdminCategoriasRoute,
   AuthenticatedPainelAdminEmpresasRoute: AuthenticatedPainelAdminEmpresasRoute,
+  AuthenticatedPainelAdminObservabilidadeRoute:
+    AuthenticatedPainelAdminObservabilidadeRoute,
   AuthenticatedPainelAdminProdutosRoute: AuthenticatedPainelAdminProdutosRoute,
   AuthenticatedPainelProdutosNovoRoute: AuthenticatedPainelProdutosNovoRoute,
   AuthenticatedPainelAdminIndexRoute: AuthenticatedPainelAdminIndexRoute,

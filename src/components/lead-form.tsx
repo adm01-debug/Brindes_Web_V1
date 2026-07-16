@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Send } from "lucide-react";
+import { leadSchema } from "@/lib/schemas";
+import { pgErrorMessage } from "@/lib/pg-errors";
 
 type Props = {
   companyId: string;
@@ -28,17 +30,25 @@ export function LeadForm({ companyId, productId, productName }: Props) {
   const mutation = useMutation({
     mutationFn: async () => {
       const quantity = form.quantity.trim() ? parseInt(form.quantity, 10) : null;
-      if (form.quantity.trim() && (Number.isNaN(quantity!) || quantity! <= 0)) {
-        throw new Error("Quantidade inválida.");
+      const parsed = leadSchema.safeParse({
+        name: form.name,
+        email: form.email,
+        phone: form.phone || undefined,
+        quantity: quantity,
+        message: form.message,
+      });
+      if (!parsed.success) {
+        const first = parsed.error.issues[0];
+        throw new Error(first?.message ?? "Dados inválidos.");
       }
       const { error } = await supabase.from("leads").insert({
         company_id: companyId,
         product_id: productId ?? null,
-        name: form.name.trim(),
-        email: form.email.trim(),
-        phone: form.phone.trim() || null,
-        quantity,
-        message: form.message.trim(),
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone || null,
+        quantity: parsed.data.quantity ?? null,
+        message: parsed.data.message,
       });
       if (error) throw error;
     },
@@ -46,8 +56,8 @@ export function LeadForm({ companyId, productId, productName }: Props) {
       setSent(true);
       toast.success("Pedido enviado! A empresa vai retornar em breve.");
     },
-    onError: (err: Error) => {
-      toast.error(err.message ?? "Não foi possível enviar seu pedido.");
+    onError: (err: unknown) => {
+      toast.error(pgErrorMessage(err, "Não foi possível enviar seu pedido."));
     },
   });
 
