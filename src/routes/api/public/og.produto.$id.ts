@@ -18,9 +18,17 @@ function placeholderResponse(status = 200): Response {
     status,
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": "public, max-age=300",
+      "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=86400",
+      "X-Content-Type-Options": "nosniff",
     },
   });
+}
+
+async function sha1Hex(bytes: Uint8Array): Promise<string> {
+  const hash = await crypto.subtle.digest("SHA-1", bytes);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export const Route = createFileRoute("/api/public/og/produto/$id")({
