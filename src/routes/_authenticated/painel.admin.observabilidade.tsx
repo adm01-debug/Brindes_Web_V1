@@ -52,6 +52,18 @@ type SecurityEvent = {
   created_at: string;
 };
 
+type CronHealth = {
+  jobname: string;
+  schedule: string;
+  last_run_start: string | null;
+  last_run_end: string | null;
+  last_status: string | null;
+  duration_ms: number | null;
+  last_error: string | null;
+  runs_24h: number;
+  failures_24h: number;
+};
+
 function ObservabilidadePage() {
   const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
 
