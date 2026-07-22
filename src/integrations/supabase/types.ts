@@ -616,6 +616,20 @@ export type Database = {
           total_views: number
         }[]
       }
+      get_cron_health: {
+        Args: { _limit?: number }
+        Returns: {
+          duration_ms: number
+          failures_24h: number
+          jobname: string
+          last_error: string
+          last_run_end: string
+          last_run_start: string
+          last_status: string
+          runs_24h: number
+          schedule: string
+        }[]
+      }
       get_security_events: {
         Args: { _from?: string; _limit?: number; _to?: string }
         Returns: {
