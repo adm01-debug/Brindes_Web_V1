@@ -240,7 +240,14 @@ function ProductPage() {
                 <Building2 className="h-4 w-4" />
                 {product.company!.name}
               </Link>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight">{product.name}</h1>
+              <div className="mt-2 flex items-start justify-between gap-3">
+                <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
+                <ShareButton
+                  title={product.name}
+                  text={product.short_description ?? `${product.name} — ${product.company!.name}`}
+                  className="shrink-0"
+                />
+              </div>
               {product.short_description && (
                 <p className="mt-2 text-muted-foreground">{product.short_description}</p>
               )}
