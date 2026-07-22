@@ -301,9 +301,92 @@ function CompanyPage() {
               </Card>
             </aside>
           </div>
+
+          <RelatedCompanies currentId={company.id} state={company.state} city={company.city} />
         </div>
       </main>
       <SiteFooter />
     </div>
+  );
+}
+
+function RelatedCompanies({
+  currentId,
+  state,
+  city,
+}: {
+  currentId: string;
+  state: string | null;
+  city: string | null;
+}) {
+  const { data } = useQuery({
+    queryKey: ["related-companies", currentId, state, city],
+    queryFn: async () => {
+      let q = supabase
+        .from("companies")
+        .select("id, slug, name, tagline, city, state, logo_url")
+        .neq("id", currentId)
+        .eq("status", "approved")
+        .limit(4);
+      if (city) q = q.eq("city", city);
+      else if (state) q = q.eq("state", state);
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  const [logos, setLogos] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!data?.length) return;
+    (async () => {
+      const map: Record<string, string> = {};
+      await Promise.all(
+        data.map(async (c) => {
+          if (c.logo_url) {
+            const signed = await getSignedUrl("company-assets", c.logo_url);
+            if (signed) map[c.id] = signed;
+          }
+        }),
+      );
+      setLogos(map);
+    })();
+  }, [data]);
+
+  if (!data || data.length === 0) return null;
+
+  return (
+    <section aria-labelledby="related-companies" className="mt-12">
+      <h2 id="related-companies" className="text-xl font-semibold tracking-tight">
+        Outras empresas {city ? `em ${city}` : state ? `em ${state}` : "parceiras"}
+      </h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {data.map((c) => (
+          <a
+            key={c.id}
+            href={`/empresa/${c.slug}`}
+            className="group flex items-start gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-primary"
+          >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
+              {logos[c.id] ? (
+                <img loading="lazy" decoding="async" src={logos[c.id]} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <Building2 className="h-5 w-5 text-muted-foreground" />
+              )}
+            </div>
+            <div className="min-w-0">
+              <h3 className="truncate text-sm font-medium group-hover:text-primary">{c.name}</h3>
+              {c.tagline && <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{c.tagline}</p>}
+              {(c.city || c.state) && (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {[c.city, c.state].filter(Boolean).join(" · ")}
+                </p>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
   );
 }
