@@ -169,7 +169,7 @@ function ProductPage() {
 
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const [lightboxOpen, setLightboxOpen] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     const images = product?.images?.sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order) ?? [];
