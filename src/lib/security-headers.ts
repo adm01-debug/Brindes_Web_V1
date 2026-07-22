@@ -26,7 +26,28 @@ export const applySecurityHeaders = createIsomorphicFn()
       // Isola o processo do site de janelas cross-origin (mitiga Spectre/XS-Leaks)
       setResponseHeader("Cross-Origin-Opener-Policy", "same-origin");
       setResponseHeader("Cross-Origin-Resource-Policy", "same-site");
-      // CSP em modo Report-Only: telemetria de violações sem bloquear recursos.
+      // CSP enforcement: política endurecida (sem 'unsafe-eval'); mantém
+      // 'unsafe-inline' em scripts por causa do hydration inline do TanStack Start.
+      const enforcedCsp = [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'self'",
+        "object-src 'none'",
+        "img-src 'self' data: blob: https:",
+        "font-src 'self' data: https://fonts.gstatic.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "script-src 'self' 'unsafe-inline'",
+        "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.lovable.app https://*.lovable.dev",
+        "media-src 'self' data: blob: https:",
+        "worker-src 'self' blob:",
+        "manifest-src 'self'",
+        "upgrade-insecure-requests",
+      ].join("; ");
+      setResponseHeader("Content-Security-Policy", enforcedCsp);
+
+      // CSP Report-Only mantido em paralelo para telemetria de endurecimentos futuros
+      // (ex.: remover 'unsafe-inline' de script-src via nonce/'strict-dynamic').
       setResponseHeader(
         "Content-Security-Policy-Report-Only",
         [
@@ -38,7 +59,7 @@ export const applySecurityHeaders = createIsomorphicFn()
           "img-src 'self' data: blob: https:",
           "font-src 'self' data: https://fonts.gstatic.com",
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+          "script-src 'self'",
           "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.lovable.app https://*.lovable.dev",
           "media-src 'self' data: blob: https:",
           "worker-src 'self' blob:",
