@@ -205,7 +205,7 @@ function ProductPage() {
             <div>
               <div className="aspect-square overflow-hidden rounded-2xl border bg-card">
                 {imageUrls[selectedIdx] ? (
-                  <img loading="eager" decoding="async" fetchpriority="high" src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover" />
+                  <img loading="eager" decoding="async" fetchPriority="high" src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center text-muted-foreground">
                     <Package className="h-16 w-16" />
