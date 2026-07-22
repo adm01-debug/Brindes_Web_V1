@@ -221,9 +221,24 @@ function ProductPage() {
           <div className="grid gap-8 lg:grid-cols-2">
             {/* Gallery */}
             <div>
-              <div className="aspect-square overflow-hidden rounded-2xl border bg-card">
+              <div className="group relative aspect-square overflow-hidden rounded-2xl border bg-card">
                 {imageUrls[selectedIdx] ? (
-                  <img loading="eager" decoding="async" fetchPriority="high" src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover" />
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setLightboxOpen(true)}
+                      aria-label="Ampliar imagem"
+                      className="block h-full w-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <img loading="eager" decoding="async" fetchPriority="high" src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                    </button>
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-background/80 px-2 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur opacity-0 transition group-hover:opacity-100"
+                    >
+                      <Expand className="h-3.5 w-3.5" /> Ampliar
+                    </span>
+                  </>
                 ) : (
                   <div className="flex h-full items-center justify-center text-muted-foreground">
                     <Package className="h-16 w-16" />
