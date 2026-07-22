@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Search, Building2, Package, Sparkles } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { CategoryPill } from "@/components/category-pill";
+import { RecentlyViewed } from "@/components/recently-viewed";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -216,6 +217,8 @@ function HomePage() {
             </div>
           </div>
         </section>
+
+        <RecentlyViewed />
 
         {/* CTA */}
         <section className="border-t bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
