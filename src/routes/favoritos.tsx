@@ -37,7 +37,7 @@ function FavoritesPage() {
           "id, name, price, price_on_request, short_description, company:companies!inner(id, slug, name, status), images:product_images(url, sort_order)",
         )
         .in("id", ids)
-        .eq("status", "active");
+        .eq("is_active", true);
       if (error) throw error;
       return (data ?? []).filter((p: any) => p.company?.status === "approved");
     },
