@@ -35,7 +35,7 @@ async function sha1Hex(bytes: Uint8Array): Promise<string> {
 export const Route = createFileRoute("/api/public/og/produto/$id")({
   server: {
     handlers: {
-      GET: async ({ params }) => {
+      GET: async ({ params, request }) => {
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
