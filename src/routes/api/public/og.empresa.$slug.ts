@@ -20,6 +20,7 @@ function placeholderResponse(status = 200): Response {
       "Content-Type": "image/svg+xml; charset=utf-8",
       "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=86400",
       "X-Content-Type-Options": "nosniff",
+      "X-Robots-Tag": "noindex",
     },
   });
 }
