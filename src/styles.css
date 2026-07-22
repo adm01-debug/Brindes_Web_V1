@@ -139,3 +139,29 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/* Acessibilidade: respeitar preferência de movimento reduzido do sistema. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Foco visível consistente para navegação por teclado. */
+:focus-visible {
+  outline: 2px solid var(--color-ring, currentColor);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Impressão: economiza tinta e oculta elementos interativos. */
+@media print {
+  nav, footer, button, [role="dialog"], [aria-hidden="true"] { display: none !important; }
+  a { color: #000 !important; text-decoration: underline; }
+  body { background: #fff !important; color: #000 !important; }
+}
