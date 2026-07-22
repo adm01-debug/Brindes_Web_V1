@@ -352,6 +352,8 @@ function ProductPage() {
             categoryId={product.category_id}
             companyId={product.company!.id}
           />
+
+          <RecentlyViewed excludeId={product.id} className="mt-12" />
         </div>
       </main>
       <SiteFooter />
