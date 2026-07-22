@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CookieConsent } from "@/components/cookie-consent";
+import { BackToTop } from "@/components/back-to-top";
 
 function NotFoundComponent() {
   return (
@@ -197,6 +198,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <CookieConsent />
+        <BackToTop />
         <Toaster richColors position="top-right" />
       </ThemeProvider>
     </QueryClientProvider>
