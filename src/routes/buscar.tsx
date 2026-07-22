@@ -244,10 +244,7 @@ function SearchPage() {
           </div>
 
           <div className="mt-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {isLoading &&
-              Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="aspect-[3/4] animate-pulse rounded-lg bg-card" />
-              ))}
+            {isLoading && <ProductCardSkeleton count={8} />}
             {!isLoading &&
               data?.map((p) => (
                 <ProductCard
