@@ -84,12 +84,18 @@ function ObservabilidadePage() {
           <TabsTrigger value="queries">
             <Activity className="mr-2 h-4 w-4" /> Queries lentas
           </TabsTrigger>
+          <TabsTrigger value="cron">
+            <Clock className="mr-2 h-4 w-4" /> Tarefas agendadas
+          </TabsTrigger>
           <TabsTrigger value="security">
             <ShieldAlert className="mr-2 h-4 w-4" /> Eventos de segurança
           </TabsTrigger>
         </TabsList>
         <TabsContent value="queries" className="mt-4">
           <SlowQueriesPanel />
+        </TabsContent>
+        <TabsContent value="cron" className="mt-4">
+          <CronHealthPanel />
         </TabsContent>
         <TabsContent value="security" className="mt-4">
           <SecurityEventsPanel />
