@@ -224,8 +224,38 @@ function AuthPage() {
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="signup-password">Senha</Label>
-                    <Input id="signup-password" name="password" type="password" required autoComplete="new-password" minLength={8} />
-                    <p className="text-xs text-muted-foreground">Mínimo de 8 caracteres.</p>
+                    <Input
+                      id="signup-password"
+                      name="password"
+                      type="password"
+                      required
+                      autoComplete="new-password"
+                      minLength={8}
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                    />
+                    {signupPassword.length > 0 ? (
+                      <div className="space-y-1 pt-1" aria-live="polite">
+                        <div className="flex gap-1" aria-hidden="true">
+                          {[0, 1, 2, 3].map((i) => (
+                            <div
+                              key={i}
+                              className={`h-1 flex-1 rounded-full transition-colors ${
+                                i < strength.score ? strength.colorClass : "bg-muted"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">{strength.label}</span>
+                          {strength.hints.length > 0 && ` — adicione ${strength.hints.slice(0, 2).join(" e ")}`}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        Mínimo de 8 caracteres. Evite senhas reutilizadas em outros sites.
+                      </p>
+                    )}
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
