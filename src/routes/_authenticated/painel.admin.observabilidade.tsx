@@ -394,3 +394,164 @@ function CronHealthPanel() {
     </Card>
   );
 }
+
+type WebVitalRow = {
+  day: string;
+  metric: string;
+  route: string;
+  samples: number;
+  p75: number;
+};
+
+const METRIC_THRESHOLDS: Record<string, { good: number; poor: number; unit: string }> = {
+  LCP: { good: 2500, poor: 4000, unit: "ms" },
+  INP: { good: 200, poor: 500, unit: "ms" },
+  CLS: { good: 0.1, poor: 0.25, unit: "" },
+  FCP: { good: 1800, poor: 3000, unit: "ms" },
+  TTFB: { good: 800, poor: 1800, unit: "ms" },
+};
+
+function ratingFor(metric: string, p75: number): "good" | "needs" | "poor" {
+  const t = METRIC_THRESHOLDS[metric];
+  if (!t) return "good";
+  if (p75 <= t.good) return "good";
+  if (p75 <= t.poor) return "needs";
+  return "poor";
+}
+
+function formatP75(metric: string, v: number) {
+  const t = METRIC_THRESHOLDS[metric];
+  if (metric === "CLS") return v.toFixed(3);
+  return `${Math.round(v)}${t?.unit ?? ""}`;
+}
+
+function WebVitalsPanel() {
+  const [days, setDays] = useState(14);
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
+    queryKey: ["web-vitals-daily", days],
+    queryFn: async (): Promise<WebVitalRow[]> => {
+      const since = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
+      const { data, error } = await supabase
+        .from("web_vitals_daily")
+        .select("day, metric, route, samples, p75")
+        .gte("day", since)
+        .order("day", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as WebVitalRow[];
+    },
+  });
+
+  // Agrega: por métrica, p75 mais recente (último dia) e média ponderada
+  const summary = (() => {
+    if (!data) return [] as { metric: string; p75_latest: number; samples: number }[];
+    const byMetric = new Map<string, WebVitalRow[]>();
+    for (const r of data) {
+      const arr = byMetric.get(r.metric) ?? [];
+      arr.push(r);
+      byMetric.set(r.metric, arr);
+    }
+    return Array.from(byMetric.entries()).map(([metric, rows]) => {
+      const totalSamples = rows.reduce((a, r) => a + r.samples, 0);
+      const weighted = totalSamples > 0 ? rows.reduce((a, r) => a + r.p75 * r.samples, 0) / totalSamples : 0;
+      return { metric, p75_latest: weighted, samples: totalSamples };
+    });
+  })();
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle className="text-base">Web Vitals (p75) — últimos {days} dias</CardTitle>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Coleta RUM via <code>navigator.sendBeacon</code>. Agregação diária p75 por rota e métrica.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {[7, 14, 30].map((d) => (
+            <Button key={d} variant={days === d ? "default" : "outline"} size="sm" onClick={() => setDays(d)}>
+              {d}d
+            </Button>
+          ))}
+          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+            <RefreshCw className={`mr-2 h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
+            Atualizar
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {isLoading && <div className="h-40 animate-pulse rounded bg-muted" />}
+        {error && <p className="text-sm text-destructive">{pgErrorMessage(error)}</p>}
+        {!isLoading && !error && (!data || data.length === 0) && (
+          <p className="py-8 text-center text-sm text-muted-foreground">
+            Ainda não há amostras. Aguarde tráfego real para popular as métricas.
+          </p>
+        )}
+
+        {summary.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {summary.map((s) => {
+              const rating = ratingFor(s.metric, s.p75_latest);
+              const color =
+                rating === "good"
+                  ? "border-green-500/40 bg-green-500/5"
+                  : rating === "needs"
+                    ? "border-yellow-500/40 bg-yellow-500/5"
+                    : "border-destructive/40 bg-destructive/5";
+              return (
+                <div key={s.metric} className={`rounded-lg border p-3 ${color}`}>
+                  <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{s.metric}</div>
+                  <div className="mt-1 text-2xl font-bold tabular-nums">{formatP75(s.metric, s.p75_latest)}</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">{s.samples.toLocaleString("pt-BR")} amostras</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {data && data.length > 0 && (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-28">Dia</TableHead>
+                  <TableHead className="w-20">Métrica</TableHead>
+                  <TableHead>Rota</TableHead>
+                  <TableHead className="w-24 text-right">Amostras</TableHead>
+                  <TableHead className="w-28 text-right">p75</TableHead>
+                  <TableHead className="w-24">Rating</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...data]
+                  .sort((a, b) => (a.day < b.day ? 1 : -1))
+                  .slice(0, 200)
+                  .map((r, i) => {
+                    const rating = ratingFor(r.metric, r.p75);
+                    return (
+                      <TableRow key={`${r.day}-${r.metric}-${r.route}-${i}`}>
+                        <TableCell className="text-xs tabular-nums">{r.day}</TableCell>
+                        <TableCell className="text-xs font-medium">{r.metric}</TableCell>
+                        <TableCell className="max-w-xs truncate text-xs text-muted-foreground" title={r.route}>
+                          {r.route}
+                        </TableCell>
+                        <TableCell className="text-right text-xs tabular-nums">{r.samples}</TableCell>
+                        <TableCell className="text-right text-xs tabular-nums">{formatP75(r.metric, r.p75)}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={rating === "good" ? "default" : rating === "needs" ? "secondary" : "destructive"}
+                            className="text-[10px]"
+                          >
+                            {rating === "good" ? "Bom" : rating === "needs" ? "A melhorar" : "Ruim"}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
