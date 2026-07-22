@@ -260,6 +260,14 @@ function ProductPage() {
                   ))}
                 </div>
               )}
+              <ImageLightbox
+                images={imageUrls}
+                index={selectedIdx}
+                alt={product.name}
+                open={lightboxOpen}
+                onOpenChange={setLightboxOpen}
+                onIndexChange={setSelectedIdx}
+              />
             </div>
 
             {/* Info */}
