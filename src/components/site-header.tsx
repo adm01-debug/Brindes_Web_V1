@@ -47,6 +47,11 @@ export function SiteHeader() {
               <Search className="h-4 w-4" />
             </Link>
           </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/favoritos" aria-label="Favoritos">
+              <Heart className="h-4 w-4" />
+            </Link>
+          </Button>
 
           {loading ? (
             <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
