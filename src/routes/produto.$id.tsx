@@ -13,6 +13,8 @@ import { LeadForm } from "@/components/lead-form";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
+import { RecentlyViewed } from "@/components/recently-viewed";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
@@ -154,12 +156,15 @@ function ProductPage() {
     },
   });
 
-  // Log view
+  const { track } = useRecentlyViewed();
+
+  // Log view + histórico
   useEffect(() => {
     if (product?.id) {
       supabase.from("product_views").insert({ product_id: product.id }).then(() => {});
+      track(product.id);
     }
-  }, [product?.id]);
+  }, [product?.id, track]);
 
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -347,6 +352,8 @@ function ProductPage() {
             categoryId={product.category_id}
             companyId={product.company!.id}
           />
+
+          <RecentlyViewed excludeId={product.id} className="mt-12" />
         </div>
       </main>
       <SiteFooter />
