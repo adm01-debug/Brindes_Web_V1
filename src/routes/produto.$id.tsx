@@ -11,6 +11,7 @@ import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
 import { ShareButton } from "@/components/share-button";
+import { FavoriteButton } from "@/components/favorite-button";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
