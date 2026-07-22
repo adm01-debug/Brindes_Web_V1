@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_leads_company_unread ON public.leads (company_id, created_at DESC) WHERE read_at IS NULL;
