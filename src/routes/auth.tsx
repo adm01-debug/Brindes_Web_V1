@@ -80,6 +80,8 @@ function AuthPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [signupPassword, setSignupPassword] = useState("");
+  const strength = evaluatePasswordStrength(signupPassword);
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
