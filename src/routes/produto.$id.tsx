@@ -321,10 +321,107 @@ function ProductPage() {
               </div>
             </div>
           </div>
+
+          <RelatedProducts
+            currentId={product.id}
+            categoryId={product.category_id}
+            companyId={product.company!.id}
+          />
         </div>
       </main>
       <SiteFooter />
     </div>
+  );
+}
+
+function RelatedProducts({
+  currentId,
+  categoryId,
+  companyId,
+}: {
+  currentId: string;
+  categoryId: string | null;
+  companyId: string;
+}) {
+  const { data } = useQuery({
+    queryKey: ["related-products", currentId, categoryId, companyId],
+    queryFn: async () => {
+      let q = supabase
+        .from("products")
+        .select("id, name, slug, price, price_on_request, product_images(url, is_primary, sort_order)")
+        .neq("id", currentId)
+        .eq("is_active", true)
+        .is("deleted_at", null)
+        .eq("moderation_status", "approved")
+        .limit(4);
+      if (categoryId) q = q.eq("category_id", categoryId);
+      else q = q.eq("company_id", companyId);
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 60_000,
+  });
+
+  const [urls, setUrls] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!data?.length) return;
+    (async () => {
+      const map: Record<string, string> = {};
+      await Promise.all(
+        data.map(async (p) => {
+          const imgs = (p.product_images ?? []) as Array<{ url: string; is_primary: boolean; sort_order: number }>;
+          const primary = imgs.find((i) => i.is_primary) ?? imgs.sort((a, b) => a.sort_order - b.sort_order)[0];
+          if (primary) {
+            const signed = await getSignedUrl("product-images", primary.url);
+            if (signed) map[p.id] = signed;
+          }
+        }),
+      );
+      setUrls(map);
+    })();
+  }, [data]);
+
+  if (!data || data.length === 0) return null;
+
+  return (
+    <section aria-labelledby="related" className="mt-12">
+      <h2 id="related" className="text-xl font-semibold tracking-tight">
+        Produtos relacionados
+      </h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {data.map((p) => (
+          <Link
+            key={p.id}
+            to="/produto/$id"
+            params={{ id: p.id }}
+            className="group overflow-hidden rounded-lg border bg-card transition-colors hover:border-primary"
+          >
+            <div className="aspect-square overflow-hidden bg-muted">
+              {urls[p.id] ? (
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={urls[p.id]}
+                  alt={p.name}
+                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-muted-foreground">
+                  <Package className="h-10 w-10" />
+                </div>
+              )}
+            </div>
+            <div className="p-3">
+              <h3 className="line-clamp-2 text-sm font-medium">{p.name}</h3>
+              <p className="mt-1 text-sm text-primary">
+                {p.price_on_request || p.price == null ? "Sob consulta" : formatBRL(Number(p.price))}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
