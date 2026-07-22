@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Activity, RefreshCw, ShieldAlert, Trash2, Clock } from "lucide-react";
+import { Activity, RefreshCw, ShieldAlert, Trash2, Clock, Gauge } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
