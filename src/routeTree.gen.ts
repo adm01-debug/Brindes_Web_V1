@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -33,6 +34,11 @@ import { Route as ApiPublicOgProdutoIdRouteImport } from './routes/api/public/og
 import { Route as ApiPublicOgEmpresaSlugRouteImport } from './routes/api/public/og.empresa.$slug'
 import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
 
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sobre': typeof SobreRoute
   '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sobre': typeof SobreRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/produto/$id': typeof ProdutoIdRoute
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sobre': typeof SobreRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/buscar'
     | '/sitemap.xml'
+    | '/sobre'
     | '/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/buscar'
     | '/sitemap.xml'
+    | '/sobre'
     | '/categoria/$slug'
     | '/empresa/$slug'
     | '/produto/$id'
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/buscar'
     | '/sitemap.xml'
+    | '/sobre'
     | '/_authenticated/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
@@ -313,6 +325,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BuscarRoute: typeof BuscarRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SobreRoute: typeof SobreRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
@@ -323,6 +336,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -538,6 +558,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BuscarRoute: BuscarRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SobreRoute: SobreRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
