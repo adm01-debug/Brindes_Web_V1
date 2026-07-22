@@ -6,6 +6,7 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
   "Cache-Control": "no-store, max-age=0",
   "X-Content-Type-Options": "nosniff",
+  "X-Robots-Tag": "noindex, nofollow",
 };
 
 // Endpoint público de health-check — usado por uptime monitors (UptimeRobot,
