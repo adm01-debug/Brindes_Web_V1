@@ -35,6 +35,8 @@ export function SiteFooter() {
             <h3 className="text-sm font-semibold">Portal</h3>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li><Link to="/sobre" className="hover:text-foreground">Sobre</Link></li>
+              <li><Link to="/termos" className="hover:text-foreground">Termos de Uso</Link></li>
+              <li><Link to="/privacidade" className="hover:text-foreground">Privacidade</Link></li>
               <li><a href="mailto:contato@brindeshub.com.br" className="hover:text-foreground">Contato</a></li>
             </ul>
           </div>
