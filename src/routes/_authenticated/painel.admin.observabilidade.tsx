@@ -307,3 +307,84 @@ function SecurityEventsPanel() {
     </Card>
   );
 }
+
+function CronHealthPanel() {
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
+    queryKey: ["cron-health"],
+    queryFn: async (): Promise<CronHealth[]> => {
+      const { data, error } = await supabase.rpc("get_cron_health", { _limit: 100 });
+      if (error) throw error;
+      return (data ?? []) as CronHealth[];
+    },
+    refetchInterval: 60_000,
+  });
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-base">Saúde das tarefas agendadas (pg_cron)</CardTitle>
+        <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+          <RefreshCw className={`mr-2 h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
+          Recarregar
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {isLoading && <div className="h-40 animate-pulse rounded bg-muted" />}
+        {error && <p className="text-sm text-destructive">{pgErrorMessage(error)}</p>}
+        {!isLoading && !error && (!data || data.length === 0) && (
+          <p className="py-8 text-center text-sm text-muted-foreground">Nenhuma tarefa agendada.</p>
+        )}
+        {data && data.length > 0 && (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Job</TableHead>
+                  <TableHead className="w-28">Agenda</TableHead>
+                  <TableHead className="w-40">Última execução</TableHead>
+                  <TableHead className="w-24">Status</TableHead>
+                  <TableHead className="w-24">Duração</TableHead>
+                  <TableHead className="w-28">24h (falhas)</TableHead>
+                  <TableHead>Erro</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.map((j) => {
+                  const ok = j.last_status === "succeeded" || j.last_status === null;
+                  return (
+                    <TableRow key={j.jobname}>
+                      <TableCell className="font-medium text-xs">{j.jobname}</TableCell>
+                      <TableCell className="font-mono text-[10px] text-muted-foreground">{j.schedule}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {j.last_run_start
+                          ? formatDistanceToNow(new Date(j.last_run_start), { locale: ptBR, addSuffix: true })
+                          : "nunca"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={ok ? "secondary" : "destructive"}>
+                          {j.last_status ?? "—"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="tabular-nums text-xs">
+                        {j.duration_ms != null ? `${j.duration_ms.toFixed(0)} ms` : "—"}
+                      </TableCell>
+                      <TableCell className="tabular-nums text-xs">
+                        {j.runs_24h}
+                        {j.failures_24h > 0 && (
+                          <span className="ml-1 text-destructive">({j.failures_24h})</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="max-w-sm truncate text-xs text-destructive" title={j.last_error ?? ""}>
+                        {j.last_error ?? "—"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
