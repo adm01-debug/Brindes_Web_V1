@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
+import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
