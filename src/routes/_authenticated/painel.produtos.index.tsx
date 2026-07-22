@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { pgErrorMessage } from "@/lib/pg-errors";
 import { Plus, Package, Pencil, Trash2, Eye, EyeOff, Clock, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/painel/produtos/")({
@@ -35,7 +36,7 @@ function ProductsPage() {
 
   const toggleActive = async (id: string, is_active: boolean) => {
     const { error } = await supabase.from("products").update({ is_active: !is_active }).eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(pgErrorMessage(error));
     else {
       toast.success(!is_active ? "Produto ativado" : "Produto desativado");
       qc.invalidateQueries({ queryKey: ["my-products"] });
@@ -44,7 +45,7 @@ function ProductsPage() {
 
   const softDelete = async (id: string) => {
     const { error } = await supabase.from("products").update({ deleted_at: new Date().toISOString() }).eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(pgErrorMessage(error));
     else {
       toast.success("Produto removido");
       qc.invalidateQueries({ queryKey: ["my-products"] });

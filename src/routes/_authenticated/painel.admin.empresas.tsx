@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+import { pgErrorMessage } from "@/lib/pg-errors";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,7 +90,7 @@ function AdminEmpresasPage() {
       toast.success(`Empresa ${STATUS_META[vars.status].label.toLowerCase()} com sucesso.`);
       qc.invalidateQueries({ queryKey: ["admin-companies"] });
     },
-    onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar a empresa."),
+    onError: (e) => toast.error(pgErrorMessage(e, "Não foi possível atualizar a empresa.")),
   });
 
   if (checkingAdmin) {

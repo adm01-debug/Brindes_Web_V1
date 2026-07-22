@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { pgErrorMessage } from "@/lib/pg-errors";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -131,7 +132,7 @@ function AdminProdutosPage() {
       toast.success("Produto atualizado.");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
     },
-    onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar."),
+    onError: (e) => toast.error(pgErrorMessage(e, "Não foi possível atualizar.")),
   });
 
   if (checkingAdmin) {

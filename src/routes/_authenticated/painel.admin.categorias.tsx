@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { slugify } from "@/lib/portal";
+import { pgErrorMessage } from "@/lib/pg-errors";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -84,7 +85,7 @@ function AdminCategoriasPage() {
       toast.success(vars.is_active ? "Categoria ativada." : "Categoria desativada.");
       qc.invalidateQueries({ queryKey: ["admin-categories"] });
     },
-    onError: (e: Error) => toast.error(e.message || "Erro ao atualizar."),
+    onError: (e) => toast.error(pgErrorMessage(e, "Erro ao atualizar.")),
   });
 
   if (checkingAdmin) {

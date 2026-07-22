@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSignedUrl, uploadFile, slugify } from "@/lib/portal";
+import { pgErrorMessage } from "@/lib/pg-errors";
 import { Building2, Loader2, Upload, ImageIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/painel/perfil")({
@@ -59,7 +60,7 @@ function PerfilPage() {
     };
     const { error } = await supabase.from("companies").update(updates).eq("id", company.id);
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(pgErrorMessage(error));
     toast.success("Perfil atualizado!");
     qc.invalidateQueries({ queryKey: ["my-company"] });
   };
