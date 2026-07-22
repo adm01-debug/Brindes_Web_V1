@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
-import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock } from "lucide-react";
+import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock, Expand } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
 import { RecentlyViewed } from "@/components/recently-viewed";
+import { ImageLightbox } from "@/components/image-lightbox";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
