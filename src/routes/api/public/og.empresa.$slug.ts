@@ -65,6 +65,7 @@ export const Route = createFileRoute("/api/public/og/empresa/$slug")({
               headers: {
                 ETag: etag,
                 "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+                "X-Robots-Tag": "noindex",
               },
             });
           }
@@ -74,6 +75,7 @@ export const Route = createFileRoute("/api/public/og/empresa/$slug")({
               "Content-Type": type,
               "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
               "X-Content-Type-Options": "nosniff",
+              "X-Robots-Tag": "noindex",
               ETag: etag,
             },
           });
