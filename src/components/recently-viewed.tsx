@@ -93,7 +93,7 @@ export function RecentlyViewed({ excludeId, title = "Vistos recentemente", class
                 <p className="mt-1 text-xs text-muted-foreground">
                   {p.price_on_request || p.price == null
                     ? "Sob consulta"
-                    : formatBRL(Number(p.price), p.currency ?? "BRL")}
+                    : formatBRL(Number(p.price))}
                 </p>
               </CardContent>
             </Card>
