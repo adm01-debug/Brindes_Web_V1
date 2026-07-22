@@ -16,6 +16,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import { BackToTop } from "@/components/back-to-top";
 import { applySecurityHeaders } from "@/lib/security-headers";
+import { useWebVitals } from "@/hooks/use-web-vitals";
 
 function NotFoundComponent() {
   return (
@@ -195,6 +196,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useWebVitals();
 
   return (
     <QueryClientProvider client={queryClient}>

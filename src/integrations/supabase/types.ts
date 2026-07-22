@@ -549,6 +549,66 @@ export type Database = {
         }
         Relationships: []
       }
+      web_vitals_daily: {
+        Row: {
+          day: string
+          metric: string
+          p75: number | null
+          route: string
+          samples: number
+          updated_at: string
+        }
+        Insert: {
+          day: string
+          metric: string
+          p75?: number | null
+          route: string
+          samples?: number
+          updated_at?: string
+        }
+        Update: {
+          day?: string
+          metric?: string
+          p75?: number | null
+          route?: string
+          samples?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      web_vitals_events: {
+        Row: {
+          created_at: string
+          id: number
+          metric: string
+          nav_type: string | null
+          rating: string | null
+          route: string
+          ua_family: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          metric: string
+          nav_type?: string | null
+          rating?: string | null
+          route: string
+          ua_family?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          metric?: string
+          nav_type?: string | null
+          rating?: string | null
+          route?: string
+          ua_family?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       mv_company_stats: {
@@ -744,6 +804,7 @@ export type Database = {
       }
       strip_dangerous_html: { Args: { input: string }; Returns: string }
       unaccent_safe: { Args: { input: string }; Returns: string }
+      web_vitals_rollup: { Args: { _day?: string }; Returns: number }
     }
     Enums: {
       app_role: "admin" | "company_owner"

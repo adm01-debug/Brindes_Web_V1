@@ -31,6 +31,7 @@ import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authent
 import { Route as AuthenticatedPainelLeadsRouteImport } from './routes/_authenticated/painel.leads'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
 import { Route as AuthenticatedPainelAdminIndexRouteImport } from './routes/_authenticated/painel.admin.index'
+import { Route as ApiPublicHooksWebVitalsRouteImport } from './routes/api/public/hooks/web-vitals'
 import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
 import { Route as AuthenticatedPainelAdminProdutosRouteImport } from './routes/_authenticated/painel.admin.produtos'
 import { Route as AuthenticatedPainelAdminObservabilidadeRouteImport } from './routes/_authenticated/painel.admin.observabilidade'
@@ -154,6 +155,11 @@ const AuthenticatedPainelAdminIndexRoute =
     path: '/admin/',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const ApiPublicHooksWebVitalsRoute = ApiPublicHooksWebVitalsRouteImport.update({
+  id: '/api/public/hooks/web-vitals',
+  path: '/api/public/hooks/web-vitals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPainelProdutosNovoRoute =
   AuthenticatedPainelProdutosNovoRouteImport.update({
     id: '/produtos/novo',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
+  '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
@@ -256,6 +263,7 @@ export interface FileRoutesByTo {
   '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
+  '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/painel/admin': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/_authenticated/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/_authenticated/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
   '/_authenticated/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
+  '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/_authenticated/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/_authenticated/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
@@ -322,6 +331,7 @@ export interface FileRouteTypes {
     | '/painel/admin/observabilidade'
     | '/painel/admin/produtos'
     | '/painel/produtos/novo'
+    | '/api/public/hooks/web-vitals'
     | '/painel/admin/'
     | '/painel/produtos/'
     | '/painel/produtos/$id/editar'
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/painel/admin/observabilidade'
     | '/painel/admin/produtos'
     | '/painel/produtos/novo'
+    | '/api/public/hooks/web-vitals'
     | '/painel/admin'
     | '/painel/produtos'
     | '/painel/produtos/$id/editar'
@@ -384,6 +395,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/admin/observabilidade'
     | '/_authenticated/painel/admin/produtos'
     | '/_authenticated/painel/produtos/novo'
+    | '/api/public/hooks/web-vitals'
     | '/_authenticated/painel/admin/'
     | '/_authenticated/painel/produtos/'
     | '/_authenticated/painel/produtos/$id/editar'
@@ -408,6 +420,7 @@ export interface RootRouteChildren {
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
+  ApiPublicHooksWebVitalsRoute: typeof ApiPublicHooksWebVitalsRoute
   ApiPublicOgEmpresaSlugRoute: typeof ApiPublicOgEmpresaSlugRoute
   ApiPublicOgProdutoIdRoute: typeof ApiPublicOgProdutoIdRoute
 }
@@ -568,6 +581,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelAdminIndexRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/api/public/hooks/web-vitals': {
+      id: '/api/public/hooks/web-vitals'
+      path: '/api/public/hooks/web-vitals'
+      fullPath: '/api/public/hooks/web-vitals'
+      preLoaderRoute: typeof ApiPublicHooksWebVitalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/painel/produtos/novo': {
       id: '/_authenticated/painel/produtos/novo'
       path: '/produtos/novo'
@@ -689,6 +709,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaSlugRoute: EmpresaSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
+  ApiPublicHooksWebVitalsRoute: ApiPublicHooksWebVitalsRoute,
   ApiPublicOgEmpresaSlugRoute: ApiPublicOgEmpresaSlugRoute,
   ApiPublicOgProdutoIdRoute: ApiPublicOgProdutoIdRoute,
 }
