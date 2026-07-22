@@ -36,11 +36,52 @@ export const Route = createFileRoute("/auth")({
 const emailSchema = z.string().trim().email("E-mail inválido").max(255);
 const passwordSchema = z.string().min(8, "Mínimo de 8 caracteres").max(72);
 
+type PasswordStrength = {
+  score: 0 | 1 | 2 | 3 | 4;
+  label: string;
+  colorClass: string;
+  hints: string[];
+};
+
+function evaluatePasswordStrength(pwd: string): PasswordStrength {
+  const hints: string[] = [];
+  let raw = 0;
+  if (pwd.length >= 8) raw++; else hints.push("pelo menos 8 caracteres");
+  if (pwd.length >= 12) raw++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) raw++; else hints.push("letras maiúsculas e minúsculas");
+  if (/\d/.test(pwd)) raw++; else hints.push("um número");
+  if (/[^A-Za-z0-9]/.test(pwd)) raw++; else hints.push("um símbolo");
+  const score = Math.min(raw, 4) as 0 | 1 | 2 | 3 | 4;
+  const labels = ["Muito fraca", "Fraca", "Razoável", "Boa", "Forte"];
+  const colors = [
+    "bg-destructive",
+    "bg-destructive",
+    "bg-amber-500",
+    "bg-emerald-500",
+    "bg-emerald-600",
+  ];
+  return { score, label: labels[score], colorClass: colors[score], hints };
+}
+
+function translateAuthError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("pwned") || m.includes("compromised") || m.includes("leaked") || m.includes("haveibeenpwned"))
+    return "Esta senha apareceu em vazamentos públicos conhecidos. Escolha uma senha diferente e exclusiva.";
+  if (m.includes("weak") || m.includes("password should")) return "Senha muito fraca. Combine letras, números e símbolos.";
+  if (m.includes("invalid login") || m.includes("invalid credentials")) return "E-mail ou senha incorretos.";
+  if (m.includes("already registered") || m.includes("user already")) return "Este e-mail já está cadastrado. Faça login.";
+  if (m.includes("rate limit")) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+  if (m.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar.";
+  return message;
+}
+
 function AuthPage() {
   const { mode } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [signupPassword, setSignupPassword] = useState("");
+  const strength = evaluatePasswordStrength(signupPassword);
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,7 +97,7 @@ function AuthPage() {
       password: password.data,
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(translateAuthError(error.message));
     toast.success("Bem-vindo!");
     navigate({ to: "/painel" });
   };
@@ -81,7 +122,7 @@ function AuthPage() {
       },
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(translateAuthError(error.message));
     toast.success("Cadastro criado! Você já está no ar.");
     navigate({ to: "/painel" });
   };
@@ -183,8 +224,38 @@ function AuthPage() {
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="signup-password">Senha</Label>
-                    <Input id="signup-password" name="password" type="password" required autoComplete="new-password" minLength={8} />
-                    <p className="text-xs text-muted-foreground">Mínimo de 8 caracteres.</p>
+                    <Input
+                      id="signup-password"
+                      name="password"
+                      type="password"
+                      required
+                      autoComplete="new-password"
+                      minLength={8}
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                    />
+                    {signupPassword.length > 0 ? (
+                      <div className="space-y-1 pt-1" aria-live="polite">
+                        <div className="flex gap-1" aria-hidden="true">
+                          {[0, 1, 2, 3].map((i) => (
+                            <div
+                              key={i}
+                              className={`h-1 flex-1 rounded-full transition-colors ${
+                                i < strength.score ? strength.colorClass : "bg-muted"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          <span className="font-medium text-foreground">{strength.label}</span>
+                          {strength.hints.length > 0 && ` — adicione ${strength.hints.slice(0, 2).join(" e ")}`}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        Mínimo de 8 caracteres. Evite senhas reutilizadas em outros sites.
+                      </p>
+                    )}
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
