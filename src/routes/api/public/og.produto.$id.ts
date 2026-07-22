@@ -71,11 +71,24 @@ export const Route = createFileRoute("/api/public/og/produto/$id")({
 
           const bytes = new Uint8Array(await file.arrayBuffer());
           const type = file.type || "image/jpeg";
+          const etag = `"${await sha1Hex(bytes)}"`;
+          const inm = request.headers.get("if-none-match");
+          if (inm && inm === etag) {
+            return new Response(null, {
+              status: 304,
+              headers: {
+                ETag: etag,
+                "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+              },
+            });
+          }
           return new Response(bytes, {
             status: 200,
             headers: {
               "Content-Type": type,
-              "Cache-Control": "public, max-age=86400, s-maxage=86400",
+              "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+              "X-Content-Type-Options": "nosniff",
+              ETag: etag,
             },
           });
         } catch {
