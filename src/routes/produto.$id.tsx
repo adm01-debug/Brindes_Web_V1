@@ -13,6 +13,8 @@ import { LeadForm } from "@/components/lead-form";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
+import { RecentlyViewed } from "@/components/recently-viewed";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
