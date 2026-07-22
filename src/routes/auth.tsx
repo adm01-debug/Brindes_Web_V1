@@ -36,6 +36,45 @@ export const Route = createFileRoute("/auth")({
 const emailSchema = z.string().trim().email("E-mail inválido").max(255);
 const passwordSchema = z.string().min(8, "Mínimo de 8 caracteres").max(72);
 
+type PasswordStrength = {
+  score: 0 | 1 | 2 | 3 | 4;
+  label: string;
+  colorClass: string;
+  hints: string[];
+};
+
+function evaluatePasswordStrength(pwd: string): PasswordStrength {
+  const hints: string[] = [];
+  let raw = 0;
+  if (pwd.length >= 8) raw++; else hints.push("pelo menos 8 caracteres");
+  if (pwd.length >= 12) raw++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) raw++; else hints.push("letras maiúsculas e minúsculas");
+  if (/\d/.test(pwd)) raw++; else hints.push("um número");
+  if (/[^A-Za-z0-9]/.test(pwd)) raw++; else hints.push("um símbolo");
+  const score = Math.min(raw, 4) as 0 | 1 | 2 | 3 | 4;
+  const labels = ["Muito fraca", "Fraca", "Razoável", "Boa", "Forte"];
+  const colors = [
+    "bg-destructive",
+    "bg-destructive",
+    "bg-amber-500",
+    "bg-emerald-500",
+    "bg-emerald-600",
+  ];
+  return { score, label: labels[score], colorClass: colors[score], hints };
+}
+
+function translateAuthError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes("pwned") || m.includes("compromised") || m.includes("leaked") || m.includes("haveibeenpwned"))
+    return "Esta senha apareceu em vazamentos públicos conhecidos. Escolha uma senha diferente e exclusiva.";
+  if (m.includes("weak") || m.includes("password should")) return "Senha muito fraca. Combine letras, números e símbolos.";
+  if (m.includes("invalid login") || m.includes("invalid credentials")) return "E-mail ou senha incorretos.";
+  if (m.includes("already registered") || m.includes("user already")) return "Este e-mail já está cadastrado. Faça login.";
+  if (m.includes("rate limit")) return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+  if (m.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar.";
+  return message;
+}
+
 function AuthPage() {
   const { mode } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
