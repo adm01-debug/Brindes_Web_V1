@@ -168,6 +168,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "dns-prefetch", href: "https://atphsqbixdfqwobhiaoz.supabase.co" },
+      { rel: "alternate", hrefLang: "pt-BR", href: "https://brinde-gallery.lovable.app/" },
+      { rel: "alternate", hrefLang: "x-default", href: "https://brinde-gallery.lovable.app/" },
       {
         rel: "preload",
         as: "style",
