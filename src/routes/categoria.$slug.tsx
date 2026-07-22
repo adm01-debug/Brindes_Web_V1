@@ -143,13 +143,13 @@ function CategoryPage() {
       <main className="flex-1 bg-muted/30">
         <section className="border-b bg-gradient-to-br from-primary/10 via-background to-accent/10">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-            <nav aria-label="breadcrumb" className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <Link to="/" className="hover:text-foreground">Início</Link>
-              <span>/</span>
-              <Link to="/buscar" className="hover:text-foreground">Buscar</Link>
-              <span>/</span>
-              <span className="text-foreground">{category.name}</span>
-            </nav>
+            <Breadcrumbs
+              className="mb-4"
+              items={[
+                { label: "Buscar", href: "/buscar" },
+                { label: category.name },
+              ]}
+            />
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Tag className="h-6 w-6" />
