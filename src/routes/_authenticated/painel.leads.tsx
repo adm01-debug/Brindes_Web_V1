@@ -95,7 +95,7 @@ function LeadsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err) => toast.error(pgErrorMessage(err)),
   });
 
   const filtered = useMemo(() => {

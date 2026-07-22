@@ -60,7 +60,7 @@ function PerfilPage() {
     };
     const { error } = await supabase.from("companies").update(updates).eq("id", company.id);
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(pgErrorMessage(error));
     toast.success("Perfil atualizado!");
     qc.invalidateQueries({ queryKey: ["my-company"] });
   };

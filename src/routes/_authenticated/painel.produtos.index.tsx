@@ -36,7 +36,7 @@ function ProductsPage() {
 
   const toggleActive = async (id: string, is_active: boolean) => {
     const { error } = await supabase.from("products").update({ is_active: !is_active }).eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(pgErrorMessage(error));
     else {
       toast.success(!is_active ? "Produto ativado" : "Produto desativado");
       qc.invalidateQueries({ queryKey: ["my-products"] });
@@ -45,7 +45,7 @@ function ProductsPage() {
 
   const softDelete = async (id: string) => {
     const { error } = await supabase.from("products").update({ deleted_at: new Date().toISOString() }).eq("id", id);
-    if (error) toast.error(error.message);
+    if (error) toast.error(pgErrorMessage(error));
     else {
       toast.success("Produto removido");
       qc.invalidateQueries({ queryKey: ["my-products"] });
