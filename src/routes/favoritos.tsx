@@ -4,6 +4,7 @@ import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useFavorites } from "@/hooks/use-favorites";
 import { ProductCard } from "@/components/product-card";
+import { ProductCardSkeleton } from "@/components/product-card-skeleton";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
