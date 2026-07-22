@@ -156,12 +156,15 @@ function ProductPage() {
     },
   });
 
-  // Log view
+  const { track } = useRecentlyViewed();
+
+  // Log view + histórico
   useEffect(() => {
     if (product?.id) {
       supabase.from("product_views").insert({ product_id: product.id }).then(() => {});
+      track(product.id);
     }
-  }, [product?.id]);
+  }, [product?.id, track]);
 
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
