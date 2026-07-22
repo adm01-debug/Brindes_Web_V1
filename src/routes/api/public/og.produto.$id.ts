@@ -25,7 +25,8 @@ function placeholderResponse(status = 200): Response {
 }
 
 async function sha1Hex(bytes: Uint8Array): Promise<string> {
-  const hash = await crypto.subtle.digest("SHA-1", bytes);
+  const buf = bytes.slice().buffer as ArrayBuffer;
+  const hash = await crypto.subtle.digest("SHA-1", buf);
   return Array.from(new Uint8Array(hash))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
