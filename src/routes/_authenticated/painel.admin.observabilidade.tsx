@@ -84,6 +84,9 @@ function ObservabilidadePage() {
           <TabsTrigger value="queries">
             <Activity className="mr-2 h-4 w-4" /> Queries lentas
           </TabsTrigger>
+          <TabsTrigger value="webvitals">
+            <Gauge className="mr-2 h-4 w-4" /> Web Vitals
+          </TabsTrigger>
           <TabsTrigger value="cron">
             <Clock className="mr-2 h-4 w-4" /> Tarefas agendadas
           </TabsTrigger>
@@ -93,6 +96,9 @@ function ObservabilidadePage() {
         </TabsList>
         <TabsContent value="queries" className="mt-4">
           <SlowQueriesPanel />
+        </TabsContent>
+        <TabsContent value="webvitals" className="mt-4">
+          <WebVitalsPanel />
         </TabsContent>
         <TabsContent value="cron" className="mt-4">
           <CronHealthPanel />
