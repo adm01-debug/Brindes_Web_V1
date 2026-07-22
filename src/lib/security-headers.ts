@@ -1,4 +1,5 @@
 import { createIsomorphicFn } from "@tanstack/react-start";
+import { setResponseHeader } from "@tanstack/react-start/server";
 
 /**
  * Injeta headers de segurança na resposta HTML raiz.
@@ -8,9 +9,6 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 export const applySecurityHeaders = createIsomorphicFn()
   .client(() => {})
   .server(() => {
-    // Import lazy dentro do handler server-only para não vazar no bundle cliente.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { setResponseHeader } = require("@tanstack/react-start/server") as typeof import("@tanstack/react-start/server");
     try {
       setResponseHeader("X-Frame-Options", "SAMEORIGIN");
       setResponseHeader("X-Content-Type-Options", "nosniff");
@@ -24,3 +22,4 @@ export const applySecurityHeaders = createIsomorphicFn()
       /* fora de contexto de request SSR */
     }
   });
+
