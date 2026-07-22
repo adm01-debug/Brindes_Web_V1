@@ -34,8 +34,8 @@ export function SiteFooter() {
           <div>
             <h3 className="text-sm font-semibold">Portal</h3>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-              <li>Sobre</li>
-              <li>Contato</li>
+              <li><Link to="/sobre" className="hover:text-foreground">Sobre</Link></li>
+              <li><a href="mailto:contato@brindeshub.com.br" className="hover:text-foreground">Contato</a></li>
             </ul>
           </div>
         </div>
