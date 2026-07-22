@@ -38,9 +38,8 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link to="/produto/$id" params={{ id: product.id }}>
       <Card className="group h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
-        <div className="aspect-square overflow-hidden bg-muted">
+        <div className="relative aspect-square overflow-hidden bg-muted">
           {imgUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imgUrl}
               alt={product.name}
@@ -52,6 +51,16 @@ export function ProductCard({ product }: { product: Product }) {
               <Package className="h-10 w-10" />
             </div>
           )}
+          <div className="absolute right-2 top-2">
+            <FavoriteButton
+              productId={product.id}
+              productName={product.name}
+              showLabel={false}
+              size="icon"
+              variant="secondary"
+              className="h-8 w-8 rounded-full shadow-sm backdrop-blur"
+            />
+          </div>
         </div>
         <CardContent className="p-4">
           <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold group-hover:text-primary">
