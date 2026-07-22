@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_companies_approved_recent ON public.companies (created_at DESC) WHERE status = 'approved';
