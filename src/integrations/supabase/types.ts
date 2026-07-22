@@ -528,6 +528,36 @@ export type Database = {
         }
         Relationships: []
       }
+      storage_cleanup_queue: {
+        Row: {
+          attempts: number
+          bucket: string
+          created_at: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          path: string
+        }
+        Insert: {
+          attempts?: number
+          bucket: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          path: string
+        }
+        Update: {
+          attempts?: number
+          bucket?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          path?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -798,6 +828,11 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      storage_cleanup_enqueue: {
+        Args: { _bucket: string; _err?: string; _path: string }
+        Returns: undefined
+      }
+      storage_cleanup_worker: { Args: { _limit?: number }; Returns: number }
       storage_purge_orphans: {
         Args: { _bucket?: string; _limit?: number }
         Returns: number
