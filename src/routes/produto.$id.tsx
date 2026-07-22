@@ -12,6 +12,7 @@ import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, 
 import { LeadForm } from "@/components/lead-form";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
