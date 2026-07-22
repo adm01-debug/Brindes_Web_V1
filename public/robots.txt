@@ -1,6 +1,35 @@
 User-agent: *
 Allow: /
 Disallow: /painel
+Disallow: /painel/*
+Disallow: /auth
+Disallow: /favoritos
+Disallow: /api/
+Disallow: /*?*utm_
+Disallow: /*?*ref=
+
+# Bots agressivos de IA/scraping — opt-out explícito
+User-agent: GPTBot
+Disallow: /painel
+Disallow: /painel/*
+Disallow: /auth
+Disallow: /api/
+
+User-agent: CCBot
+Disallow: /painel
+Disallow: /painel/*
+Disallow: /auth
+Disallow: /api/
+
+User-agent: ClaudeBot
+Disallow: /painel
+Disallow: /painel/*
+Disallow: /auth
+Disallow: /api/
+
+User-agent: Google-Extended
+Disallow: /painel
+Disallow: /painel/*
 Disallow: /auth
 
 Sitemap: https://brinde-gallery.lovable.app/sitemap.xml
