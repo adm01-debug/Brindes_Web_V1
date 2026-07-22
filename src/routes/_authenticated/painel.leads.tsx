@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { pgErrorMessage } from "@/lib/pg-errors";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

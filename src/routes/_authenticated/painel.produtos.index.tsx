@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { pgErrorMessage } from "@/lib/pg-errors";
 import { Plus, Package, Pencil, Trash2, Eye, EyeOff, Clock, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/painel/produtos/")({

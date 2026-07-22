@@ -90,7 +90,7 @@ function AdminEmpresasPage() {
       toast.success(`Empresa ${STATUS_META[vars.status].label.toLowerCase()} com sucesso.`);
       qc.invalidateQueries({ queryKey: ["admin-companies"] });
     },
-    onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar a empresa."),
+    onError: (e) => toast.error(pgErrorMessage(e, "Não foi possível atualizar a empresa.")),
   });
 
   if (checkingAdmin) {
