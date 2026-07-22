@@ -1,0 +1,5 @@
+Contact: mailto:security@brinde-gallery.lovable.app
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: pt-BR, en
+Canonical: https://brinde-gallery.lovable.app/.well-known/security.txt
+Policy: https://brinde-gallery.lovable.app/privacidade
