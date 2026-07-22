@@ -20,6 +20,7 @@ function placeholderResponse(status = 200): Response {
       "Content-Type": "image/svg+xml; charset=utf-8",
       "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=86400",
       "X-Content-Type-Options": "nosniff",
+      "X-Robots-Tag": "noindex",
     },
   });
 }
@@ -79,6 +80,7 @@ export const Route = createFileRoute("/api/public/og/produto/$id")({
               headers: {
                 ETag: etag,
                 "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+                "X-Robots-Tag": "noindex",
               },
             });
           }
@@ -88,6 +90,7 @@ export const Route = createFileRoute("/api/public/og/produto/$id")({
               "Content-Type": type,
               "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
               "X-Content-Type-Options": "nosniff",
+              "X-Robots-Tag": "noindex",
               ETag: etag,
             },
           });
