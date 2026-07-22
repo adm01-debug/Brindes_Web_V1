@@ -195,6 +195,14 @@ function ProductPage() {
       <SiteHeader />
       <main className="flex-1 bg-muted/30">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <Breadcrumbs
+            className="mb-4"
+            items={[
+              { label: "Empresas", href: "/empresas" },
+              { label: product.company!.name, href: `/empresa/${product.company!.slug}` },
+              { label: product.name },
+            ]}
+          />
           <Button variant="ghost" size="sm" asChild className="mb-4">
             <Link to="/empresa/$slug" params={{ slug: product.company!.slug }}>
               <ChevronLeft className="mr-1 h-4 w-4" />
