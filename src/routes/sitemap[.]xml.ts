@@ -92,13 +92,35 @@ export const Route = createFileRoute("/sitemap.xml")({
           }
 
           for (const p of productsRes.data ?? []) {
+            const loc = `${SITE_URL}/produto/${p.id}`;
+            const lastmod = p.updated_at ? new Date(p.updated_at).toISOString() : undefined;
+            const images = (p.product_images ?? [])
+              .slice()
+              .sort(
+                (a: { is_primary: boolean; sort_order: number }, b: { is_primary: boolean; sort_order: number }) =>
+                  (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0) || a.sort_order - b.sort_order,
+              )
+              .slice(0, 5);
+            const imageXml = images
+              .map(
+                (img: { url: string }) =>
+                  `    <image:image><image:loc>${escapeXml(img.url)}</image:loc>${
+                    p.name ? `<image:title>${escapeXml(p.name)}</image:title>` : ""
+                  }</image:image>`,
+              )
+              .join("\n");
             parts.push(
-              urlEntry(
-                `${SITE_URL}/produto/${p.id}`,
-                p.updated_at ? new Date(p.updated_at).toISOString() : undefined,
-                "weekly",
-                "0.6",
-              ),
+              [
+                "  <url>",
+                `    <loc>${escapeXml(loc)}</loc>`,
+                lastmod ? `    <lastmod>${lastmod}</lastmod>` : "",
+                "    <changefreq>weekly</changefreq>",
+                "    <priority>0.6</priority>",
+                imageXml,
+                "  </url>",
+              ]
+                .filter(Boolean)
+                .join("\n"),
             );
           }
 
