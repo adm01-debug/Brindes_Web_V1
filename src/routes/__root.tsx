@@ -15,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import { BackToTop } from "@/components/back-to-top";
+import { applySecurityHeaders } from "@/lib/security-headers";
 
 function NotFoundComponent() {
   return (
@@ -83,11 +84,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  beforeLoad: async () => {
-    // SSR-only: injeta headers de segurança. O helper .server.ts é
-    // bloqueado do bundle cliente pela extensão do arquivo.
-    if (typeof window !== "undefined") return;
-    const { applySecurityHeaders } = await import("@/lib/security-headers.server");
+  beforeLoad: () => {
     applySecurityHeaders();
   },
   head: () => ({
