@@ -59,7 +59,9 @@ function FavoritesPage() {
         </header>
 
         {!hydrated || isLoading ? (
-          <p className="text-muted-foreground">Carregando…</p>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <ProductCardSkeleton count={8} />
+          </div>
         ) : ids.length === 0 ? (
           <EmptyState />
         ) : !products || products.length === 0 ? (
