@@ -37,7 +37,7 @@ export function SiteFooter() {
               <li><Link to="/sobre" className="hover:text-foreground">Sobre</Link></li>
               <li><Link to="/termos" className="hover:text-foreground">Termos de Uso</Link></li>
               <li><Link to="/privacidade" className="hover:text-foreground">Privacidade</Link></li>
-              <li><a href="mailto:contato@brindeshub.com.br" className="hover:text-foreground">Contato</a></li>
+              <li><Link to="/contato" className="hover:text-foreground">Contato</Link></li>
             </ul>
           </div>
         </div>
