@@ -184,6 +184,13 @@ function CompanyPage() {
         </div>
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs
+            className="pt-4"
+            items={[
+              { label: "Empresas", href: "/empresas" },
+              { label: company.name },
+            ]}
+          />
           {/* Company header */}
           <div className="-mt-16 flex flex-col gap-6 rounded-2xl border bg-card p-6 shadow-sm sm:flex-row sm:items-end">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-4 border-background bg-primary/10 text-primary shadow-sm">
