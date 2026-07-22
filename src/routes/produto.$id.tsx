@@ -11,6 +11,7 @@ import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
 import { ShareButton } from "@/components/share-button";
+import { FavoriteButton } from "@/components/favorite-button";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
@@ -242,11 +243,13 @@ function ProductPage() {
               </Link>
               <div className="mt-2 flex items-start justify-between gap-3">
                 <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
-                <ShareButton
-                  title={product.name}
-                  text={product.short_description ?? `${product.name} — ${product.company!.name}`}
-                  className="shrink-0"
-                />
+                <div className="flex shrink-0 items-center gap-2">
+                  <FavoriteButton productId={product.id} productName={product.name} showLabel={false} size="icon" />
+                  <ShareButton
+                    title={product.name}
+                    text={product.short_description ?? `${product.name} — ${product.company!.name}`}
+                  />
+                </div>
               </div>
               {product.short_description && (
                 <p className="mt-2 text-muted-foreground">{product.short_description}</p>

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
+import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,11 @@ export function SiteHeader() {
           <Button variant="ghost" size="icon" asChild>
             <Link to="/buscar" aria-label="Buscar">
               <Search className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/favoritos" aria-label="Favoritos">
+              <Heart className="h-4 w-4" />
             </Link>
           </Button>
 
