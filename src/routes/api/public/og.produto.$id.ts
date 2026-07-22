@@ -18,15 +18,24 @@ function placeholderResponse(status = 200): Response {
     status,
     headers: {
       "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": "public, max-age=300",
+      "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=86400",
+      "X-Content-Type-Options": "nosniff",
     },
   });
+}
+
+async function sha1Hex(bytes: Uint8Array): Promise<string> {
+  const buf = bytes.slice().buffer as ArrayBuffer;
+  const hash = await crypto.subtle.digest("SHA-1", buf);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export const Route = createFileRoute("/api/public/og/produto/$id")({
   server: {
     handlers: {
-      GET: async ({ params }) => {
+      GET: async ({ params, request }) => {
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -62,11 +71,24 @@ export const Route = createFileRoute("/api/public/og/produto/$id")({
 
           const bytes = new Uint8Array(await file.arrayBuffer());
           const type = file.type || "image/jpeg";
+          const etag = `"${await sha1Hex(bytes)}"`;
+          const inm = request.headers.get("if-none-match");
+          if (inm && inm === etag) {
+            return new Response(null, {
+              status: 304,
+              headers: {
+                ETag: etag,
+                "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+              },
+            });
+          }
           return new Response(bytes, {
             status: 200,
             headers: {
               "Content-Type": type,
-              "Cache-Control": "public, max-age=86400, s-maxage=86400",
+              "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+              "X-Content-Type-Options": "nosniff",
+              ETag: etag,
             },
           });
         } catch {
