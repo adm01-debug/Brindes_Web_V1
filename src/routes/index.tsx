@@ -218,6 +218,8 @@ function HomePage() {
           </div>
         </section>
 
+        <RecentlyViewed />
+
         {/* CTA */}
         <section className="border-t bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
           <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 lg:px-8">
