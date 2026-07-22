@@ -11,6 +11,35 @@ import { ProductCard } from "@/components/product-card";
 import { CategoryPill } from "@/components/category-pill";
 import { RecentlyViewed } from "@/components/recently-viewed";
 
+const SITE_URL = "https://brinde-gallery.lovable.app";
+const HOME_JSONLD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
+      name: "BrindesHub",
+      url: SITE_URL,
+      logo: `${SITE_URL}/favicon.ico`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "BrindesHub",
+      description:
+        "Portal de empresas de brindes corporativos, promocionais e personalizados no Brasil.",
+      inLanguage: "pt-BR",
+      publisher: { "@id": `${SITE_URL}/#organization` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE_URL}/buscar?q={search_term_string}`,
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
+};
+
 export const Route = createFileRoute("/")({
   component: HomePage,
   head: () => ({
@@ -27,8 +56,16 @@ export const Route = createFileRoute("/")({
         content: "Descubra empresas de brindes personalizados, promocionais e ecológicos em um só portal. Compare fornecedores, veja catálogos e peça orçamentos direto com a empresa.",
       },
       { property: "og:url", content: "https://brinde-gallery.lovable.app/" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://brinde-gallery.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(HOME_JSONLD),
+      },
+    ],
   }),
 });
 
