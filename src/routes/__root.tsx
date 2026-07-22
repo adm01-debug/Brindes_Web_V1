@@ -171,6 +171,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "alternate", hrefLang: "pt-BR", href: "https://brinde-gallery.lovable.app/" },
       { rel: "alternate", hrefLang: "x-default", href: "https://brinde-gallery.lovable.app/" },
       {
+        rel: "search",
+        type: "application/opensearchdescription+xml",
+        title: "BrindesHub",
+        href: "/opensearch.xml",
+      },
+      {
         rel: "preload",
         as: "style",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
