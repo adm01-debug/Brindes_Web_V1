@@ -18,6 +18,14 @@ export const applySecurityHeaders = createIsomorphicFn()
         "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
       );
       setResponseHeader("X-DNS-Prefetch-Control", "on");
+      // HSTS: força HTTPS por 2 anos com preload (seguro: domínio já serve só HTTPS)
+      setResponseHeader(
+        "Strict-Transport-Security",
+        "max-age=63072000; includeSubDomains; preload",
+      );
+      // Isola o processo do site de janelas cross-origin (mitiga Spectre/XS-Leaks)
+      setResponseHeader("Cross-Origin-Opener-Policy", "same-origin");
+      setResponseHeader("Cross-Origin-Resource-Policy", "same-site");
     } catch {
       /* fora de contexto de request SSR */
     }
