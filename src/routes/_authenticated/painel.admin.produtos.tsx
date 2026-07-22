@@ -132,7 +132,7 @@ function AdminProdutosPage() {
       toast.success("Produto atualizado.");
       qc.invalidateQueries({ queryKey: ["admin-products"] });
     },
-    onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar."),
+    onError: (e) => toast.error(pgErrorMessage(e, "Não foi possível atualizar.")),
   });
 
   if (checkingAdmin) {
