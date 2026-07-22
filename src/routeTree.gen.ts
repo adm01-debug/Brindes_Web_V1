@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -66,6 +67,11 @@ const FaqRoute = FaqRouteImport.update({
 const ContatoRoute = ContatoRouteImport.update({
   id: '/contato',
   path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
+  id: '/como-funciona',
+  path: '/como-funciona',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BuscarRoute = BuscarRouteImport.update({
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/privacidade': typeof PrivacidadeRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/privacidade': typeof PrivacidadeRoute
@@ -252,6 +260,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
+  '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/privacidade': typeof PrivacidadeRoute
@@ -283,6 +292,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buscar'
+    | '/como-funciona'
     | '/contato'
     | '/faq'
     | '/privacidade'
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/buscar'
+    | '/como-funciona'
     | '/contato'
     | '/faq'
     | '/privacidade'
@@ -341,6 +352,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/buscar'
+    | '/como-funciona'
     | '/contato'
     | '/faq'
     | '/privacidade'
@@ -372,6 +384,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BuscarRoute: typeof BuscarRoute
+  ComoFuncionaRoute: typeof ComoFuncionaRoute
   ContatoRoute: typeof ContatoRoute
   FaqRoute: typeof FaqRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
@@ -428,6 +441,13 @@ declare module '@tanstack/react-router' {
       path: '/contato'
       fullPath: '/contato'
       preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/como-funciona': {
+      id: '/como-funciona'
+      path: '/como-funciona'
+      fullPath: '/como-funciona'
+      preLoaderRoute: typeof ComoFuncionaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/buscar': {
@@ -637,6 +657,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BuscarRoute: BuscarRoute,
+  ComoFuncionaRoute: ComoFuncionaRoute,
   ContatoRoute: ContatoRoute,
   FaqRoute: FaqRoute,
   PrivacidadeRoute: PrivacidadeRoute,
