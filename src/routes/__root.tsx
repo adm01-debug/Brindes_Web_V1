@@ -83,24 +83,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  beforeLoad: () => {
-    // SSR-only: injeta headers de segurança na resposta HTML raiz.
+  beforeLoad: async () => {
+    // SSR-only: injeta headers de segurança. O helper .server.ts é
+    // bloqueado do bundle cliente pela extensão do arquivo.
     if (typeof window !== "undefined") return;
-    // Import dinâmico evita puxar utilitário server-only pro bundle do cliente.
-    import("@tanstack/react-start/server")
-      .then(({ setResponseHeader }) => {
-        setResponseHeader("X-Frame-Options", "SAMEORIGIN");
-        setResponseHeader("X-Content-Type-Options", "nosniff");
-        setResponseHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-        setResponseHeader(
-          "Permissions-Policy",
-          "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
-        );
-        setResponseHeader("X-DNS-Prefetch-Control", "on");
-      })
-      .catch(() => {
-        /* no-op — não deve bloquear render em nenhum cenário */
-      });
+    const { applySecurityHeaders } = await import("@/lib/security-headers.server");
+    applySecurityHeaders();
   },
   head: () => ({
     meta: [
