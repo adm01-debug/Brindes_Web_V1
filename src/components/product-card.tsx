@@ -3,6 +3,7 @@ import { Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
+import { FavoriteButton } from "@/components/favorite-button";
 
 type Product = {
   id: string;
