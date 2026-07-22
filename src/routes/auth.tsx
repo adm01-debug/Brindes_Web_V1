@@ -97,7 +97,7 @@ function AuthPage() {
       password: password.data,
     });
     setLoading(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(translateAuthError(error.message));
     toast.success("Bem-vindo!");
     navigate({ to: "/painel" });
   };
