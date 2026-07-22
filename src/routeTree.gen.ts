@@ -27,6 +27,7 @@ import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
 import { Route as AuthenticatedPainelLeadsRouteImport } from './routes/_authenticated/painel.leads'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
@@ -131,6 +132,11 @@ const AuthenticatedPainelIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPainelPerfilRoute =
   AuthenticatedPainelPerfilRouteImport.update({
     id: '/perfil',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/empresas/': typeof EmpresasIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/painel/': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
@@ -257,6 +264,7 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/painel': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
@@ -291,6 +299,7 @@ export interface FileRoutesById {
   '/empresas/': typeof EmpresasIndexRoute
   '/_authenticated/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
   '/_authenticated/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/_authenticated/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
@@ -325,6 +334,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/painel/leads'
     | '/painel/perfil'
+    | '/api/public/health'
     | '/painel/'
     | '/painel/admin/categorias'
     | '/painel/admin/empresas'
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/painel/leads'
     | '/painel/perfil'
+    | '/api/public/health'
     | '/painel'
     | '/painel/admin/categorias'
     | '/painel/admin/empresas'
@@ -389,6 +400,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/_authenticated/painel/leads'
     | '/_authenticated/painel/perfil'
+    | '/api/public/health'
     | '/_authenticated/painel/'
     | '/_authenticated/painel/admin/categorias'
     | '/_authenticated/painel/admin/empresas'
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicHooksWebVitalsRoute: typeof ApiPublicHooksWebVitalsRoute
   ApiPublicOgEmpresaSlugRoute: typeof ApiPublicOgEmpresaSlugRoute
   ApiPublicOgProdutoIdRoute: typeof ApiPublicOgProdutoIdRoute
@@ -552,6 +565,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/painel/'
       preLoaderRoute: typeof AuthenticatedPainelIndexRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
+    }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/painel/perfil': {
       id: '/_authenticated/painel/perfil'
@@ -709,6 +729,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresaSlugRoute: EmpresaSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicHooksWebVitalsRoute: ApiPublicHooksWebVitalsRoute,
   ApiPublicOgEmpresaSlugRoute: ApiPublicOgEmpresaSlugRoute,
   ApiPublicOgProdutoIdRoute: ApiPublicOgProdutoIdRoute,
