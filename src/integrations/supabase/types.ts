@@ -579,6 +579,10 @@ export type Database = {
     }
     Functions: {
       audit_log_purge: { Args: { _older_than_days?: number }; Returns: number }
+      cron_history_purge: {
+        Args: { _older_than_days?: number }
+        Returns: number
+      }
       extract_storage_path: {
         Args: { _bucket: string; _url: string }
         Returns: string
