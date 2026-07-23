@@ -9,7 +9,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 const SITE_URL = "https://brinde-gallery.lovable.app";
 const KITS_URL = `${SITE_URL}/kits`;
 
-export const Route = createFileRoute("/kits")({
+export const Route = createFileRoute("/kits/")({
   head: () => ({
     meta: [
       { title: "Kits temáticos de brindes personalizados — BrindesHub" },
