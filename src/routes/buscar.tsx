@@ -25,8 +25,15 @@ const searchSchema = z.object({
   ordenar: fallback(z.string(), "relevance").default("relevance"),
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 0).default(0),
+  material: fallback(z.string(), "").default(""),
+  cor: fallback(z.string(), "").default(""),
+  moq: fallback(z.number().int(), 0).default(0),
+  prazo: fallback(z.number().int(), 0).default(0),
+  uf: fallback(z.string(), "").default(""),
   page: fallback(z.number().int(), 1).default(1),
 });
+
+const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
 const PAGE_SIZE = 24;
 
@@ -105,6 +112,10 @@ function SearchPage() {
   const [term, setTerm] = useState(search.q);
   const [priceMin, setPriceMin] = useState(search.min ? String(search.min) : "");
   const [priceMax, setPriceMax] = useState(search.max ? String(search.max) : "");
+  const [material, setMaterial] = useState(search.material);
+  const [cor, setCor] = useState(search.cor);
+  const [moq, setMoq] = useState(search.moq ? String(search.moq) : "");
+  const [prazo, setPrazo] = useState(search.prazo ? String(search.prazo) : "");
 
   const { data: categories } = useQuery({
     queryKey: ["all-categories-active"],
@@ -127,6 +138,11 @@ function SearchPage() {
       search.ordenar,
       search.min,
       search.max,
+      search.material,
+      search.cor,
+      search.moq,
+      search.prazo,
+      search.uf,
       search.page,
     ],
     placeholderData: keepPreviousData,
@@ -139,6 +155,11 @@ function SearchPage() {
         _sort: search.ordenar,
         _page: search.page,
         _page_size: PAGE_SIZE,
+        _material: search.material || undefined,
+        _color: search.cor || undefined,
+        _max_moq: search.moq > 0 ? search.moq : undefined,
+        _max_days: search.prazo > 0 ? search.prazo : undefined,
+        _state: search.uf || undefined,
       });
       if (error) throw error;
       return (data ?? []) as RpcRow[];
@@ -158,7 +179,21 @@ function SearchPage() {
         q: term,
         min: priceMin ? Number(priceMin) : 0,
         max: priceMax ? Number(priceMax) : 0,
+        material,
+        cor,
+        moq: moq ? Number(moq) : 0,
+        prazo: prazo ? Number(prazo) : 0,
         page: 1,
+      }),
+    });
+  };
+
+  const clearAll = () => {
+    setTerm(""); setPriceMin(""); setPriceMax(""); setMaterial(""); setCor(""); setMoq(""); setPrazo("");
+    navigate({
+      search: () => ({
+        q: "", categoria: "", ordenar: "relevance", min: 0, max: 0,
+        material: "", cor: "", moq: 0, prazo: 0, uf: "", page: 1,
       }),
     });
   };
@@ -205,6 +240,58 @@ function SearchPage() {
             />
             <Button type="submit">Buscar</Button>
           </form>
+
+          <details className="mt-4 rounded-lg border bg-card p-4">
+            <summary className="cursor-pointer text-sm font-medium">Filtros avançados</summary>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <Input
+                placeholder="Material (ex: algodão)"
+                value={material}
+                onChange={(e) => setMaterial(e.target.value)}
+                aria-label="Material"
+              />
+              <Input
+                placeholder="Cor (ex: azul)"
+                value={cor}
+                onChange={(e) => setCor(e.target.value)}
+                aria-label="Cor"
+              />
+              <Input
+                type="number"
+                inputMode="numeric"
+                placeholder="Aceito pedir a partir de"
+                value={moq}
+                onChange={(e) => setMoq(e.target.value)}
+                aria-label="Quantidade mínima máxima que aceito"
+              />
+              <Input
+                type="number"
+                inputMode="numeric"
+                placeholder="Prazo máx (dias)"
+                value={prazo}
+                onChange={(e) => setPrazo(e.target.value)}
+                aria-label="Prazo de produção máximo em dias"
+              />
+              <Select
+                value={search.uf || "all"}
+                onValueChange={(v) => setFilter("uf", v === "all" ? "" : v)}
+              >
+                <SelectTrigger><SelectValue placeholder="Estado (UF)" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os estados</SelectItem>
+                  {UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="mt-3 flex gap-2">
+              <Button type="button" size="sm" onClick={(e) => submitSearch(e as unknown as React.FormEvent)}>
+                Aplicar filtros
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={clearAll}>
+                Limpar tudo
+              </Button>
+            </div>
+          </details>
 
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row">
