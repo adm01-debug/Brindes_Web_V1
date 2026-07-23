@@ -18,6 +18,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
 import { RecentlyViewed } from "@/components/recently-viewed";
 import { ImageLightbox } from "@/components/image-lightbox";
+import { ProductQA } from "@/components/product-qa";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
