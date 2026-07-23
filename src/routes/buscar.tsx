@@ -25,8 +25,15 @@ const searchSchema = z.object({
   ordenar: fallback(z.string(), "relevance").default("relevance"),
   min: fallback(z.number(), 0).default(0),
   max: fallback(z.number(), 0).default(0),
+  material: fallback(z.string(), "").default(""),
+  cor: fallback(z.string(), "").default(""),
+  moq: fallback(z.number().int(), 0).default(0),
+  prazo: fallback(z.number().int(), 0).default(0),
+  uf: fallback(z.string(), "").default(""),
   page: fallback(z.number().int(), 1).default(1),
 });
+
+const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
 const PAGE_SIZE = 24;
 
