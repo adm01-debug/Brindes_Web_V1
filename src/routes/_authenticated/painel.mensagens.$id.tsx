@@ -233,11 +233,78 @@ function MessageThreadPage() {
             <ArrowLeft className="mr-1 h-4 w-4" /> Voltar
           </Link>
         </Button>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="truncate font-semibold">{conv?.company?.name ?? "Conversa"}</div>
           {conv?.subject && <div className="truncate text-xs text-muted-foreground">{conv.subject}</div>}
         </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            setShowSearch((v) => {
+              if (v) setSearch("");
+              return !v;
+            });
+          }}
+          aria-label={showSearch ? "Fechar busca" : "Buscar mensagens"}
+          aria-pressed={showSearch}
+        >
+          <Search className="h-4 w-4" />
+        </Button>
       </div>
+
+      {showSearch && (
+        <div className="mb-2 flex items-center gap-2 rounded-lg border bg-card px-2 py-1.5">
+          <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <Input
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar nesta conversa…"
+            className="h-8 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+            aria-label="Buscar na conversa"
+          />
+          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+            {normalizedSearch.length > 0 ? `${matches.length === 0 ? 0 : matchIdx + 1}/${matches.length}` : ""}
+          </span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            disabled={matches.length === 0}
+            onClick={() => setMatchIdx((i) => (i - 1 + matches.length) % matches.length)}
+            aria-label="Resultado anterior"
+          >
+            <ChevronUp className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            disabled={matches.length === 0}
+            onClick={() => setMatchIdx((i) => (i + 1) % matches.length)}
+            aria-label="Próximo resultado"
+          >
+            <ChevronDown className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => {
+              setSearch("");
+              setShowSearch(false);
+            }}
+            aria-label="Fechar"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto rounded-xl border bg-muted/20 p-4">
         {messages.length === 0 ? (
