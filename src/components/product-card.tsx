@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorite-button";
+import { AddToQuoteCartButton } from "@/components/add-to-quote-cart-button";
 
 type Product = {
   id: string;
@@ -36,8 +37,8 @@ export function ProductCard({ product }: { product: Product }) {
     : formatBRL(product.price);
 
   return (
-    <Link to="/produto/$id" params={{ id: product.id }}>
-      <Card className="group h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
+    <Card className="group relative h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
+      <Link to="/produto/$id" params={{ id: product.id }} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted">
           {imgUrl ? (
             <img
@@ -71,7 +72,23 @@ export function ProductCard({ product }: { product: Product }) {
           )}
           <p className="mt-2 text-sm font-semibold text-primary">{priceLabel}</p>
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+      {product.company && (
+        <div className="px-4 pb-4">
+          <AddToQuoteCartButton
+            item={{
+              product_id: product.id,
+              product_name: product.name,
+              company_id: product.company.id,
+              company_name: product.company.name,
+              image_url: rawUrl ?? null,
+            }}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          />
+        </div>
+      )}
+    </Card>
   );
 }
