@@ -103,11 +103,12 @@ export const Route = createFileRoute("/blog/$slug")({
 });
 
 function ArticlePage() {
-  const { article } = Route.useLoaderData();
-  const related = ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 3);
-  const relatedIntents = (article.related ?? [])
-    .map((s) => INTENTS.find((i) => i.slug === s))
-    .filter((x): x is NonNullable<typeof x> => !!x);
+  const data = Route.useLoaderData() as { article: Article };
+  const article = data.article;
+  const related: Article[] = ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 3);
+  const relatedIntents: Intent[] = (article.related ?? [])
+    .map((s: string) => INTENTS.find((i) => i.slug === s))
+    .filter((x): x is Intent => !!x);
 
   return (
     <div className="flex min-h-screen flex-col">
