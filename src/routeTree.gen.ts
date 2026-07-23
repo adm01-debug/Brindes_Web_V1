@@ -44,6 +44,7 @@ import { Route as AuthenticatedPainelAdminProdutosRouteImport } from './routes/_
 import { Route as AuthenticatedPainelAdminObservabilidadeRouteImport } from './routes/_authenticated/painel.admin.observabilidade'
 import { Route as AuthenticatedPainelAdminEmpresasRouteImport } from './routes/_authenticated/painel.admin.empresas'
 import { Route as AuthenticatedPainelAdminCategoriasRouteImport } from './routes/_authenticated/painel.admin.categorias'
+import { Route as AuthenticatedPainelAdminAvaliacoesRouteImport } from './routes/_authenticated/painel.admin.avaliacoes'
 import { Route as ApiPublicOgProdutoIdRouteImport } from './routes/api/public/og.produto.$id'
 import { Route as ApiPublicOgEmpresaSlugRouteImport } from './routes/api/public/og.empresa.$slug'
 import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
@@ -232,6 +233,12 @@ const AuthenticatedPainelAdminCategoriasRoute =
     path: '/admin/categorias',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelAdminAvaliacoesRoute =
+  AuthenticatedPainelAdminAvaliacoesRouteImport.update({
+    id: '/admin/avaliacoes',
+    path: '/admin/avaliacoes',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 const ApiPublicOgProdutoIdRoute = ApiPublicOgProdutoIdRouteImport.update({
   id: '/api/public/og/produto/$id',
   path: '/api/public/og/produto/$id',
@@ -275,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/painel/': typeof AuthenticatedPainelIndexRoute
+  '/painel/admin/avaliacoes': typeof AuthenticatedPainelAdminAvaliacoesRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
@@ -313,6 +321,7 @@ export interface FileRoutesByTo {
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/painel': typeof AuthenticatedPainelIndexRoute
+  '/painel/admin/avaliacoes': typeof AuthenticatedPainelAdminAvaliacoesRoute
   '/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
@@ -354,6 +363,7 @@ export interface FileRoutesById {
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
+  '/_authenticated/painel/admin/avaliacoes': typeof AuthenticatedPainelAdminAvaliacoesRoute
   '/_authenticated/painel/admin/categorias': typeof AuthenticatedPainelAdminCategoriasRoute
   '/_authenticated/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/_authenticated/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/painel/perfil'
     | '/api/public/health'
     | '/painel/'
+    | '/painel/admin/avaliacoes'
     | '/painel/admin/categorias'
     | '/painel/admin/empresas'
     | '/painel/admin/observabilidade'
@@ -433,6 +444,7 @@ export interface FileRouteTypes {
     | '/painel/perfil'
     | '/api/public/health'
     | '/painel'
+    | '/painel/admin/avaliacoes'
     | '/painel/admin/categorias'
     | '/painel/admin/empresas'
     | '/painel/admin/observabilidade'
@@ -473,6 +485,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/perfil'
     | '/api/public/health'
     | '/_authenticated/painel/'
+    | '/_authenticated/painel/admin/avaliacoes'
     | '/_authenticated/painel/admin/categorias'
     | '/_authenticated/painel/admin/empresas'
     | '/_authenticated/painel/admin/observabilidade'
@@ -762,6 +775,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelAdminCategoriasRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/admin/avaliacoes': {
+      id: '/_authenticated/painel/admin/avaliacoes'
+      path: '/admin/avaliacoes'
+      fullPath: '/painel/admin/avaliacoes'
+      preLoaderRoute: typeof AuthenticatedPainelAdminAvaliacoesRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
     '/api/public/og/produto/$id': {
       id: '/api/public/og/produto/$id'
       path: '/api/public/og/produto/$id'
@@ -790,6 +810,7 @@ interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelLeadsRoute: typeof AuthenticatedPainelLeadsRoute
   AuthenticatedPainelPerfilRoute: typeof AuthenticatedPainelPerfilRoute
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
+  AuthenticatedPainelAdminAvaliacoesRoute: typeof AuthenticatedPainelAdminAvaliacoesRoute
   AuthenticatedPainelAdminCategoriasRoute: typeof AuthenticatedPainelAdminCategoriasRoute
   AuthenticatedPainelAdminEmpresasRoute: typeof AuthenticatedPainelAdminEmpresasRoute
   AuthenticatedPainelAdminObservabilidadeRoute: typeof AuthenticatedPainelAdminObservabilidadeRoute
@@ -804,6 +825,8 @@ const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelLeadsRoute: AuthenticatedPainelLeadsRoute,
   AuthenticatedPainelPerfilRoute: AuthenticatedPainelPerfilRoute,
   AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
+  AuthenticatedPainelAdminAvaliacoesRoute:
+    AuthenticatedPainelAdminAvaliacoesRoute,
   AuthenticatedPainelAdminCategoriasRoute:
     AuthenticatedPainelAdminCategoriasRoute,
   AuthenticatedPainelAdminEmpresasRoute: AuthenticatedPainelAdminEmpresasRoute,
