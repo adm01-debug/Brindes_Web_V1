@@ -33,6 +33,7 @@ import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
 import { Route as KitSlugRouteImport } from './routes/kit.$slug'
 import { Route as IdeiasSlugRouteImport } from './routes/ideias.$slug'
+import { Route as FornecedoresSlugRouteImport } from './routes/fornecedores.$slug'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -175,6 +176,11 @@ const KitSlugRoute = KitSlugRouteImport.update({
 const IdeiasSlugRoute = IdeiasSlugRouteImport.update({
   id: '/ideias/$slug',
   path: '/ideias/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FornecedoresSlugRoute = FornecedoresSlugRouteImport.update({
+  id: '/fornecedores/$slug',
+  path: '/fornecedores/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
@@ -333,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/fornecedores/$slug': typeof FornecedoresSlugRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
@@ -381,6 +388,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/fornecedores/$slug': typeof FornecedoresSlugRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
@@ -432,6 +440,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/fornecedores/$slug': typeof FornecedoresSlugRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
@@ -483,6 +492,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/fornecedores/$slug'
     | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
@@ -531,6 +541,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/fornecedores/$slug'
     | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
@@ -581,6 +592,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/fornecedores/$slug'
     | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
@@ -631,6 +643,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
+  FornecedoresSlugRoute: typeof FornecedoresSlugRoute
   IdeiasSlugRoute: typeof IdeiasSlugRoute
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
@@ -813,6 +826,13 @@ declare module '@tanstack/react-router' {
       path: '/ideias/$slug'
       fullPath: '/ideias/$slug'
       preLoaderRoute: typeof IdeiasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fornecedores/$slug': {
+      id: '/fornecedores/$slug'
+      path: '/fornecedores/$slug'
+      fullPath: '/fornecedores/$slug'
+      preLoaderRoute: typeof FornecedoresSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/empresa/$slug': {
@@ -1073,6 +1093,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
+  FornecedoresSlugRoute: FornecedoresSlugRoute,
   IdeiasSlugRoute: IdeiasSlugRoute,
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
