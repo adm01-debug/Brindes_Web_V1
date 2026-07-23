@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { withRetry } from "@/lib/fetch-retry";
+
 
 const schema = z.object({
   metric: z.enum(["LCP", "INP", "CLS", "TTFB", "FCP"]),
