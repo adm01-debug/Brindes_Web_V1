@@ -122,6 +122,22 @@ export const applySecurityHeaders = createIsomorphicFn()
 
       setResponseHeader("Content-Security-Policy", enforcedCsp);
       setResponseHeader("Content-Security-Policy-Report-Only", reportOnlyCsp(nonce));
+
+      // Reporting API v1 (Chrome/Edge) — grupo referenciado por `report-to` no CSP.
+      setResponseHeader(
+        "Reporting-Endpoints",
+        `${REPORT_TO_GROUP}="${REPORT_ENDPOINT}"`,
+      );
+      // Report-To (legado, ainda usado por Chrome estável).
+      setResponseHeader(
+        "Report-To",
+        JSON.stringify({
+          group: REPORT_TO_GROUP,
+          max_age: 10886400,
+          endpoints: [{ url: REPORT_ENDPOINT }],
+          include_subdomains: true,
+        }),
+      );
     } catch {
       /* fora de contexto de request SSR */
     }
