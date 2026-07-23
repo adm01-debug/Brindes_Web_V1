@@ -7,6 +7,7 @@ import { useQuoteCart } from "@/hooks/use-quote-cart";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { QuoteCartDrawer } from "@/components/quote-cart-drawer";
+import { NotificationsBell } from "@/components/notifications-bell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,6 +97,8 @@ export function SiteHeader() {
           {loading ? (
             <div className="h-9 w-24 animate-pulse rounded-md bg-muted" />
           ) : user ? (
+            <>
+              <NotificationsBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
@@ -119,6 +122,7 @@ export function SiteHeader() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </>
           ) : (
             <>
               <Button variant="ghost" size="sm" asChild>
