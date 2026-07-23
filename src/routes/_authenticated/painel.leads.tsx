@@ -28,6 +28,7 @@ export const Route = createFileRoute("/_authenticated/painel/leads")({
 });
 
 type LeadStatus = "new" | "contacted" | "won" | "lost";
+type LeadKind = "quote" | "sample";
 
 type LeadRow = {
   id: string;
@@ -37,6 +38,9 @@ type LeadRow = {
   quantity: number | null;
   message: string;
   status: LeadStatus;
+  kind: LeadKind;
+  shipping_address: string | null;
+  shipping_city: string | null;
   read_at: string | null;
   created_at: string;
   product_id: string | null;
@@ -48,6 +52,11 @@ const STATUS_META: Record<LeadStatus, { label: string; className: string }> = {
   contacted: { label: "Em contato", className: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20" },
   won: { label: "Ganho", className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20" },
   lost: { label: "Perdido", className: "bg-muted text-muted-foreground border-border" },
+};
+
+const KIND_META: Record<LeadKind, { label: string; className: string }> = {
+  quote: { label: "Orçamento", className: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20" },
+  sample: { label: "Amostra", className: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20" },
 };
 
 function LeadsPage() {
