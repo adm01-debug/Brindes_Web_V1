@@ -35,6 +35,7 @@ const productQueryOptions = (id: string) =>
         `)
         .eq("id", id)
         .eq("is_active", true)
+        .eq("moderation_status", "approved")
         .is("deleted_at", null)
         .eq("company.status", "approved")
         .maybeSingle();
