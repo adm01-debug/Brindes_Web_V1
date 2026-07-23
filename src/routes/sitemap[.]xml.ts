@@ -14,6 +14,8 @@ const STATIC_ROUTES: Array<{ path: string; changefreq: string; priority: string 
   { path: "/ideias", changefreq: "weekly", priority: "0.8" },
   { path: "/blog", changefreq: "weekly", priority: "0.7" },
   { path: "/planos", changefreq: "monthly", priority: "0.6" },
+  { path: "/vender", changefreq: "monthly", priority: "0.8" },
+
   { path: "/sobre", changefreq: "monthly", priority: "0.6" },
   { path: "/como-funciona", changefreq: "monthly", priority: "0.7" },
   { path: "/contato", changefreq: "monthly", priority: "0.5" },
