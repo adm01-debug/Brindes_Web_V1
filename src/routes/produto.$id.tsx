@@ -363,7 +363,19 @@ function ProductPage() {
                 </Card>
               )}
 
-              <div className="mt-6">
+              <div className="mt-6 space-y-3">
+                <AddToQuoteCartButton
+                  item={{
+                    product_id: product.id,
+                    product_name: product.name,
+                    company_id: product.company!.id,
+                    company_name: product.company!.name,
+                    image_url: product.images?.sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)[0]?.url ?? null,
+                  }}
+                  variant="default"
+                  size="lg"
+                  className="w-full"
+                />
                 <LeadForm
                   companyId={product.company!.id}
                   productId={product.id}
