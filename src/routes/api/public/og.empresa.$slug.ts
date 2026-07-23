@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { withRetry } from "@/lib/fetch-retry";
+
 
 const PLACEHOLDER_SVG = `<?xml version="1.0"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
