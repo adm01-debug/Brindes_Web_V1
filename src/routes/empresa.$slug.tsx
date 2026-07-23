@@ -143,6 +143,7 @@ function CompanyPage() {
         `)
         .eq("company_id", company!.id)
         .eq("is_active", true)
+        .eq("moderation_status", "approved")
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
       return data ?? [];
