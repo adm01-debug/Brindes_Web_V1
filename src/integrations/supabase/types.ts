@@ -406,12 +406,15 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          kind: string
           message: string
           name: string
           phone: string | null
           product_id: string | null
           quantity: number | null
           read_at: string | null
+          shipping_address: string | null
+          shipping_city: string | null
           status: string
           updated_at: string
         }
@@ -420,12 +423,15 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          kind?: string
           message: string
           name: string
           phone?: string | null
           product_id?: string | null
           quantity?: number | null
           read_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
           status?: string
           updated_at?: string
         }
@@ -434,12 +440,15 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          kind?: string
           message?: string
           name?: string
           phone?: string | null
           product_id?: string | null
           quantity?: number | null
           read_at?: string | null
+          shipping_address?: string | null
+          shipping_city?: string | null
           status?: string
           updated_at?: string
         }

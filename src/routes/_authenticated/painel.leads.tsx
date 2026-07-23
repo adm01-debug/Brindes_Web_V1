@@ -28,6 +28,7 @@ export const Route = createFileRoute("/_authenticated/painel/leads")({
 });
 
 type LeadStatus = "new" | "contacted" | "won" | "lost";
+type LeadKind = "quote" | "sample";
 
 type LeadRow = {
   id: string;
@@ -37,6 +38,9 @@ type LeadRow = {
   quantity: number | null;
   message: string;
   status: LeadStatus;
+  kind: LeadKind;
+  shipping_address: string | null;
+  shipping_city: string | null;
   read_at: string | null;
   created_at: string;
   product_id: string | null;
@@ -50,20 +54,27 @@ const STATUS_META: Record<LeadStatus, { label: string; className: string }> = {
   lost: { label: "Perdido", className: "bg-muted text-muted-foreground border-border" },
 };
 
+const KIND_META: Record<LeadKind, { label: string; className: string }> = {
+  quote: { label: "Orçamento", className: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20" },
+  sample: { label: "Amostra", className: "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20" },
+};
+
 function LeadsPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
+  const [kindFilter, setKindFilter] = useState<LeadKind | "all">("all");
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["leads", statusFilter],
+    queryKey: ["leads", statusFilter, kindFilter],
     queryFn: async () => {
       let q = supabase
         .from("leads")
-        .select("id, name, email, phone, quantity, message, status, read_at, created_at, product_id, product:products(id, name, slug)")
+        .select("id, name, email, phone, quantity, message, status, kind, shipping_address, shipping_city, read_at, created_at, product_id, product:products(id, name, slug)")
         .order("created_at", { ascending: false });
       if (statusFilter !== "all") q = q.eq("status", statusFilter);
+      if (kindFilter !== "all") q = q.eq("kind", kindFilter);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as unknown as LeadRow[];
@@ -165,6 +176,16 @@ function LeadsPage() {
           <Button variant="outline" size="sm" onClick={exportCsv} disabled={!data?.length}>
             <Download className="mr-2 h-4 w-4" /> Exportar CSV
           </Button>
+          <Select value={kindFilter} onValueChange={(v) => setKindFilter(v as LeadKind | "all")}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os tipos</SelectItem>
+              <SelectItem value="quote">Orçamento</SelectItem>
+              <SelectItem value="sample">Amostra</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as LeadStatus | "all")}>
             <SelectTrigger className="w-48">
               <SelectValue />
@@ -219,6 +240,7 @@ function LeadsPage() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-semibold">{lead.name}</h3>
+                      <Badge variant="outline" className={KIND_META[lead.kind].className}>{KIND_META[lead.kind].label}</Badge>
                       <Badge variant="outline" className={meta.className}>{meta.label}</Badge>
                       {isUnread && <Badge variant="secondary">Não lido</Badge>}
                     </div>
@@ -257,6 +279,15 @@ function LeadsPage() {
                     <span className="text-muted-foreground">Qtd. estimada: <strong className="text-foreground">{lead.quantity}</strong></span>
                   )}
                 </div>
+
+                {lead.kind === "sample" && (lead.shipping_address || lead.shipping_city) && (
+                  <div className="rounded-md border border-purple-500/20 bg-purple-500/5 p-3 text-xs">
+                    <p className="font-medium text-purple-900 dark:text-purple-200">Endereço para envio da amostra</p>
+                    <p className="mt-1 text-muted-foreground">
+                      {[lead.shipping_address, lead.shipping_city].filter(Boolean).join(" — ")}
+                    </p>
+                  </div>
+                )}
 
                 {lead.product && (
                   <Link
