@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import { withRetry } from "@/lib/fetch-retry";
+
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
