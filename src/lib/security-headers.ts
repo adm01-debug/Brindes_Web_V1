@@ -15,6 +15,9 @@ const INLINE_SCRIPT_HASHES = [
 const CONNECT_SRC =
   "'self' https://*.supabase.co wss://*.supabase.co https://*.lovable.app https://*.lovable.dev";
 
+const REPORT_ENDPOINT = "/api/public/hooks/csp-report";
+const REPORT_TO_GROUP = "csp-endpoint";
+
 function baseDirectives(nonce: string): string[] {
   return [
     "default-src 'self'",
