@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock, Expand } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
+import { SampleRequestForm } from "@/components/sample-request-form";
 import { AddToQuoteCartButton } from "@/components/add-to-quote-cart-button";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -377,6 +378,11 @@ function ProductPage() {
                   className="w-full"
                 />
                 <LeadForm
+                  companyId={product.company!.id}
+                  productId={product.id}
+                  productName={product.name}
+                />
+                <SampleRequestForm
                   companyId={product.company!.id}
                   productId={product.id}
                   productName={product.name}
