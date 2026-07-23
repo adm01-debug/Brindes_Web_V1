@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Check, CheckCheck, FileText, Loader2, Paperclip, Send, X } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, ChevronDown, ChevronUp, FileText, Loader2, Paperclip, Search, Send, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -49,6 +50,10 @@ function MessageThreadPage() {
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef<number>(0);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Map<string, HTMLLIElement | null>>(new Map());
+  const [search, setSearch] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [matchIdx, setMatchIdx] = useState(0);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setMe(data.user?.id ?? null));
@@ -94,9 +99,28 @@ function MessageThreadPage() {
     };
   }, [id, qc]);
 
+  const normalizedSearch = search.trim().toLowerCase();
+  const matches = useMemo(() => {
+    if (normalizedSearch.length < 1) return [] as string[];
+    return messages
+      .filter((m) => (m.body ?? "").toLowerCase().includes(normalizedSearch))
+      .map((m) => m.id);
+  }, [messages, normalizedSearch]);
+  const activeMatchId = matches[matchIdx];
+
   useEffect(() => {
+    setMatchIdx(0);
+  }, [normalizedSearch]);
+
+  useEffect(() => {
+    if (!activeMatchId) return;
+    messageRefs.current.get(activeMatchId)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeMatchId]);
+
+  useEffect(() => {
+    if (matches.length > 0) return;
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
+  }, [messages.length, matches.length]);
 
   // marca as mensagens do outro como lidas
   useEffect(() => {
@@ -209,11 +233,78 @@ function MessageThreadPage() {
             <ArrowLeft className="mr-1 h-4 w-4" /> Voltar
           </Link>
         </Button>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="truncate font-semibold">{conv?.company?.name ?? "Conversa"}</div>
           {conv?.subject && <div className="truncate text-xs text-muted-foreground">{conv.subject}</div>}
         </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            setShowSearch((v) => {
+              if (v) setSearch("");
+              return !v;
+            });
+          }}
+          aria-label={showSearch ? "Fechar busca" : "Buscar mensagens"}
+          aria-pressed={showSearch}
+        >
+          <Search className="h-4 w-4" />
+        </Button>
       </div>
+
+      {showSearch && (
+        <div className="mb-2 flex items-center gap-2 rounded-lg border bg-card px-2 py-1.5">
+          <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <Input
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar nesta conversa…"
+            className="h-8 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"
+            aria-label="Buscar na conversa"
+          />
+          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+            {normalizedSearch.length > 0 ? `${matches.length === 0 ? 0 : matchIdx + 1}/${matches.length}` : ""}
+          </span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            disabled={matches.length === 0}
+            onClick={() => setMatchIdx((i) => (i - 1 + matches.length) % matches.length)}
+            aria-label="Resultado anterior"
+          >
+            <ChevronUp className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            disabled={matches.length === 0}
+            onClick={() => setMatchIdx((i) => (i + 1) % matches.length)}
+            aria-label="Próximo resultado"
+          >
+            <ChevronDown className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => {
+              setSearch("");
+              setShowSearch(false);
+            }}
+            aria-label="Fechar"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto rounded-xl border bg-muted/20 p-4">
         {messages.length === 0 ? (
@@ -222,12 +313,22 @@ function MessageThreadPage() {
           <ul className="space-y-3">
             {messages.map((m) => {
               const mine = m.sender_id === me;
+              const isMatch = normalizedSearch.length > 0 && matches.includes(m.id);
+              const isActive = m.id === activeMatchId;
               return (
-                <li key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
+                <li
+                  key={m.id}
+                  ref={(el) => {
+                    messageRefs.current.set(m.id, el);
+                  }}
+                  className={cn("flex", mine ? "justify-end" : "justify-start")}
+                >
                   <div
                     className={cn(
-                      "max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm",
+                      "max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm transition",
                       mine ? "bg-primary text-primary-foreground" : "bg-card text-card-foreground border",
+                      isMatch && "ring-2 ring-yellow-400/70",
+                      isActive && "ring-yellow-500 ring-offset-2 ring-offset-background",
                     )}
                   >
                     {m.attachment_url && (
@@ -240,7 +341,9 @@ function MessageThreadPage() {
                       />
                     )}
                     {m.body && m.body.length > 0 && (
-                      <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                      <p className="whitespace-pre-wrap break-words">
+                        {normalizedSearch.length > 0 ? highlight(m.body, normalizedSearch) : m.body}
+                      </p>
                     )}
                     <div className={cn("mt-1 flex items-center gap-1 text-[10px] opacity-70", mine ? "justify-end" : "")}>
                       <span>{formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}</span>
@@ -341,6 +444,26 @@ function MessageThreadPage() {
     </div>
   );
 }
+
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlight(text: string, needle: string) {
+  if (!needle) return text;
+  const re = new RegExp(`(${escapeRegExp(needle)})`, "ig");
+  const parts = text.split(re);
+  return parts.map((p, i) =>
+    i % 2 === 1 ? (
+      <mark key={i} className="rounded bg-yellow-300 px-0.5 text-black">
+        {p}
+      </mark>
+    ) : (
+      <span key={i}>{p}</span>
+    ),
+  );
+}
+
 
 function MessageAttachment({
   path,
