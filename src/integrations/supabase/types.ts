@@ -106,6 +106,7 @@ export type Database = {
           description: string | null
           email: string | null
           facebook: string | null
+          featured_until: string | null
           id: string
           instagram: string | null
           linkedin: string | null
@@ -113,6 +114,7 @@ export type Database = {
           name: string
           owner_id: string
           phone: string | null
+          plan: Database["public"]["Enums"]["company_plan"]
           rejection_reason: string | null
           slug: string
           state: string | null
@@ -130,6 +132,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           facebook?: string | null
+          featured_until?: string | null
           id?: string
           instagram?: string | null
           linkedin?: string | null
@@ -137,6 +140,7 @@ export type Database = {
           name: string
           owner_id: string
           phone?: string | null
+          plan?: Database["public"]["Enums"]["company_plan"]
           rejection_reason?: string | null
           slug: string
           state?: string | null
@@ -154,6 +158,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           facebook?: string | null
+          featured_until?: string | null
           id?: string
           instagram?: string | null
           linkedin?: string | null
@@ -161,6 +166,7 @@ export type Database = {
           name?: string
           owner_id?: string
           phone?: string | null
+          plan?: Database["public"]["Enums"]["company_plan"]
           rejection_reason?: string | null
           slug?: string
           state?: string | null
@@ -931,6 +937,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "company_owner"
+      company_plan: "free" | "pro" | "premium"
       company_status: "pending" | "approved" | "rejected" | "suspended"
       product_moderation_status: "pending" | "approved" | "rejected"
     }
@@ -1061,6 +1068,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "company_owner"],
+      company_plan: ["free", "pro", "premium"],
       company_status: ["pending", "approved", "rejected", "suspended"],
       product_moderation_status: ["pending", "approved", "rejected"],
     },
