@@ -4,7 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Check, CheckCheck, ChevronDown, ChevronUp, FileText, Loader2, Paperclip, Search, Send, X } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, ChevronDown, ChevronUp, FileText, Loader2, Paperclip, Search, Send, SmilePlus, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -85,6 +86,32 @@ function MessageThreadPage() {
     },
   });
 
+  const messageIds = useMemo(() => messages.map((m) => m.id), [messages]);
+
+  const { data: reactions = [] } = useQuery({
+    queryKey: ["message-reactions", id, messageIds.length],
+    enabled: messageIds.length > 0,
+    queryFn: async (): Promise<Array<{ message_id: string; user_id: string; emoji: string }>> => {
+      const { data, error } = await supabase
+        .from("message_reactions")
+        .select("message_id, user_id, emoji")
+        .in("message_id", messageIds);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const reactionsByMessage = useMemo(() => {
+    const map = new Map<string, Map<string, string[]>>();
+    for (const r of reactions) {
+      if (!map.has(r.message_id)) map.set(r.message_id, new Map());
+      const em = map.get(r.message_id)!;
+      if (!em.has(r.emoji)) em.set(r.emoji, []);
+      em.get(r.emoji)!.push(r.user_id);
+    }
+    return map;
+  }, [reactions]);
+
   useEffect(() => {
     const ch = supabase
       .channel(`conv-${id}`)
@@ -93,11 +120,36 @@ function MessageThreadPage() {
         { event: "*", schema: "public", table: "messages", filter: `conversation_id=eq.${id}` },
         () => qc.invalidateQueries({ queryKey: ["messages", id] }),
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "message_reactions" },
+        () => qc.invalidateQueries({ queryKey: ["message-reactions", id] }),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
     };
   }, [id, qc]);
+
+  async function toggleReaction(messageId: string, emoji: string) {
+    if (!me) return;
+    const existing = reactionsByMessage.get(messageId)?.get(emoji)?.includes(me);
+    if (existing) {
+      const { error } = await supabase
+        .from("message_reactions")
+        .delete()
+        .eq("message_id", messageId)
+        .eq("user_id", me)
+        .eq("emoji", emoji);
+      if (error) toast.error("Falha ao remover reação", { description: error.message });
+    } else {
+      const { error } = await supabase
+        .from("message_reactions")
+        .insert({ message_id: messageId, user_id: me, emoji });
+      if (error) toast.error("Falha ao reagir", { description: error.message });
+    }
+    qc.invalidateQueries({ queryKey: ["message-reactions", id] });
+  }
 
   const normalizedSearch = search.trim().toLowerCase();
   const matches = useMemo(() => {
@@ -325,7 +377,7 @@ function MessageThreadPage() {
                 >
                   <div
                     className={cn(
-                      "max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm transition",
+                      "group max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm transition",
                       mine ? "bg-primary text-primary-foreground" : "bg-card text-card-foreground border",
                       isMatch && "ring-2 ring-yellow-400/70",
                       isActive && "ring-yellow-500 ring-offset-2 ring-offset-background",
@@ -355,6 +407,13 @@ function MessageThreadPage() {
                         )
                       )}
                     </div>
+                    <MessageReactions
+                      messageId={m.id}
+                      reactions={reactionsByMessage.get(m.id)}
+                      me={me}
+                      mine={mine}
+                      onToggle={toggleReaction}
+                    />
                   </div>
                 </li>
               );
@@ -461,6 +520,78 @@ function highlight(text: string, needle: string) {
     ) : (
       <span key={i}>{p}</span>
     ),
+  );
+}
+
+const QUICK_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "🔥", "🎉"];
+
+function MessageReactions({
+  messageId,
+  reactions,
+  me,
+  mine,
+  onToggle,
+}: {
+  messageId: string;
+  reactions: Map<string, string[]> | undefined;
+  me: string | null;
+  mine: boolean;
+  onToggle: (messageId: string, emoji: string) => void;
+}) {
+  const entries = reactions ? Array.from(reactions.entries()) : [];
+  return (
+    <div className={cn("mt-1.5 flex flex-wrap items-center gap-1", mine ? "justify-end" : "justify-start")}>
+      {entries.map(([emoji, users]) => {
+        const reacted = me ? users.includes(me) : false;
+        return (
+          <button
+            key={emoji}
+            type="button"
+            onClick={() => onToggle(messageId, emoji)}
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs transition",
+              reacted
+                ? "border-primary bg-primary/15 text-foreground"
+                : "border-border bg-background/70 text-foreground hover:bg-muted",
+            )}
+            aria-pressed={reacted}
+            aria-label={`${emoji} ${users.length}`}
+          >
+            <span>{emoji}</span>
+            <span className="tabular-nums">{users.length}</span>
+          </button>
+        );
+      })}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/60 bg-background/60 text-muted-foreground opacity-0 transition hover:bg-muted group-hover:opacity-100",
+              entries.length > 0 && "opacity-100",
+            )}
+            aria-label="Adicionar reação"
+          >
+            <SmilePlus className="h-3 w-3" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-1.5" align={mine ? "end" : "start"}>
+          <div className="flex gap-0.5">
+            {QUICK_EMOJIS.map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                onClick={() => onToggle(messageId, emoji)}
+                className="rounded p-1 text-lg leading-none transition hover:bg-muted"
+                aria-label={`Reagir com ${emoji}`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
 
