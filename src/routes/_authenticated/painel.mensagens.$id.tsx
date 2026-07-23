@@ -445,6 +445,26 @@ function MessageThreadPage() {
   );
 }
 
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function highlight(text: string, needle: string) {
+  if (!needle) return text;
+  const re = new RegExp(`(${escapeRegExp(needle)})`, "ig");
+  const parts = text.split(re);
+  return parts.map((p, i) =>
+    i % 2 === 1 ? (
+      <mark key={i} className="rounded bg-yellow-300 px-0.5 text-black">
+        {p}
+      </mark>
+    ) : (
+      <span key={i}>{p}</span>
+    ),
+  );
+}
+
+
 function MessageAttachment({
   path,
   type,
