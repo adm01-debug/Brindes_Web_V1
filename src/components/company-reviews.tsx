@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Star, MessageSquare, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
