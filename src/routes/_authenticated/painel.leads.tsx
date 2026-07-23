@@ -280,6 +280,15 @@ function LeadsPage() {
                   )}
                 </div>
 
+                {lead.kind === "sample" && (lead.shipping_address || lead.shipping_city) && (
+                  <div className="rounded-md border border-purple-500/20 bg-purple-500/5 p-3 text-xs">
+                    <p className="font-medium text-purple-900 dark:text-purple-200">Endereço para envio da amostra</p>
+                    <p className="mt-1 text-muted-foreground">
+                      {[lead.shipping_address, lead.shipping_city].filter(Boolean).join(" — ")}
+                    </p>
+                  </div>
+                )}
+
                 {lead.product && (
                   <Link
                     to="/produto/$id"
