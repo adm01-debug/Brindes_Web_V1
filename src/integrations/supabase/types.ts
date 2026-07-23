@@ -838,6 +838,10 @@ export type Database = {
         Returns: number
       }
       strip_dangerous_html: { Args: { input: string }; Returns: string }
+      submit_quote_cart: {
+        Args: { _customer: Json; _items: Json }
+        Returns: Json
+      }
       unaccent_safe: { Args: { input: string }; Returns: string }
       web_vitals_rollup: { Args: { _day?: string }; Returns: number }
     }
