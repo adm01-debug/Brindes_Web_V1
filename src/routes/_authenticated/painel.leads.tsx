@@ -63,16 +63,18 @@ function LeadsPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
+  const [kindFilter, setKindFilter] = useState<LeadKind | "all">("all");
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["leads", statusFilter],
+    queryKey: ["leads", statusFilter, kindFilter],
     queryFn: async () => {
       let q = supabase
         .from("leads")
-        .select("id, name, email, phone, quantity, message, status, read_at, created_at, product_id, product:products(id, name, slug)")
+        .select("id, name, email, phone, quantity, message, status, kind, shipping_address, shipping_city, read_at, created_at, product_id, product:products(id, name, slug)")
         .order("created_at", { ascending: false });
       if (statusFilter !== "all") q = q.eq("status", statusFilter);
+      if (kindFilter !== "all") q = q.eq("kind", kindFilter);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as unknown as LeadRow[];
