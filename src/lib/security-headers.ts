@@ -42,6 +42,8 @@ function baseDirectives(nonce: string): string[] {
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     "upgrade-insecure-requests",
+    `report-uri ${REPORT_ENDPOINT}`,
+    `report-to ${REPORT_TO_GROUP}`,
   ];
 }
 
