@@ -198,7 +198,10 @@ function MessageThreadPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
     qc.invalidateQueries({ queryKey: ["messages", id] });
   }
+
+  return (
     <div className="flex h-[calc(100vh-12rem)] flex-col">
+
       <div className="mb-3 flex items-center gap-3 border-b pb-3">
         <Button asChild variant="ghost" size="sm">
           <Link to="/painel/mensagens">
