@@ -137,14 +137,56 @@ function MessageThreadPage() {
     typingChannelRef.current.send({ type: "broadcast", event: "typing", payload: { user_id: me } });
   }
 
+  function handlePickFile(file: File | null) {
+    if (!file) {
+      setPendingFile(null);
+      return;
+    }
+    if (!ALLOWED_ATTACHMENT_TYPES.includes(file.type)) {
+      toast.error("Formato não suportado", { description: "Envie JPG, PNG, WebP, GIF ou PDF." });
+      return;
+    }
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      toast.error("Arquivo muito grande", { description: "Limite de 10 MB por anexo." });
+      return;
+    }
+    setPendingFile(file);
+  }
+
   async function handleSend() {
     const trimmed = body.trim();
-    if (trimmed.length < 1 || !me) return;
+    if (!me) return;
+    if (trimmed.length === 0 && !pendingFile) return;
     setBusy(true);
+    let attachment: {
+      attachment_url: string;
+      attachment_type: string;
+      attachment_name: string;
+      attachment_size: number;
+    } | null = null;
+    if (pendingFile) {
+      const ext = pendingFile.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
+      const path = `${id}/${me}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("chat-attachments")
+        .upload(path, pendingFile, { contentType: pendingFile.type, upsert: false });
+      if (upErr) {
+        setBusy(false);
+        toast.error("Falha ao enviar anexo", { description: upErr.message });
+        return;
+      }
+      attachment = {
+        attachment_url: path,
+        attachment_type: pendingFile.type,
+        attachment_name: pendingFile.name.slice(0, 200),
+        attachment_size: pendingFile.size,
+      };
+    }
     const { error } = await supabase.from("messages").insert({
       conversation_id: id,
       sender_id: me,
-      body: trimmed,
+      body: trimmed.length > 0 ? trimmed : null,
+      ...(attachment ?? {}),
     });
     setBusy(false);
     if (error) {
@@ -152,10 +194,10 @@ function MessageThreadPage() {
       return;
     }
     setBody("");
+    setPendingFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     qc.invalidateQueries({ queryKey: ["messages", id] });
   }
-
-  return (
     <div className="flex h-[calc(100vh-12rem)] flex-col">
       <div className="mb-3 flex items-center gap-3 border-b pb-3">
         <Button asChild variant="ghost" size="sm">
