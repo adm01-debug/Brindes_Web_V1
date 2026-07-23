@@ -312,6 +312,14 @@ function ProductPage() {
                     </a>
                   </Button>
                 )}
+                <MessageSellerButton
+                  companyId={product.company!.id}
+                  companyName={product.company!.name}
+                  productId={product.id}
+                  productName={product.name}
+                  className="mt-2 w-full"
+                />
+
               </div>
 
               {/* Attributes grid */}
