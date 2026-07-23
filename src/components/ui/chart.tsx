@@ -68,8 +68,16 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null;
   }
 
+  const nonce =
+    typeof window !== "undefined"
+      ? (window as unknown as { __CSP_NONCE__?: string }).__CSP_NONCE__ ??
+        document.documentElement.getAttribute("data-csp-nonce") ??
+        undefined
+      : undefined;
+
   return (
     <style
+      nonce={nonce}
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(

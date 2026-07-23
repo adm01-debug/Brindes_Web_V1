@@ -16,6 +16,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import { BackToTop } from "@/components/back-to-top";
 import { applySecurityHeaders } from "@/lib/security-headers";
+import { getCspNonce } from "@/lib/csp-nonce";
 import { useWebVitals } from "@/hooks/use-web-vitals";
 
 function NotFoundComponent() {
@@ -231,10 +232,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const nonce = getCspNonce();
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" data-csp-nonce={nonce} suppressHydrationWarning>
       <head>
         <HeadContent />
+        {nonce ? (
+          <script
+            nonce={nonce}
+            dangerouslySetInnerHTML={{
+              __html: `window.__CSP_NONCE__=${JSON.stringify(nonce)};`,
+            }}
+          />
+        ) : null}
       </head>
       <body>
         {children}
