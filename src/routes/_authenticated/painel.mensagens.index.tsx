@@ -117,10 +117,10 @@ function MessagesListPage() {
     e.preventDefault();
     e.stopPropagation();
     const role = roleOf(c);
-    const col = role === "buyer" ? "buyer_archived_at" : "seller_archived_at";
     const currentlyArchived = isArchived(c);
     const value = currentlyArchived ? null : new Date().toISOString();
-    const { error } = await supabase.from("conversations").update({ [col]: value }).eq("id", c.id);
+    const patch = role === "buyer" ? { buyer_archived_at: value } : { seller_archived_at: value };
+    const { error } = await supabase.from("conversations").update(patch).eq("id", c.id);
     if (error) {
       toast.error("Não foi possível atualizar", { description: error.message });
       return;
