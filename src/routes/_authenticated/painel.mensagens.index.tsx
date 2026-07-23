@@ -265,6 +265,7 @@ function MessagesListPage() {
           {filtered.map((c) => {
             const muted = isMuted(c);
             const archived = isArchived(c);
+            const until = muted ? mutedUntil(c) : null;
             return (
               <li key={c.id} className="group relative">
                 <Link
@@ -275,7 +276,19 @@ function MessagesListPage() {
                   <div className="flex items-center justify-between gap-3">
                     <span className="flex items-center gap-2 font-medium">
                       {c.company?.name ?? "Empresa"}
-                      {muted && <BellOff className="h-3.5 w-3.5 text-muted-foreground" aria-label="Silenciada" />}
+                      {muted && (
+                        <span
+                          className="inline-flex items-center gap-1 text-xs text-muted-foreground"
+                          title={until ? `Silenciada até ${new Date(until).toLocaleString("pt-BR")}` : "Silenciada"}
+                        >
+                          <BellOff className="h-3.5 w-3.5" aria-label="Silenciada" />
+                          {until && (
+                            <span className="hidden sm:inline">
+                              {formatDistanceToNow(new Date(until), { addSuffix: true, locale: ptBR })}
+                            </span>
+                          )}
+                        </span>
+                      )}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(c.last_message_at), { addSuffix: true, locale: ptBR })}
@@ -287,17 +300,48 @@ function MessagesListPage() {
                   )}
                 </Link>
                 <div className="absolute right-3 top-1/2 flex -translate-y-1/2 gap-1 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={(e) => toggleMute(c, e)}
-                    aria-label={muted ? "Reativar notificações" : "Silenciar"}
-                    title={muted ? "Reativar notificações" : "Silenciar"}
-                  >
-                    {muted ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
-                  </Button>
+                  {muted ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={(e) => unmute(c, e)}
+                      aria-label="Reativar notificações"
+                      title="Reativar notificações"
+                    >
+                      <Bell className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          aria-label="Silenciar por…"
+                          title="Silenciar por…"
+                        >
+                          <BellOff className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                        {MUTE_PRESETS.map((p, i) => (
+                          <div key={p.label}>
+                            {i === MUTE_PRESETS.length - 1 && <DropdownMenuSeparator />}
+                            <DropdownMenuItem onClick={(e) => applyMute(c, p.minutes, e)}>
+                              {p.label}
+                            </DropdownMenuItem>
+                          </div>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                   <Button
                     type="button"
                     variant="ghost"
