@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Building2, Search, MapPin } from "lucide-react";
+import { PlanBadge } from "@/components/plan-badge";
 import { useState } from "react";
 
 const EMPRESAS_URL = "https://brinde-gallery.lovable.app/empresas";
@@ -57,8 +58,10 @@ function CompaniesPage() {
     queryFn: async () => {
       let query = supabase
         .from("companies")
-        .select("id, slug, name, tagline, city, state")
+        .select("id, slug, name, tagline, city, state, plan, featured_until")
         .eq("status", "approved")
+        .order("plan", { ascending: false })
+        .order("featured_until", { ascending: false, nullsFirst: false })
         .order("name");
       if (q) query = query.ilike("name", `%${q}%`);
       const { data } = await query;
@@ -99,7 +102,10 @@ function CompaniesPage() {
                         <Building2 className="h-6 w-6" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="truncate font-semibold">{c.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="truncate font-semibold">{c.name}</h3>
+                          <PlanBadge plan={c.plan} featuredUntil={c.featured_until} />
+                        </div>
                         {c.tagline && (
                           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{c.tagline}</p>
                         )}

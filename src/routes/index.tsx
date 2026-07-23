@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Search, Building2, Package, Sparkles } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { CategoryPill } from "@/components/category-pill";
+import { PlanBadge } from "@/components/plan-badge";
 import { RecentlyViewed } from "@/components/recently-viewed";
 
 const SITE_URL = "https://brinde-gallery.lovable.app";
@@ -85,13 +86,24 @@ function HomePage() {
   const { data: featuredCompanies } = useQuery({
     queryKey: ["featured-companies"],
     queryFn: async () => {
+      const nowIso = new Date().toISOString();
       const { data } = await supabase
         .from("companies")
-        .select("id, slug, name, tagline, city, state, logo_url, banner_url")
+        .select("id, slug, name, tagline, city, state, logo_url, banner_url, plan, featured_until")
+        .eq("status", "approved")
+        .or(`plan.eq.premium,plan.eq.pro,featured_until.gt.${nowIso}`)
+        .order("plan", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(6);
+      if (data && data.length > 0) return data;
+      // Fallback: nenhum destaque cadastrado — mostra recentes
+      const { data: recent } = await supabase
+        .from("companies")
+        .select("id, slug, name, tagline, city, state, logo_url, banner_url, plan, featured_until")
         .eq("status", "approved")
         .order("created_at", { ascending: false })
         .limit(6);
-      return data ?? [];
+      return recent ?? [];
     },
   });
 
@@ -102,7 +114,7 @@ function HomePage() {
         .from("products")
         .select(`
           id, name, price, price_on_request, short_description,
-          company:companies!inner(id, slug, name, status),
+          company:companies!inner(id, slug, name, status, plan, featured_until),
           images:product_images(url, sort_order)
         `)
         .eq("is_active", true)
@@ -189,8 +201,12 @@ function HomePage() {
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {(featuredCompanies ?? []).map((c) => (
                 <Link key={c.id} to="/empresa/$slug" params={{ slug: c.slug }}>
-                  <Card className="group h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
-                    <div className="aspect-[3/1] bg-gradient-to-br from-primary/20 to-accent/20" />
+                  <Card className="group relative h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
+                    <div className="relative aspect-[3/1] bg-gradient-to-br from-primary/20 to-accent/20">
+                      <div className="absolute left-2 top-2">
+                        <PlanBadge plan={c.plan} featuredUntil={c.featured_until} />
+                      </div>
+                    </div>
                     <CardContent className="pt-4">
                       <div className="flex items-start gap-3">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
