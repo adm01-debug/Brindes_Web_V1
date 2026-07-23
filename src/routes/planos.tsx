@@ -184,7 +184,7 @@ function PlanosPage() {
                       {plan.id === "free" ? (
                         <Link to="/auth">{plan.cta}</Link>
                       ) : (
-                        <Link to="/contato" search={{ plano: plan.id }}>{plan.cta}</Link>
+                        <a href={`/contato?plano=${plan.id}`}>{plan.cta}</a>
                       )}
                     </Button>
                   </CardContent>

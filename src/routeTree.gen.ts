@@ -13,6 +13,7 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as OrcamentoRouteImport } from './routes/orcamento'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -65,6 +66,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PrivacidadeRoute = PrivacidadeRouteImport.update({
   id: '/privacidade',
   path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanosRoute = PlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrcamentoRoute = OrcamentoRouteImport.update({
@@ -252,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
+  '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -290,6 +297,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
+  '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -329,6 +337,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
+  '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -369,6 +378,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/favoritos'
     | '/orcamento'
+    | '/planos'
     | '/privacidade'
     | '/sitemap.xml'
     | '/sobre'
@@ -407,6 +417,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/favoritos'
     | '/orcamento'
+    | '/planos'
     | '/privacidade'
     | '/sitemap.xml'
     | '/sobre'
@@ -445,6 +456,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/favoritos'
     | '/orcamento'
+    | '/planos'
     | '/privacidade'
     | '/sitemap.xml'
     | '/sobre'
@@ -485,6 +497,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   FavoritosRoute: typeof FavoritosRoute
   OrcamentoRoute: typeof OrcamentoRouteWithChildren
+  PlanosRoute: typeof PlanosRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
@@ -530,6 +543,13 @@ declare module '@tanstack/react-router' {
       path: '/privacidade'
       fullPath: '/privacidade'
       preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planos': {
+      id: '/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof PlanosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orcamento': {
@@ -833,6 +853,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   FavoritosRoute: FavoritosRoute,
   OrcamentoRoute: OrcamentoRouteWithChildren,
+  PlanosRoute: PlanosRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
