@@ -95,6 +95,33 @@ function MessageThreadPage() {
       .then(() => qc.invalidateQueries({ queryKey: ["messages", id] }));
   }, [me, messages, id, qc]);
 
+  // Indicador "digitando…" via Realtime broadcast
+  useEffect(() => {
+    if (!me) return;
+    const ch = supabase.channel(`typing-${id}`, { config: { broadcast: { self: false } } });
+    ch.on("broadcast", { event: "typing" }, (payload) => {
+      const from = (payload.payload as { user_id?: string } | undefined)?.user_id;
+      if (!from || from === me) return;
+      setOtherTyping(true);
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
+      typingClearRef.current = setTimeout(() => setOtherTyping(false), 3500);
+    }).subscribe();
+    typingChannelRef.current = ch;
+    return () => {
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
+      supabase.removeChannel(ch);
+      typingChannelRef.current = null;
+    };
+  }, [id, me]);
+
+  function emitTyping() {
+    if (!me || !typingChannelRef.current) return;
+    const now = Date.now();
+    if (now - lastTypingSentRef.current < 1500) return;
+    lastTypingSentRef.current = now;
+    typingChannelRef.current.send({ type: "broadcast", event: "typing", payload: { user_id: me } });
+  }
+
   async function handleSend() {
     const trimmed = body.trim();
     if (trimmed.length < 1 || !me) return;
