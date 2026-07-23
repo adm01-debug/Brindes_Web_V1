@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
+import { CompanyReviews, CompanyRatingSummary } from "@/components/company-reviews";
 import { getSignedUrl } from "@/lib/portal";
 import {
   Building2, MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook, Linkedin, Package,
