@@ -72,7 +72,7 @@ function MessageThreadPage() {
     queryFn: async (): Promise<Message[]> => {
       const { data, error } = await supabase
         .from("messages")
-        .select("id, body, sender_id, created_at, read_at")
+        .select("id, body, sender_id, created_at, read_at, attachment_url, attachment_type, attachment_name, attachment_size")
         .eq("conversation_id", id)
         .order("created_at", { ascending: true });
       if (error) throw error;
