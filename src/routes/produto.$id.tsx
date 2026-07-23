@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock, Expand } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
+import { AddToQuoteCartButton } from "@/components/add-to-quote-cart-button";
 import { ShareButton } from "@/components/share-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
