@@ -50,6 +50,10 @@ function MessageThreadPage() {
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef<number>(0);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Map<string, HTMLLIElement | null>>(new Map());
+  const [search, setSearch] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [matchIdx, setMatchIdx] = useState(0);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setMe(data.user?.id ?? null));
