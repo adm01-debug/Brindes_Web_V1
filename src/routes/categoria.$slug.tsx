@@ -163,13 +163,19 @@ function CategoryPage() {
                 )}
               </div>
             </div>
-            <div className="mt-6">
+            <div className="mt-6 flex flex-wrap gap-2">
               <Button asChild variant="outline" size="sm">
                 <Link to="/buscar" search={{ categoria: slug }}>
                   Filtros avançados <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
+              <Button asChild size="sm">
+                <Link to="/fornecedores/$slug" params={{ slug }}>
+                  Comparar fornecedores
+                </Link>
+              </Button>
             </div>
+
           </div>
         </section>
 
