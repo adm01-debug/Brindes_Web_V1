@@ -3,8 +3,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
-import { ARTICLES, findArticle } from "@/lib/articles";
-import { INTENTS } from "@/lib/intents";
+import { ARTICLES, findArticle, type Article, type ArticleSection } from "@/lib/articles";
+import { INTENTS, type Intent } from "@/lib/intents";
 import { Clock, Calendar } from "lucide-react";
 
 const SITE_URL = "https://brinde-gallery.lovable.app";
