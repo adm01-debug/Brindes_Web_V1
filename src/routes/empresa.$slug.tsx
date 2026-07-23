@@ -310,6 +310,7 @@ function CompanyPage() {
             </aside>
           </div>
 
+          <CompanyReviews companyId={company.id} />
           <RelatedCompanies currentId={company.id} state={company.state} city={company.city} />
         </div>
       </main>
