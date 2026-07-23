@@ -101,13 +101,16 @@ export function NotificationsBell() {
                 return (
                   <li key={n.id} className="group">
                     {n.url ? (
-                      <Link
-                        to={n.url}
-                        onClick={() => unread && void markRead(n.id)}
-                        className={cn("block hover:bg-muted/50", unread && "bg-primary/[0.03]")}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (unread) void markRead(n.id);
+                          router.navigate({ to: n.url! });
+                        }}
+                        className={cn("block w-full text-left hover:bg-muted/50", unread && "bg-primary/[0.03]")}
                       >
                         {content}
-                      </Link>
+                      </button>
                     ) : (
                       <button
                         type="button"
