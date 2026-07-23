@@ -517,6 +517,30 @@ function MessageThreadPage() {
         </div>
       )}
 
+      {replyTo && (
+        <div className="mt-2 flex items-start gap-2 rounded-lg border-l-2 border-primary bg-muted/40 px-3 py-2 text-xs">
+          <CornerUpLeft className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] font-semibold text-muted-foreground">
+              Respondendo a {replyTo.sender_id === me ? "você" : conv?.company?.name ?? "Empresa"}
+            </div>
+            <div className="line-clamp-2 text-foreground/90">
+              {replyTo.body?.trim() || replyTo.attachment_name || "Anexo"}
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={() => setReplyTo(null)}
+            aria-label="Cancelar resposta"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
