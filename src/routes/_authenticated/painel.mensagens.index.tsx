@@ -99,7 +99,15 @@ function MessagesListPage() {
 
   const roleOf = (c: Row): "buyer" | "seller" => (me && c.buyer_id === me ? "buyer" : "seller");
   const isArchived = (c: Row) => (roleOf(c) === "buyer" ? !!c.buyer_archived_at : !!c.seller_archived_at);
-  const isMuted = (c: Row) => (roleOf(c) === "buyer" ? c.buyer_muted : c.seller_muted);
+  const mutedUntil = (c: Row): string | null =>
+    roleOf(c) === "buyer" ? c.buyer_muted_until : c.seller_muted_until;
+  const isMuted = (c: Row) => {
+    const base = roleOf(c) === "buyer" ? c.buyer_muted : c.seller_muted;
+    if (!base) return false;
+    const until = mutedUntil(c);
+    if (until && new Date(until).getTime() <= Date.now()) return false;
+    return true;
+  };
 
   const filtered = useMemo(() => {
     const base = data.filter((c) => (tab === "arquivadas" ? isArchived(c) : !isArchived(c)));
