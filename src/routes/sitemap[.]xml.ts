@@ -135,7 +135,11 @@ export const Route = createFileRoute("/sitemap.xml")({
             parts.push(
               urlEntry(`${SITE_URL}/categoria/${c.slug}`, undefined, "weekly", "0.7"),
             );
+            parts.push(
+              urlEntry(`${SITE_URL}/fornecedores/${c.slug}`, undefined, "weekly", "0.6"),
+            );
           }
+
 
           for (const i of INTENTS) {
             parts.push(
