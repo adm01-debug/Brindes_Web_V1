@@ -1,9 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon, Heart } from "lucide-react";
+import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon, Heart, ShoppingCart } from "lucide-react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuoteCart } from "@/hooks/use-quote-cart";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { QuoteCartDrawer } from "@/components/quote-cart-drawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +18,14 @@ import {
 
 export function SiteHeader() {
   const { user, loading } = useAuth();
+  const { count, hydrated } = useQuoteCart();
+  const [cartOpen, setCartOpen] = useState(false);
+
+  useEffect(() => {
+    const open = () => setCartOpen(true);
+    window.addEventListener("brindeshub:open-quote-cart", open);
+    return () => window.removeEventListener("brindeshub:open-quote-cart", open);
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -51,6 +62,23 @@ export function SiteHeader() {
             <Link to="/favoritos" aria-label="Favoritos">
               <Heart className="h-4 w-4" />
             </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            onClick={() => setCartOpen(true)}
+            aria-label={`Orçamento (${count} ${count === 1 ? "item" : "itens"})`}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {hydrated && count > 0 && (
+              <span
+                aria-hidden
+                className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground"
+              >
+                {count > 99 ? "99+" : count}
+              </span>
+            )}
           </Button>
 
           {loading ? (
@@ -93,6 +121,7 @@ export function SiteHeader() {
           )}
         </div>
       </div>
+      <QuoteCartDrawer open={cartOpen} onOpenChange={setCartOpen} />
     </header>
   );
 }
