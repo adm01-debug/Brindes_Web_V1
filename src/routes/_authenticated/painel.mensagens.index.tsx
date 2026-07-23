@@ -362,3 +362,9 @@ function MessagesListPage() {
     </div>
   );
 }
+
+function formatMinutes(m: number): string {
+  if (m < 60) return `${m} min`;
+  if (m < 60 * 24) return `${Math.round(m / 60)}h`;
+  return `${Math.round(m / (60 * 24))}d`;
+}
