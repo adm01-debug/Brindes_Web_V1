@@ -41,7 +41,7 @@ export function MessageSellerButton({ companyId, companyName, productId, product
     }
     const { data, error } = await supabase.rpc("start_conversation", {
       _company_id: companyId,
-      _product_id: productId ?? null,
+      _product_id: (productId ?? null) as string,
       _subject: subject,
       _body: trimmed,
     });
