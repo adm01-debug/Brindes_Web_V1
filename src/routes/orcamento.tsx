@@ -30,11 +30,10 @@ export const Route = createFileRoute("/orcamento")({
         property: "og:description",
         content: "Envie seu pedido de orçamento para múltiplas empresas de uma só vez.",
       },
-      { property: "og:url", content: "https://brindes-gallery.lovable.app/orcamento" },
+      { property: "og:url", content: "https://brinde-gallery.lovable.app/orcamento" },
       { property: "og:type", content: "website" },
       { name: "robots", content: "noindex, nofollow" },
     ],
-    links: [{ rel: "canonical", href: "https://brindes-gallery.lovable.app/orcamento" }],
   }),
 });
 

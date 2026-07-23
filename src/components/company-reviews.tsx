@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Star, MessageSquare, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -202,7 +203,7 @@ export function CompanyReviews({ companyId }: { companyId: string }) {
               <p className="text-sm text-muted-foreground">
                 Faça login para avaliar esta empresa e ajudar outros compradores.
               </p>
-              <Button asChild size="sm"><a href="/auth">Entrar para avaliar</a></Button>
+              <Button asChild size="sm"><Link to="/auth" search={{ next: typeof window !== "undefined" ? window.location.pathname : "/" } as never}>Entrar para avaliar</Link></Button>
             </div>
           ) : myReview ? (
             <div className="space-y-2">

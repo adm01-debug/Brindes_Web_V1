@@ -27,6 +27,12 @@ export const Route = createFileRoute("/favoritos")({
 
 function FavoritesPage() {
   const { ids, hydrated } = useFavorites();
+  const { data: userData } = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: async () => (await supabase.auth.getUser()).data.user,
+    staleTime: 60_000,
+  });
+  const user = userData ?? null;
 
   const { data: products, isLoading } = useQuery({
     queryKey: ["favorites", ids],
@@ -38,7 +44,9 @@ function FavoritesPage() {
           "id, name, price, price_on_request, short_description, company:companies!inner(id, slug, name, status), images:product_images(url, sort_order)",
         )
         .in("id", ids)
-        .eq("is_active", true);
+        .eq("is_active", true)
+        .eq("moderation_status", "approved")
+        .is("deleted_at", null);
       if (error) throw error;
       return (data ?? []).filter((p: any) => p.company?.status === "approved");
     },
@@ -53,9 +61,11 @@ function FavoritesPage() {
             <Heart className="h-7 w-7 text-red-500" aria-hidden />
             Meus favoritos
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Faça login para sincronizar seus favoritos entre dispositivos. Sem login, ficam salvos apenas neste navegador.
-          </p>
+          {!user && (
+            <p className="mt-2 text-muted-foreground">
+              Faça login para sincronizar seus favoritos entre dispositivos. Sem login, ficam salvos apenas neste navegador.
+            </p>
+          )}
         </header>
 
         {!hydrated || isLoading ? (

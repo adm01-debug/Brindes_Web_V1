@@ -35,6 +35,7 @@ const productQueryOptions = (id: string) =>
         `)
         .eq("id", id)
         .eq("is_active", true)
+        .eq("moderation_status", "approved")
         .is("deleted_at", null)
         .eq("company.status", "approved")
         .maybeSingle();
@@ -153,6 +154,7 @@ function ProductPage() {
         `)
         .eq("id", id)
         .eq("is_active", true)
+        .eq("moderation_status", "approved")
         .is("deleted_at", null)
         .eq("company.status", "approved")
         .maybeSingle();
@@ -163,12 +165,18 @@ function ProductPage() {
 
   const { track } = useRecentlyViewed();
 
-  // Log view + histórico
+  // Log view + histórico (dedupe por sessão)
   useEffect(() => {
-    if (product?.id) {
-      supabase.from("product_views").insert({ product_id: product.id }).then(() => {});
-      track(product.id);
+    if (!product?.id) return;
+    const key = `pv:${product.id}`;
+    if (typeof sessionStorage !== "undefined" && !sessionStorage.getItem(key)) {
+      sessionStorage.setItem(key, "1");
+      supabase.from("product_views").insert({ product_id: product.id }).then(
+        () => {},
+        () => {},
+      );
     }
+    track(product.id);
   }, [product?.id, track]);
 
   const [imageUrls, setImageUrls] = useState<string[]>([]);

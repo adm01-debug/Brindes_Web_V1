@@ -58,7 +58,8 @@ function ComparePage() {
         )
         .in("id", ids)
         .eq("is_active", true)
-        .eq("moderation_status", "approved");
+        .eq("moderation_status", "approved")
+        .is("deleted_at", null);
       if (error) throw error;
       const rows = ((data ?? []) as unknown as CompareProduct[]).filter((p) => p.company?.status === "approved");
       // preserve ordem dos ids selecionados
