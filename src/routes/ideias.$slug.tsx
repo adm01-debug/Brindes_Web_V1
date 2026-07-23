@@ -142,7 +142,7 @@ function IntentPage() {
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <Breadcrumbs
               className="mb-4"
-              items={[{ label: "Ideias", to: "/ideias" }, { label: intent.h1 }]}
+              items={[{ label: "Ideias", href: "/ideias" }, { label: intent.h1 }]}
             />
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{intent.h1}</h1>
             <p className="mt-2 max-w-2xl text-muted-foreground">{intent.intro}</p>
@@ -190,7 +190,7 @@ function IntentPage() {
         <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
           <h2 className="mb-4 text-xl font-semibold">Perguntas frequentes</h2>
           <div className="space-y-3">
-            {intent.faqs.map((f) => (
+            {intent.faqs.map((f: { q: string; a: string }) => (
               <details key={f.q} className="rounded-lg border bg-card p-4">
                 <summary className="cursor-pointer font-medium">{f.q}</summary>
                 <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
