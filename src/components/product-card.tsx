@@ -5,6 +5,7 @@ import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorite-button";
 import { AddToQuoteCartButton } from "@/components/add-to-quote-cart-button";
+import { PlanBadge, type CompanyPlan } from "@/components/plan-badge";
 
 type Product = {
   id: string;
@@ -12,7 +13,9 @@ type Product = {
   price: number | null;
   price_on_request: boolean;
   short_description: string | null;
-  company: { id: string; slug: string; name: string } | null;
+  company:
+    | { id: string; slug: string; name: string; plan?: CompanyPlan | null; featured_until?: string | null }
+    | null;
   images: { url: string; sort_order: number }[] | null;
 };
 
@@ -62,6 +65,11 @@ export function ProductCard({ product }: { product: Product }) {
               className="h-8 w-8 rounded-full shadow-sm backdrop-blur"
             />
           </div>
+          {product.company && (
+            <div className="absolute left-2 top-2">
+              <PlanBadge plan={product.company.plan} featuredUntil={product.company.featured_until} />
+            </div>
+          )}
         </div>
         <CardContent className="p-4">
           <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold group-hover:text-primary">
