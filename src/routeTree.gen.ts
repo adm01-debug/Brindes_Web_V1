@@ -22,9 +22,11 @@ import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as KitsIndexRouteImport } from './routes/kits.index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
+import { Route as KitSlugRouteImport } from './routes/kit.$slug'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
@@ -109,6 +111,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KitsIndexRoute = KitsIndexRouteImport.update({
+  id: '/kits/',
+  path: '/kits/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
   id: '/empresas/',
   path: '/empresas/',
@@ -123,6 +130,11 @@ const OrcamentoEnviadoRoute = OrcamentoEnviadoRouteImport.update({
   id: '/enviado',
   path: '/enviado',
   getParentRoute: () => OrcamentoRoute,
+} as any)
+const KitSlugRoute = KitSlugRouteImport.update({
+  id: '/kit/$slug',
+  path: '/kit/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
   id: '/empresa/$slug',
@@ -247,9 +259,11 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/kits/': typeof KitsIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -282,9 +296,11 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas': typeof EmpresasIndexRoute
+  '/kits': typeof KitsIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -320,9 +336,11 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/kits/': typeof KitsIndexRoute
   '/_authenticated/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/api/public/health': typeof ApiPublicHealthRoute
@@ -358,9 +376,11 @@ export interface FileRouteTypes {
     | '/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas/'
+    | '/kits/'
     | '/painel/leads'
     | '/painel/perfil'
     | '/api/public/health'
@@ -393,9 +413,11 @@ export interface FileRouteTypes {
     | '/termos'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas'
+    | '/kits'
     | '/painel/leads'
     | '/painel/perfil'
     | '/api/public/health'
@@ -430,9 +452,11 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas/'
+    | '/kits/'
     | '/_authenticated/painel/leads'
     | '/_authenticated/painel/perfil'
     | '/api/public/health'
@@ -467,8 +491,10 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
+  KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
+  KitsIndexRoute: typeof KitsIndexRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicHooksCspReportRoute: typeof ApiPublicHooksCspReportRoute
   ApiPublicHooksWebVitalsRoute: typeof ApiPublicHooksWebVitalsRoute
@@ -569,6 +595,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kits/': {
+      id: '/kits/'
+      path: '/kits'
+      fullPath: '/kits/'
+      preLoaderRoute: typeof KitsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/empresas/': {
       id: '/empresas/'
       path: '/empresas'
@@ -589,6 +622,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/orcamento/enviado'
       preLoaderRoute: typeof OrcamentoEnviadoRouteImport
       parentRoute: typeof OrcamentoRoute
+    }
+    '/kit/$slug': {
+      id: '/kit/$slug'
+      path: '/kit/$slug'
+      fullPath: '/kit/$slug'
+      preLoaderRoute: typeof KitSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/empresa/$slug': {
       id: '/empresa/$slug'
@@ -799,8 +839,10 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
+  KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
+  KitsIndexRoute: KitsIndexRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicHooksCspReportRoute: ApiPublicHooksCspReportRoute,
   ApiPublicHooksWebVitalsRoute: ApiPublicHooksWebVitalsRoute,
