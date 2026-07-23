@@ -241,6 +241,58 @@ function SearchPage() {
             <Button type="submit">Buscar</Button>
           </form>
 
+          <details className="mt-4 rounded-lg border bg-card p-4">
+            <summary className="cursor-pointer text-sm font-medium">Filtros avançados</summary>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <Input
+                placeholder="Material (ex: algodão)"
+                value={material}
+                onChange={(e) => setMaterial(e.target.value)}
+                aria-label="Material"
+              />
+              <Input
+                placeholder="Cor (ex: azul)"
+                value={cor}
+                onChange={(e) => setCor(e.target.value)}
+                aria-label="Cor"
+              />
+              <Input
+                type="number"
+                inputMode="numeric"
+                placeholder="Aceito pedir a partir de"
+                value={moq}
+                onChange={(e) => setMoq(e.target.value)}
+                aria-label="Quantidade mínima máxima que aceito"
+              />
+              <Input
+                type="number"
+                inputMode="numeric"
+                placeholder="Prazo máx (dias)"
+                value={prazo}
+                onChange={(e) => setPrazo(e.target.value)}
+                aria-label="Prazo de produção máximo em dias"
+              />
+              <Select
+                value={search.uf || "all"}
+                onValueChange={(v) => setFilter("uf", v === "all" ? "" : v)}
+              >
+                <SelectTrigger><SelectValue placeholder="Estado (UF)" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os estados</SelectItem>
+                  {UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="mt-3 flex gap-2">
+              <Button type="button" size="sm" onClick={(e) => submitSearch(e as unknown as React.FormEvent)}>
+                Aplicar filtros
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={clearAll}>
+                Limpar tudo
+              </Button>
+            </div>
+          </details>
+
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row">
               <Select
