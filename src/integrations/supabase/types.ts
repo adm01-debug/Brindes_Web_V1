@@ -1099,6 +1099,24 @@ export type Database = {
     }
     Functions: {
       audit_log_purge: { Args: { _older_than_days?: number }; Returns: number }
+      compare_suppliers_by_category: {
+        Args: { _category_slug: string }
+        Returns: {
+          avg_rating: number
+          city: string
+          company_id: string
+          featured_until: string
+          logo_url: string
+          min_price: number
+          name: string
+          plan: string
+          product_count: number
+          review_count: number
+          slug: string
+          state: string
+          tagline: string
+        }[]
+      }
       cron_history_purge: {
         Args: { _older_than_days?: number }
         Returns: number
