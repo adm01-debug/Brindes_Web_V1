@@ -201,8 +201,12 @@ function HomePage() {
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {(featuredCompanies ?? []).map((c) => (
                 <Link key={c.id} to="/empresa/$slug" params={{ slug: c.slug }}>
-                  <Card className="group h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
-                    <div className="aspect-[3/1] bg-gradient-to-br from-primary/20 to-accent/20" />
+                  <Card className="group relative h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
+                    <div className="relative aspect-[3/1] bg-gradient-to-br from-primary/20 to-accent/20">
+                      <div className="absolute left-2 top-2">
+                        <PlanBadge plan={c.plan} featuredUntil={c.featured_until} />
+                      </div>
+                    </div>
                     <CardContent className="pt-4">
                       <div className="flex items-start gap-3">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
