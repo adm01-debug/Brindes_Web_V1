@@ -29,6 +29,10 @@ function MessageThreadPage() {
   const [me, setMe] = useState<string | null>(null);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
+  const [otherTyping, setOtherTyping] = useState(false);
+  const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSentRef = useRef<number>(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,6 +95,33 @@ function MessageThreadPage() {
       .then(() => qc.invalidateQueries({ queryKey: ["messages", id] }));
   }, [me, messages, id, qc]);
 
+  // Indicador "digitando…" via Realtime broadcast
+  useEffect(() => {
+    if (!me) return;
+    const ch = supabase.channel(`typing-${id}`, { config: { broadcast: { self: false } } });
+    ch.on("broadcast", { event: "typing" }, (payload) => {
+      const from = (payload.payload as { user_id?: string } | undefined)?.user_id;
+      if (!from || from === me) return;
+      setOtherTyping(true);
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
+      typingClearRef.current = setTimeout(() => setOtherTyping(false), 3500);
+    }).subscribe();
+    typingChannelRef.current = ch;
+    return () => {
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
+      supabase.removeChannel(ch);
+      typingChannelRef.current = null;
+    };
+  }, [id, me]);
+
+  function emitTyping() {
+    if (!me || !typingChannelRef.current) return;
+    const now = Date.now();
+    if (now - lastTypingSentRef.current < 1500) return;
+    lastTypingSentRef.current = now;
+    typingChannelRef.current.send({ type: "broadcast", event: "typing", payload: { user_id: me } });
+  }
+
   async function handleSend() {
     const trimmed = body.trim();
     if (trimmed.length < 1 || !me) return;
@@ -151,6 +182,19 @@ function MessageThreadPage() {
         )}
       </div>
 
+      <div className="mt-2 h-5 text-xs text-muted-foreground" aria-live="polite">
+        {otherTyping && (
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-flex gap-0.5">
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground" />
+            </span>
+            digitando…
+          </span>
+        )}
+      </div>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -160,7 +204,10 @@ function MessageThreadPage() {
       >
         <Textarea
           value={body}
-          onChange={(e) => setBody(e.target.value)}
+          onChange={(e) => {
+            setBody(e.target.value);
+            emitTyping();
+          }}
           placeholder="Escreva sua mensagem…"
           rows={2}
           maxLength={4000}
