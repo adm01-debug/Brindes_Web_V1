@@ -7,6 +7,13 @@ import { ptBR } from "date-fns/locale";
 import { Archive, ArchiveRestore, Bell, BellOff, Inbox, MessageSquare, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -25,8 +32,19 @@ type Row = {
   seller_archived_at: string | null;
   buyer_muted: boolean;
   seller_muted: boolean;
+  buyer_muted_until: string | null;
+  seller_muted_until: string | null;
   company: { id: string; name: string; slug: string; owner_id: string } | null;
 };
+
+const MUTE_PRESETS: Array<{ label: string; minutes: number | null }> = [
+  { label: "15 minutos", minutes: 15 },
+  { label: "1 hora", minutes: 60 },
+  { label: "8 horas", minutes: 60 * 8 },
+  { label: "24 horas", minutes: 60 * 24 },
+  { label: "7 dias", minutes: 60 * 24 * 7 },
+  { label: "Até eu reativar", minutes: null },
+];
 
 function normalize(v: string) {
   return v
@@ -56,7 +74,7 @@ function MessagesListPage() {
     queryFn: async (): Promise<Row[]> => {
       const { data, error } = await supabase
         .from("conversations")
-        .select("id, subject, last_message_at, last_message_preview, buyer_id, buyer_archived_at, seller_archived_at, buyer_muted, seller_muted, company:companies!inner(id, name, slug, owner_id)")
+        .select("id, subject, last_message_at, last_message_preview, buyer_id, buyer_archived_at, seller_archived_at, buyer_muted, seller_muted, buyer_muted_until, seller_muted_until, company:companies!inner(id, name, slug, owner_id)")
         .order("last_message_at", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -81,7 +99,15 @@ function MessagesListPage() {
 
   const roleOf = (c: Row): "buyer" | "seller" => (me && c.buyer_id === me ? "buyer" : "seller");
   const isArchived = (c: Row) => (roleOf(c) === "buyer" ? !!c.buyer_archived_at : !!c.seller_archived_at);
-  const isMuted = (c: Row) => (roleOf(c) === "buyer" ? c.buyer_muted : c.seller_muted);
+  const mutedUntil = (c: Row): string | null =>
+    roleOf(c) === "buyer" ? c.buyer_muted_until : c.seller_muted_until;
+  const isMuted = (c: Row) => {
+    const base = roleOf(c) === "buyer" ? c.buyer_muted : c.seller_muted;
+    if (!base) return false;
+    const until = mutedUntil(c);
+    if (until && new Date(until).getTime() <= Date.now()) return false;
+    return true;
+  };
 
   const filtered = useMemo(() => {
     const base = data.filter((c) => (tab === "arquivadas" ? isArchived(c) : !isArchived(c)));
@@ -129,18 +155,40 @@ function MessagesListPage() {
     qc.invalidateQueries({ queryKey: ["conversations"] });
   }
 
-  async function toggleMute(c: Row, e: React.MouseEvent) {
+  async function applyMute(c: Row, minutes: number | null, e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     const role = roleOf(c);
-    const value = !isMuted(c);
-    const patch = role === "buyer" ? { buyer_muted: value } : { seller_muted: value };
+    const until = minutes == null ? null : new Date(Date.now() + minutes * 60_000).toISOString();
+    const patch =
+      role === "buyer"
+        ? { buyer_muted: true, buyer_muted_until: until }
+        : { seller_muted: true, seller_muted_until: until };
+    const { error } = await supabase.from("conversations").update(patch).eq("id", c.id);
+    if (error) {
+      toast.error("Não foi possível silenciar", { description: error.message });
+      return;
+    }
+    toast.success(
+      minutes == null ? "Silenciada até você reativar" : `Silenciada por ${formatMinutes(minutes)}`,
+    );
+    qc.invalidateQueries({ queryKey: ["conversations"] });
+  }
+
+  async function unmute(c: Row, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const role = roleOf(c);
+    const patch =
+      role === "buyer"
+        ? { buyer_muted: false, buyer_muted_until: null }
+        : { seller_muted: false, seller_muted_until: null };
     const { error } = await supabase.from("conversations").update(patch).eq("id", c.id);
     if (error) {
       toast.error("Não foi possível atualizar", { description: error.message });
       return;
     }
-    toast.success(value ? "Notificações silenciadas" : "Notificações reativadas");
+    toast.success("Notificações reativadas");
     qc.invalidateQueries({ queryKey: ["conversations"] });
   }
 
@@ -217,6 +265,7 @@ function MessagesListPage() {
           {filtered.map((c) => {
             const muted = isMuted(c);
             const archived = isArchived(c);
+            const until = muted ? mutedUntil(c) : null;
             return (
               <li key={c.id} className="group relative">
                 <Link
@@ -227,7 +276,19 @@ function MessagesListPage() {
                   <div className="flex items-center justify-between gap-3">
                     <span className="flex items-center gap-2 font-medium">
                       {c.company?.name ?? "Empresa"}
-                      {muted && <BellOff className="h-3.5 w-3.5 text-muted-foreground" aria-label="Silenciada" />}
+                      {muted && (
+                        <span
+                          className="inline-flex items-center gap-1 text-xs text-muted-foreground"
+                          title={until ? `Silenciada até ${new Date(until).toLocaleString("pt-BR")}` : "Silenciada"}
+                        >
+                          <BellOff className="h-3.5 w-3.5" aria-label="Silenciada" />
+                          {until && (
+                            <span className="hidden sm:inline">
+                              {formatDistanceToNow(new Date(until), { addSuffix: true, locale: ptBR })}
+                            </span>
+                          )}
+                        </span>
+                      )}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(c.last_message_at), { addSuffix: true, locale: ptBR })}
@@ -239,17 +300,48 @@ function MessagesListPage() {
                   )}
                 </Link>
                 <div className="absolute right-3 top-1/2 flex -translate-y-1/2 gap-1 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={(e) => toggleMute(c, e)}
-                    aria-label={muted ? "Reativar notificações" : "Silenciar"}
-                    title={muted ? "Reativar notificações" : "Silenciar"}
-                  >
-                    {muted ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
-                  </Button>
+                  {muted ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={(e) => unmute(c, e)}
+                      aria-label="Reativar notificações"
+                      title="Reativar notificações"
+                    >
+                      <Bell className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          aria-label="Silenciar por…"
+                          title="Silenciar por…"
+                        >
+                          <BellOff className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                        {MUTE_PRESETS.map((p, i) => (
+                          <div key={p.label}>
+                            {i === MUTE_PRESETS.length - 1 && <DropdownMenuSeparator />}
+                            <DropdownMenuItem onClick={(e) => applyMute(c, p.minutes, e)}>
+                              {p.label}
+                            </DropdownMenuItem>
+                          </div>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
                   <Button
                     type="button"
                     variant="ghost"
@@ -269,4 +361,10 @@ function MessagesListPage() {
       )}
     </div>
   );
+}
+
+function formatMinutes(m: number): string {
+  if (m < 60) return `${m} min`;
+  if (m < 60 * 24) return `${Math.round(m / 60)}h`;
+  return `${Math.round(m / (60 * 24))}d`;
 }
