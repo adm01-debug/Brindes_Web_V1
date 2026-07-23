@@ -19,6 +19,7 @@ const BASE_NAV: NavItem[] = [
   { to: "/painel", label: "Visão geral", icon: LayoutDashboard, exact: true },
   { to: "/painel/produtos", label: "Produtos", icon: Package },
   { to: "/painel/leads", label: "Pedidos de orçamento", icon: Inbox },
+  { to: "/painel/perguntas", label: "Perguntas", icon: MessageSquare },
   { to: "/painel/perfil", label: "Perfil da empresa", icon: User },
 ];
 const ADMIN_NAV: NavItem[] = [
