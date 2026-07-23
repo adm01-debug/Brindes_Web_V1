@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VenderRouteImport } from './routes/vender'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -59,6 +60,11 @@ import { Route as ApiPublicOgProdutoIdRouteImport } from './routes/api/public/og
 import { Route as ApiPublicOgEmpresaSlugRouteImport } from './routes/api/public/og.empresa.$slug'
 import { Route as AuthenticatedPainelProdutosIdEditarRouteImport } from './routes/_authenticated/painel.produtos.$id.editar'
 
+const VenderRoute = VenderRouteImport.update({
+  id: '/vender',
+  path: '/vender',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermosRoute = TermosRouteImport.update({
   id: '/termos',
   path: '/termos',
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
+  '/vender': typeof VenderRoute
   '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -385,6 +392,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
+  '/vender': typeof VenderRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
@@ -436,6 +444,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
+  '/vender': typeof VenderRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -488,6 +497,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
+    | '/vender'
     | '/painel'
     | '/blog/$slug'
     | '/categoria/$slug'
@@ -538,6 +548,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
+    | '/vender'
     | '/blog/$slug'
     | '/categoria/$slug'
     | '/empresa/$slug'
@@ -588,6 +599,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
+    | '/vender'
     | '/_authenticated/painel'
     | '/blog/$slug'
     | '/categoria/$slug'
@@ -640,6 +652,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
   TermosRoute: typeof TermosRoute
+  VenderRoute: typeof VenderRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
@@ -660,6 +673,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vender': {
+      id: '/vender'
+      path: '/vender'
+      fullPath: '/vender'
+      preLoaderRoute: typeof VenderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/termos': {
       id: '/termos'
       path: '/termos'
@@ -1090,6 +1110,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
   TermosRoute: TermosRoute,
+  VenderRoute: VenderRoute,
   BlogSlugRoute: BlogSlugRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
