@@ -36,6 +36,7 @@ import {
   ExternalLink,
   ShieldAlert,
 } from "lucide-react";
+import { PlanBadge } from "@/components/plan-badge";
 
 export const Route = createFileRoute("/_authenticated/painel/admin/empresas")({
   component: AdminEmpresasPage,
@@ -217,7 +218,7 @@ function AdminEmpresasPage() {
             const location = [c.city, c.state].filter(Boolean).join(" / ");
             return (
               <Card key={c.id}>
-                <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="truncate font-semibold">{c.name}</h3>
@@ -225,6 +226,7 @@ function AdminEmpresasPage() {
                         <Icon className="h-3 w-3" />
                         {meta.label}
                       </Badge>
+                      <PlanBadge plan={c.plan as never} featuredUntil={c.featured_until} />
                     </div>
                     <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                       <span>/{c.slug}</span>
@@ -233,6 +235,63 @@ function AdminEmpresasPage() {
                       {location && <span>{location}</span>}
                       <span>Cadastro: {new Date(c.created_at).toLocaleDateString("pt-BR")}</span>
                     </div>
+                    {status === "approved" && (
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <label className="text-xs font-medium text-muted-foreground">Plano:</label>
+                        <Select
+                          value={(c.plan as string) ?? "free"}
+                          onValueChange={(v) =>
+                            planMutation.mutate({
+                              id: c.id,
+                              plan: v as "free" | "pro" | "premium",
+                              featured_until:
+                                v === "free"
+                                  ? null
+                                  : c.featured_until ??
+                                    new Date(Date.now() + 30 * 864e5).toISOString(),
+                            })
+                          }
+                          disabled={planMutation.isPending}
+                        >
+                          <SelectTrigger className="h-8 w-32 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="free">Gratuito</SelectItem>
+                            <SelectItem value="pro">Pro (destaque)</SelectItem>
+                            <SelectItem value="premium">Premium (topo)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {c.plan && c.plan !== "free" && (
+                          <>
+                            <Input
+                              type="date"
+                              className="h-8 w-40 text-xs"
+                              value={
+                                c.featured_until
+                                  ? new Date(c.featured_until).toISOString().slice(0, 10)
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                planMutation.mutate({
+                                  id: c.id,
+                                  plan: c.plan as "pro" | "premium",
+                                  featured_until: e.target.value
+                                    ? new Date(e.target.value + "T23:59:59").toISOString()
+                                    : null,
+                                })
+                              }
+                              disabled={planMutation.isPending}
+                            />
+                            <span className="text-xs text-muted-foreground">
+                              {c.featured_until
+                                ? `até ${new Date(c.featured_until).toLocaleDateString("pt-BR")}`
+                                : "sem validade"}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {status === "approved" && (
