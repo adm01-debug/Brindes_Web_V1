@@ -140,6 +140,7 @@ function AdminDashboard() {
         leadsTotal,
         leadsNew,
         leadsLast7d,
+        reviewsPending,
         series: Object.values(days),
       };
     },
