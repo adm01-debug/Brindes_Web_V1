@@ -178,6 +178,63 @@ export type Database = {
         }
         Relationships: []
       }
+      company_reviews: {
+        Row: {
+          author_id: string
+          author_name: string
+          comment: string
+          company_id: string
+          created_at: string
+          id: string
+          moderation_reason: string | null
+          rating: number
+          status: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          author_name: string
+          comment: string
+          company_id: string
+          created_at?: string
+          id?: string
+          moderation_reason?: string | null
+          rating: number
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          comment?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          moderation_reason?: string | null
+          rating?: number
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_reviews_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_reviews_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "mv_company_stats"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       kit_items: {
         Row: {
           created_at: string
@@ -788,6 +845,13 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      get_company_rating: {
+        Args: { _company_id: string }
+        Returns: {
+          average: number
+          total: number
+        }[]
       }
       get_company_stats: {
         Args: { _slug: string }

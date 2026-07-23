@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
+import { CompanyReviews, CompanyRatingSummary } from "@/components/company-reviews";
 import { getSignedUrl } from "@/lib/portal";
 import {
   Building2, MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook, Linkedin, Package,
@@ -210,6 +211,7 @@ function CompanyPage() {
                   {[company.city, company.state].filter(Boolean).join(", ")}
                 </p>
               )}
+              <div className="mt-2"><CompanyRatingSummary companyId={company.id} /></div>
             </div>
             {whatsappLink && (
               <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
@@ -310,6 +312,7 @@ function CompanyPage() {
             </aside>
           </div>
 
+          <CompanyReviews companyId={company.id} />
           <RelatedCompanies currentId={company.id} state={company.state} city={company.city} />
         </div>
       </main>
