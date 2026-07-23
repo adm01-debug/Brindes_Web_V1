@@ -39,12 +39,33 @@ function PainelLayout() {
   const NAV = isAdmin ? [...BASE_NAV, ...ADMIN_NAV] : BASE_NAV;
   const queryClient = useQueryClient();
 
+  const { data: me } = useQuery({
+    queryKey: ["auth-uid"],
+    queryFn: async () => (await supabase.auth.getUser()).data.user?.id ?? null,
+    staleTime: Infinity,
+  });
+
   const { data: unreadLeads = 0 } = useQuery({
     queryKey: ["leads-unread-count"],
     queryFn: async () => {
       const { count } = await supabase
         .from("leads")
         .select("id", { count: "exact", head: true })
+        .is("read_at", null);
+      return count ?? 0;
+    },
+    refetchInterval: 60_000,
+  });
+
+  const { data: unreadMessages = 0 } = useQuery({
+    queryKey: ["messages-unread-count", me],
+    enabled: !!me,
+    queryFn: async () => {
+      if (!me) return 0;
+      const { count } = await supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .neq("sender_id", me)
         .is("read_at", null);
       return count ?? 0;
     },
@@ -81,9 +102,43 @@ function PainelLayout() {
     };
   }, [queryClient, navigate]);
 
+  useEffect(() => {
+    if (!me) return;
+    const channel = supabase
+      .channel("messages-nav")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages" },
+        (payload) => {
+          queryClient.invalidateQueries({ queryKey: ["messages-unread-count", me] });
+          if (payload.eventType !== "INSERT") return;
+          const msg = payload.new as { sender_id?: string; conversation_id?: string } | null;
+          if (!msg || msg.sender_id === me) return;
+          if (location.pathname.startsWith("/painel/mensagens")) return;
+          toast.message("Nova mensagem", {
+            description: "Você recebeu uma nova mensagem.",
+            action: {
+              label: "Abrir",
+              onClick: () =>
+                msg.conversation_id
+                  ? navigate({ to: "/painel/mensagens/$id", params: { id: msg.conversation_id } })
+                  : navigate({ to: "/painel/mensagens" }),
+            },
+          });
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [me, queryClient, navigate, location.pathname]);
 
-  const badgeFor = (to: string) =>
-    to === "/painel/leads" && unreadLeads > 0 ? unreadLeads : null;
+
+  const badgeFor = (to: string) => {
+    if (to === "/painel/leads" && unreadLeads > 0) return unreadLeads;
+    if (to === "/painel/mensagens" && unreadMessages > 0) return unreadMessages;
+    return null;
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
