@@ -74,7 +74,7 @@ function MessagesListPage() {
     queryFn: async (): Promise<Row[]> => {
       const { data, error } = await supabase
         .from("conversations")
-        .select("id, subject, last_message_at, last_message_preview, buyer_id, buyer_archived_at, seller_archived_at, buyer_muted, seller_muted, company:companies!inner(id, name, slug, owner_id)")
+        .select("id, subject, last_message_at, last_message_preview, buyer_id, buyer_archived_at, seller_archived_at, buyer_muted, seller_muted, buyer_muted_until, seller_muted_until, company:companies!inner(id, name, slug, owner_id)")
         .order("last_message_at", { ascending: false })
         .limit(200);
       if (error) throw error;
