@@ -138,6 +138,11 @@ function SearchPage() {
       search.ordenar,
       search.min,
       search.max,
+      search.material,
+      search.cor,
+      search.moq,
+      search.prazo,
+      search.uf,
       search.page,
     ],
     placeholderData: keepPreviousData,
@@ -150,6 +155,11 @@ function SearchPage() {
         _sort: search.ordenar,
         _page: search.page,
         _page_size: PAGE_SIZE,
+        _material: search.material || undefined,
+        _color: search.cor || undefined,
+        _max_moq: search.moq > 0 ? search.moq : undefined,
+        _max_days: search.prazo > 0 ? search.prazo : undefined,
+        _state: search.uf || undefined,
       });
       if (error) throw error;
       return (data ?? []) as RpcRow[];
@@ -169,7 +179,21 @@ function SearchPage() {
         q: term,
         min: priceMin ? Number(priceMin) : 0,
         max: priceMax ? Number(priceMax) : 0,
+        material,
+        cor,
+        moq: moq ? Number(moq) : 0,
+        prazo: prazo ? Number(prazo) : 0,
         page: 1,
+      }),
+    });
+  };
+
+  const clearAll = () => {
+    setTerm(""); setPriceMin(""); setPriceMax(""); setMaterial(""); setCor(""); setMoq(""); setPrazo("");
+    navigate({
+      search: () => ({
+        q: "", categoria: "", ordenar: "relevance", min: 0, max: 0,
+        material: "", cor: "", moq: 0, prazo: 0, uf: "", page: 1,
       }),
     });
   };
