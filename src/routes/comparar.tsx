@@ -135,9 +135,11 @@ function CompareTable({ products, onRemove }: { products: CompareProduct[]; onRe
       render: (p) => (p.min_order_quantity ? `${p.min_order_quantity} un.` : "—"),
     },
     {
-      label: "Prazo estimado",
-      render: (p) => (p.lead_time_days ? `${p.lead_time_days} dias` : "—"),
+      label: "Prazo de produção",
+      render: (p) => (p.production_time_days ? `${p.production_time_days} dias` : "—"),
     },
+    { label: "Material", render: (p) => p.material ?? "—" },
+    { label: "Dimensões", render: (p) => p.dimensions ?? "—" },
     {
       label: "Variantes",
       render: (p) =>
