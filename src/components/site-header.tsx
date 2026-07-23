@@ -55,6 +55,9 @@ export function SiteHeader() {
           <Link to="/ideias" className="text-muted-foreground transition-colors hover:text-foreground">
             Ideias
           </Link>
+          <Link to="/blog" className="text-muted-foreground transition-colors hover:text-foreground">
+            Blog
+          </Link>
           <Link to="/planos" className="text-muted-foreground transition-colors hover:text-foreground">
             Planos
           </Link>

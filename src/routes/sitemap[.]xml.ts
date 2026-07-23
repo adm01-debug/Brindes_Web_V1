@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { INTENTS } from "@/lib/intents";
+import { ARTICLES } from "@/lib/articles";
 
 const SITE_URL = "https://brinde-gallery.lovable.app";
 const STATIC_ROUTES: Array<{ path: string; changefreq: string; priority: string }> = [
@@ -11,6 +12,7 @@ const STATIC_ROUTES: Array<{ path: string; changefreq: string; priority: string 
   { path: "/categorias", changefreq: "weekly", priority: "0.8" },
   { path: "/kits", changefreq: "weekly", priority: "0.8" },
   { path: "/ideias", changefreq: "weekly", priority: "0.8" },
+  { path: "/blog", changefreq: "weekly", priority: "0.7" },
   { path: "/planos", changefreq: "monthly", priority: "0.6" },
   { path: "/sobre", changefreq: "monthly", priority: "0.6" },
   { path: "/como-funciona", changefreq: "monthly", priority: "0.7" },
@@ -138,6 +140,17 @@ export const Route = createFileRoute("/sitemap.xml")({
           for (const i of INTENTS) {
             parts.push(
               urlEntry(`${SITE_URL}/ideias/${i.slug}`, undefined, "weekly", "0.7"),
+            );
+          }
+
+          for (const a of ARTICLES) {
+            parts.push(
+              urlEntry(
+                `${SITE_URL}/blog/${a.slug}`,
+                new Date(a.updatedAt).toISOString(),
+                "monthly",
+                "0.6",
+              ),
             );
           }
 
