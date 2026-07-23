@@ -270,6 +270,7 @@ function MessageThreadPage() {
       conversation_id: id,
       sender_id: me,
       body: trimmed.length > 0 ? trimmed : "",
+      reply_to_id: replyTo?.id ?? null,
       ...(attachment ?? {}),
     };
     const { error } = await supabase.from("messages").insert(payload);
@@ -280,8 +281,22 @@ function MessageThreadPage() {
     }
     setBody("");
     setPendingFile(null);
+    setReplyTo(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     qc.invalidateQueries({ queryKey: ["messages", id] });
+  }
+
+  function startReply(m: Message) {
+    setReplyTo(m);
+    setTimeout(() => composerRef.current?.focus(), 0);
+  }
+
+  function jumpToMessage(mid: string) {
+    const el = messageRefs.current.get(mid);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("ring-2", "ring-primary");
+    setTimeout(() => el.classList.remove("ring-2", "ring-primary"), 1400);
   }
 
   return (
