@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Loader2, Send } from "lucide-react";
+import { ArrowLeft, FileText, Loader2, Paperclip, Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,7 +15,20 @@ export const Route = createFileRoute("/_authenticated/painel/mensagens/$id")({
   head: () => ({ meta: [{ title: "Conversa — BrindesHub" }] }),
 });
 
-type Message = { id: string; body: string; sender_id: string; created_at: string; read_at: string | null };
+const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+const ALLOWED_ATTACHMENT_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"];
+
+type Message = {
+  id: string;
+  body: string | null;
+  sender_id: string;
+  created_at: string;
+  read_at: string | null;
+  attachment_url: string | null;
+  attachment_type: string | null;
+  attachment_name: string | null;
+  attachment_size: number | null;
+};
 type Conversation = {
   id: string;
   subject: string | null;
@@ -30,6 +43,8 @@ function MessageThreadPage() {
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef<number>(0);
@@ -57,7 +72,7 @@ function MessageThreadPage() {
     queryFn: async (): Promise<Message[]> => {
       const { data, error } = await supabase
         .from("messages")
-        .select("id, body, sender_id, created_at, read_at")
+        .select("id, body, sender_id, created_at, read_at, attachment_url, attachment_type, attachment_name, attachment_size")
         .eq("conversation_id", id)
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -122,26 +137,72 @@ function MessageThreadPage() {
     typingChannelRef.current.send({ type: "broadcast", event: "typing", payload: { user_id: me } });
   }
 
+  function handlePickFile(file: File | null) {
+    if (!file) {
+      setPendingFile(null);
+      return;
+    }
+    if (!ALLOWED_ATTACHMENT_TYPES.includes(file.type)) {
+      toast.error("Formato não suportado", { description: "Envie JPG, PNG, WebP, GIF ou PDF." });
+      return;
+    }
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      toast.error("Arquivo muito grande", { description: "Limite de 10 MB por anexo." });
+      return;
+    }
+    setPendingFile(file);
+  }
+
   async function handleSend() {
     const trimmed = body.trim();
-    if (trimmed.length < 1 || !me) return;
+    if (!me) return;
+    if (trimmed.length === 0 && !pendingFile) return;
     setBusy(true);
-    const { error } = await supabase.from("messages").insert({
+    let attachment: {
+      attachment_url: string;
+      attachment_type: string;
+      attachment_name: string;
+      attachment_size: number;
+    } | null = null;
+    if (pendingFile) {
+      const ext = pendingFile.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
+      const path = `${id}/${me}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("chat-attachments")
+        .upload(path, pendingFile, { contentType: pendingFile.type, upsert: false });
+      if (upErr) {
+        setBusy(false);
+        toast.error("Falha ao enviar anexo", { description: upErr.message });
+        return;
+      }
+      attachment = {
+        attachment_url: path,
+        attachment_type: pendingFile.type,
+        attachment_name: pendingFile.name.slice(0, 200),
+        attachment_size: pendingFile.size,
+      };
+    }
+    const payload = {
       conversation_id: id,
       sender_id: me,
-      body: trimmed,
-    });
+      body: trimmed.length > 0 ? trimmed : "",
+      ...(attachment ?? {}),
+    };
+    const { error } = await supabase.from("messages").insert(payload);
     setBusy(false);
     if (error) {
       toast.error("Falha ao enviar", { description: error.message });
       return;
     }
     setBody("");
+    setPendingFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     qc.invalidateQueries({ queryKey: ["messages", id] });
   }
 
   return (
     <div className="flex h-[calc(100vh-12rem)] flex-col">
+
       <div className="mb-3 flex items-center gap-3 border-b pb-3">
         <Button asChild variant="ghost" size="sm">
           <Link to="/painel/mensagens">
@@ -169,7 +230,18 @@ function MessageThreadPage() {
                       mine ? "bg-primary text-primary-foreground" : "bg-card text-card-foreground border",
                     )}
                   >
-                    <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                    {m.attachment_url && (
+                      <MessageAttachment
+                        path={m.attachment_url}
+                        type={m.attachment_type}
+                        name={m.attachment_name}
+                        size={m.attachment_size}
+                        mine={mine}
+                      />
+                    )}
+                    {m.body && m.body.length > 0 && (
+                      <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                    )}
                     <div className={cn("mt-1 text-[10px] opacity-70", mine ? "text-right" : "")}>
                       {formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}
                     </div>
@@ -195,6 +267,26 @@ function MessageThreadPage() {
         )}
       </div>
 
+      {pendingFile && (
+        <div className="mt-2 flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-xs">
+          <Paperclip className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <span className="min-w-0 truncate">{pendingFile.name}</span>
+          <span className="shrink-0 text-muted-foreground">
+            {(pendingFile.size / 1024).toFixed(0)} KB
+          </span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="ml-auto h-6 w-6"
+            onClick={() => handlePickFile(null)}
+            aria-label="Remover anexo"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -202,6 +294,23 @@ function MessageThreadPage() {
         }}
         className="mt-3 flex items-end gap-2"
       >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={ALLOWED_ATTACHMENT_TYPES.join(",")}
+          className="hidden"
+          onChange={(e) => handlePickFile(e.target.files?.[0] ?? null)}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={busy}
+          aria-label="Anexar arquivo"
+        >
+          <Paperclip className="h-4 w-4" />
+        </Button>
         <Textarea
           value={body}
           onChange={(e) => {
@@ -218,10 +327,71 @@ function MessageThreadPage() {
             }
           }}
         />
-        <Button type="submit" disabled={busy || body.trim().length === 0}>
+        <Button type="submit" disabled={busy || (body.trim().length === 0 && !pendingFile)}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </form>
     </div>
+  );
+}
+
+function MessageAttachment({
+  path,
+  type,
+  name,
+  size,
+  mine,
+}: {
+  path: string;
+  type: string | null;
+  name: string | null;
+  size: number | null;
+  mine: boolean;
+}) {
+  const { data: signedUrl } = useQuery({
+    queryKey: ["chat-attach-url", path],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("chat-attachments")
+        .createSignedUrl(path, 60 * 60);
+      if (error) throw error;
+      return data.signedUrl;
+    },
+    staleTime: 55 * 60 * 1000,
+  });
+  const isImage = type?.startsWith("image/") ?? false;
+  if (!signedUrl) {
+    return (
+      <div className="mb-1 flex items-center gap-2 text-xs opacity-70">
+        <Loader2 className="h-3 w-3 animate-spin" /> Carregando anexo…
+      </div>
+    );
+  }
+  if (isImage) {
+    return (
+      <a href={signedUrl} target="_blank" rel="noreferrer" className="mb-1 block">
+        <img
+          src={signedUrl}
+          alt={name ?? "anexo"}
+          loading="lazy"
+          className="max-h-64 rounded-lg object-cover"
+        />
+      </a>
+    );
+  }
+  return (
+    <a
+      href={signedUrl}
+      target="_blank"
+      rel="noreferrer"
+      className={cn(
+        "mb-1 flex items-center gap-2 rounded-lg border px-2 py-1.5 text-xs hover:underline",
+        mine ? "border-primary-foreground/30" : "border-border bg-muted/40",
+      )}
+    >
+      <FileText className="h-4 w-4 shrink-0" />
+      <span className="min-w-0 truncate">{name ?? "arquivo.pdf"}</span>
+      {size ? <span className="shrink-0 opacity-70">{(size / 1024).toFixed(0)} KB</span> : null}
+    </a>
   );
 }
