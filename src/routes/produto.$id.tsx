@@ -398,6 +398,12 @@ function ProductPage() {
             companyId={product.company!.id}
           />
 
+          <ProductQA
+            productId={product.id}
+            companyId={product.company!.id}
+            productName={product.name}
+          />
+
           <RecentlyViewed excludeId={product.id} className="mt-12" />
         </div>
       </main>
