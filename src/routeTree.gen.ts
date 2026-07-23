@@ -24,6 +24,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
+import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
@@ -117,6 +118,11 @@ const ProdutoIdRoute = ProdutoIdRouteImport.update({
   id: '/produto/$id',
   path: '/produto/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OrcamentoEnviadoRoute = OrcamentoEnviadoRouteImport.update({
+  id: '/enviado',
+  path: '/enviado',
+  getParentRoute: () => OrcamentoRoute,
 } as any)
 const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
   id: '/empresa/$slug',
@@ -233,7 +239,7 @@ export interface FileRoutesByFullPath {
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
-  '/orcamento': typeof OrcamentoRoute
+  '/orcamento': typeof OrcamentoRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -241,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
@@ -268,13 +275,14 @@ export interface FileRoutesByTo {
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
-  '/orcamento': typeof OrcamentoRoute
+  '/orcamento': typeof OrcamentoRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas': typeof EmpresasIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
@@ -304,7 +312,7 @@ export interface FileRoutesById {
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
-  '/orcamento': typeof OrcamentoRoute
+  '/orcamento': typeof OrcamentoRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/_authenticated/painel/leads': typeof AuthenticatedPainelLeadsRoute
@@ -349,6 +358,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas/'
     | '/painel/leads'
@@ -383,6 +393,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas'
     | '/painel/leads'
@@ -419,6 +430,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas/'
     | '/_authenticated/painel/leads'
@@ -448,7 +460,7 @@ export interface RootRouteChildren {
   ContatoRoute: typeof ContatoRoute
   FaqRoute: typeof FaqRoute
   FavoritosRoute: typeof FavoritosRoute
-  OrcamentoRoute: typeof OrcamentoRoute
+  OrcamentoRoute: typeof OrcamentoRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
@@ -570,6 +582,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/produto/$id'
       preLoaderRoute: typeof ProdutoIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/orcamento/enviado': {
+      id: '/orcamento/enviado'
+      path: '/enviado'
+      fullPath: '/orcamento/enviado'
+      preLoaderRoute: typeof OrcamentoEnviadoRouteImport
+      parentRoute: typeof OrcamentoRoute
     }
     '/empresa/$slug': {
       id: '/empresa/$slug'
@@ -752,6 +771,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface OrcamentoRouteChildren {
+  OrcamentoEnviadoRoute: typeof OrcamentoEnviadoRoute
+}
+
+const OrcamentoRouteChildren: OrcamentoRouteChildren = {
+  OrcamentoEnviadoRoute: OrcamentoEnviadoRoute,
+}
+
+const OrcamentoRouteWithChildren = OrcamentoRoute._addFileChildren(
+  OrcamentoRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -761,7 +792,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContatoRoute: ContatoRoute,
   FaqRoute: FaqRoute,
   FavoritosRoute: FavoritosRoute,
-  OrcamentoRoute: OrcamentoRoute,
+  OrcamentoRoute: OrcamentoRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
