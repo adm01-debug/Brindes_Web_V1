@@ -38,6 +38,7 @@ const categoryProductsQueryOptions = (categoryId: string | undefined) =>
         .eq("category_id", categoryId)
         .eq("is_active", true)
         .is("deleted_at", null)
+        .eq("moderation_status", "approved")
         .eq("company.status", "approved")
         .order("created_at", { ascending: false })
         .limit(48);
