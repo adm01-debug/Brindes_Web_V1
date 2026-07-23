@@ -30,6 +30,7 @@ type Message = {
   attachment_type: string | null;
   attachment_name: string | null;
   attachment_size: number | null;
+  reply_to_id: string | null;
 };
 type Conversation = {
   id: string;
