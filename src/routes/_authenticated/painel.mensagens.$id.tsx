@@ -406,6 +406,35 @@ function MessageThreadPage() {
                       isActive && "ring-yellow-500 ring-offset-2 ring-offset-background",
                     )}
                   >
+                    {m.reply_to_id && (() => {
+                      const parent = messageById.get(m.reply_to_id);
+                      const preview = parent
+                        ? (parent.body?.trim() || parent.attachment_name || "Anexo")
+                        : "Mensagem removida";
+                      const parentMine = parent?.sender_id === me;
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => parent && jumpToMessage(parent.id)}
+                          disabled={!parent}
+                          className={cn(
+                            "mb-1.5 flex w-full items-start gap-1.5 rounded-md border-l-2 px-2 py-1 text-left text-xs transition",
+                            mine
+                              ? "border-primary-foreground/60 bg-primary-foreground/10 hover:bg-primary-foreground/15"
+                              : "border-primary/60 bg-muted/60 hover:bg-muted",
+                            !parent && "cursor-not-allowed opacity-70",
+                          )}
+                        >
+                          <CornerUpLeft className="mt-0.5 h-3 w-3 shrink-0 opacity-70" />
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[10px] font-semibold opacity-80">
+                              {parent ? (parentMine ? "Você" : conv?.company?.name ?? "Empresa") : ""}
+                            </span>
+                            <span className="line-clamp-2 opacity-90">{preview}</span>
+                          </span>
+                        </button>
+                      );
+                    })()}
                     {m.attachment_url && (
                       <MessageAttachment
                         path={m.attachment_url}
@@ -421,6 +450,15 @@ function MessageThreadPage() {
                       </p>
                     )}
                     <div className={cn("mt-1 flex items-center gap-1 text-[10px] opacity-70", mine ? "justify-end" : "")}>
+                      <button
+                        type="button"
+                        onClick={() => startReply(m)}
+                        className="inline-flex items-center gap-0.5 rounded px-1 opacity-0 transition hover:bg-black/10 group-hover:opacity-100"
+                        aria-label="Responder mensagem"
+                        title="Responder"
+                      >
+                        <Reply className="h-3 w-3" />
+                      </button>
                       <span>{formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}</span>
                       {mine && (
                         m.read_at ? (
