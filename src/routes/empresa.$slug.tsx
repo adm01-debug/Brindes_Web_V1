@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -375,9 +375,10 @@ function RelatedCompanies({
       </h2>
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {data.map((c) => (
-          <a
+          <Link
             key={c.id}
-            href={`/empresa/${c.slug}`}
+            to="/empresa/$slug"
+            params={{ slug: c.slug }}
             className="group flex items-start gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-primary"
           >
             <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
@@ -396,7 +397,7 @@ function RelatedCompanies({
                 </p>
               )}
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     </section>

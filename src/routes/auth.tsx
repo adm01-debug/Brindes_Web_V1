@@ -13,6 +13,7 @@ import { Package2, Loader2 } from "lucide-react";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
+  next: z.string().startsWith("/").max(500).optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -26,9 +27,9 @@ export const Route = createFileRoute("/auth")({
       },
     ],
   }),
-  beforeLoad: async () => {
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/painel" });
+    if (data.session) throw redirect({ to: (search.next as "/painel") ?? "/painel" });
   },
   component: AuthPage,
 });
@@ -76,8 +77,9 @@ function translateAuthError(message: string): string {
 }
 
 function AuthPage() {
-  const { mode } = useSearch({ from: "/auth" });
+  const { mode, next } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
+  const goNext = () => navigate({ to: (next as "/painel") ?? "/painel" });
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [signupPassword, setSignupPassword] = useState("");
