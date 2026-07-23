@@ -120,7 +120,7 @@ function ArticlePage() {
             items={[{ label: "Blog", href: "/blog" }, { label: article.h1 }]}
           />
           <div className="flex flex-wrap gap-2">
-            {article.tags.map((t) => (
+            {article.tags.map((t: string) => (
               <span
                 key={t}
                 className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary"
@@ -149,11 +149,11 @@ function ArticlePage() {
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{article.intro}</p>
 
           <div className="mt-8 space-y-8">
-            {article.sections.map((s) => (
+            {article.sections.map((s: ArticleSection) => (
               <section key={s.heading}>
                 <h2 className="text-xl font-semibold tracking-tight">{s.heading}</h2>
                 <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-foreground/90">
-                  {s.body.map((p, i) => (
+                  {s.body.map((p: string, i: number) => (
                     <p key={i} className="whitespace-pre-line">{p}</p>
                   ))}
                 </div>
@@ -164,7 +164,7 @@ function ArticlePage() {
           <section className="mt-12">
             <h2 className="text-xl font-semibold">Perguntas frequentes</h2>
             <div className="mt-4 space-y-3">
-              {article.faqs.map((f) => (
+              {article.faqs.map((f: { q: string; a: string }) => (
                 <details key={f.q} className="rounded-lg border bg-card p-4">
                   <summary className="cursor-pointer font-medium">{f.q}</summary>
                   <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
@@ -177,7 +177,7 @@ function ArticlePage() {
             <section className="mt-10 rounded-lg border bg-card p-6">
               <h3 className="font-semibold">Guias relacionados</h3>
               <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                {relatedIntents.map((i) => (
+                {relatedIntents.map((i: Intent) => (
                   <li key={i.slug}>
                     <Link
                       to="/ideias/$slug"
