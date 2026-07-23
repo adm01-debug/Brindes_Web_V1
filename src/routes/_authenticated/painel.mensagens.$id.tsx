@@ -85,7 +85,7 @@ function MessageThreadPage() {
       .channel(`conv-${id}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${id}` },
+        { event: "*", schema: "public", table: "messages", filter: `conversation_id=eq.${id}` },
         () => qc.invalidateQueries({ queryKey: ["messages", id] }),
       )
       .subscribe();
