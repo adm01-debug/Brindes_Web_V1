@@ -102,7 +102,10 @@ function CompaniesPage() {
                         <Building2 className="h-6 w-6" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 className="truncate font-semibold">{c.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="truncate font-semibold">{c.name}</h3>
+                          <PlanBadge plan={c.plan} featuredUntil={c.featured_until} />
+                        </div>
                         {c.tagline && (
                           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{c.tagline}</p>
                         )}
