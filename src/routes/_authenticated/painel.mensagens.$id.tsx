@@ -377,7 +377,7 @@ function MessageThreadPage() {
                 >
                   <div
                     className={cn(
-                      "max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm transition",
+                      "group max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm transition",
                       mine ? "bg-primary text-primary-foreground" : "bg-card text-card-foreground border",
                       isMatch && "ring-2 ring-yellow-400/70",
                       isActive && "ring-yellow-500 ring-offset-2 ring-offset-background",
