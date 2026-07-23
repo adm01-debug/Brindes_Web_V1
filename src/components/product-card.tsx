@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorite-button";
+import { CompareButton } from "@/components/compare-button";
 import { AddToQuoteCartButton } from "@/components/add-to-quote-cart-button";
 import { PlanBadge, type CompanyPlan } from "@/components/plan-badge";
 
@@ -82,7 +83,7 @@ export function ProductCard({ product }: { product: Product }) {
         </CardContent>
       </Link>
       {product.company && (
-        <div className="px-4 pb-4">
+        <div className="space-y-2 px-4 pb-4">
           <AddToQuoteCartButton
             item={{
               product_id: product.id,
@@ -92,6 +93,13 @@ export function ProductCard({ product }: { product: Product }) {
               image_url: rawUrl ?? null,
             }}
             variant="outline"
+            size="sm"
+            className="w-full"
+          />
+          <CompareButton
+            productId={product.id}
+            productName={product.name}
+            variant="ghost"
             size="sm"
             className="w-full"
           />

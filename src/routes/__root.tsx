@@ -15,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import { BackToTop } from "@/components/back-to-top";
+import { CompareBar } from "@/components/compare-bar";
 import { applySecurityHeaders } from "@/lib/security-headers";
 import { getCspNonce } from "@/lib/csp-nonce";
 import { useWebVitals } from "@/hooks/use-web-vitals";
@@ -271,6 +272,7 @@ function RootComponent() {
         <Outlet />
         <CookieConsent />
         <BackToTop />
+        <CompareBar />
         <Toaster richColors position="top-right" />
       </ThemeProvider>
     </QueryClientProvider>

@@ -18,6 +18,7 @@ import { Route as OrcamentoRouteImport } from './routes/orcamento'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as CompararRouteImport } from './routes/comparar'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -92,6 +93,11 @@ const FaqRoute = FaqRouteImport.update({
 const ContatoRoute = ContatoRouteImport.update({
   id: '/contato',
   path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompararRoute = CompararRouteImport.update({
+  id: '/comparar',
+  path: '/comparar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
@@ -261,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/comparar': typeof CompararRoute
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/comparar': typeof CompararRoute
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/buscar': typeof BuscarRoute
   '/como-funciona': typeof ComoFuncionaRoute
+  '/comparar': typeof CompararRoute
   '/contato': typeof ContatoRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
@@ -384,6 +393,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/buscar'
     | '/como-funciona'
+    | '/comparar'
     | '/contato'
     | '/faq'
     | '/favoritos'
@@ -424,6 +434,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/buscar'
     | '/como-funciona'
+    | '/comparar'
     | '/contato'
     | '/faq'
     | '/favoritos'
@@ -464,6 +475,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/buscar'
     | '/como-funciona'
+    | '/comparar'
     | '/contato'
     | '/faq'
     | '/favoritos'
@@ -506,6 +518,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BuscarRoute: typeof BuscarRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
+  CompararRoute: typeof CompararRoute
   ContatoRoute: typeof ContatoRoute
   FaqRoute: typeof FaqRoute
   FavoritosRoute: typeof FavoritosRoute
@@ -591,6 +604,13 @@ declare module '@tanstack/react-router' {
       path: '/contato'
       fullPath: '/contato'
       preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comparar': {
+      id: '/comparar'
+      path: '/comparar'
+      fullPath: '/comparar'
+      preLoaderRoute: typeof CompararRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/como-funciona': {
@@ -872,6 +892,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BuscarRoute: BuscarRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
+  CompararRoute: CompararRoute,
   ContatoRoute: ContatoRoute,
   FaqRoute: FaqRoute,
   FavoritosRoute: FavoritosRoute,
