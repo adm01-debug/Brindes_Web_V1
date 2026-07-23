@@ -523,6 +523,78 @@ function highlight(text: string, needle: string) {
   );
 }
 
+const QUICK_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏", "🔥", "🎉"];
+
+function MessageReactions({
+  messageId,
+  reactions,
+  me,
+  mine,
+  onToggle,
+}: {
+  messageId: string;
+  reactions: Map<string, string[]> | undefined;
+  me: string | null;
+  mine: boolean;
+  onToggle: (messageId: string, emoji: string) => void;
+}) {
+  const entries = reactions ? Array.from(reactions.entries()) : [];
+  return (
+    <div className={cn("mt-1.5 flex flex-wrap items-center gap-1", mine ? "justify-end" : "justify-start")}>
+      {entries.map(([emoji, users]) => {
+        const reacted = me ? users.includes(me) : false;
+        return (
+          <button
+            key={emoji}
+            type="button"
+            onClick={() => onToggle(messageId, emoji)}
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs transition",
+              reacted
+                ? "border-primary bg-primary/15 text-foreground"
+                : "border-border bg-background/70 text-foreground hover:bg-muted",
+            )}
+            aria-pressed={reacted}
+            aria-label={`${emoji} ${users.length}`}
+          >
+            <span>{emoji}</span>
+            <span className="tabular-nums">{users.length}</span>
+          </button>
+        );
+      })}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "inline-flex h-5 w-5 items-center justify-center rounded-full border border-border/60 bg-background/60 text-muted-foreground opacity-0 transition hover:bg-muted group-hover:opacity-100",
+              entries.length > 0 && "opacity-100",
+            )}
+            aria-label="Adicionar reação"
+          >
+            <SmilePlus className="h-3 w-3" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-1.5" align={mine ? "end" : "start"}>
+          <div className="flex gap-0.5">
+            {QUICK_EMOJIS.map((emoji) => (
+              <button
+                key={emoji}
+                type="button"
+                onClick={() => onToggle(messageId, emoji)}
+                className="rounded p-1 text-lg leading-none transition hover:bg-muted"
+                aria-label={`Reagir com ${emoji}`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
 
 function MessageAttachment({
   path,
