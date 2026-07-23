@@ -17,6 +17,7 @@ import {
   ArrowRight,
   MessageSquare,
   Inbox,
+  Star,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -41,6 +42,7 @@ type KPI = {
   leadsTotal: number;
   leadsNew: number;
   leadsLast7d: number;
+  reviewsPending: number;
   series: { date: string; leads: number; products: number }[];
 };
 
@@ -64,7 +66,7 @@ function AdminDashboard() {
     queryFn: async (): Promise<KPI> => {
       const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const countBy = async (
-        table: "companies" | "products" | "categories" | "leads",
+        table: "companies" | "products" | "categories" | "leads" | "company_reviews",
         filter: (q: any) => any,
       ) => {
         const q = supabase.from(table).select("id", { count: "exact", head: true });
@@ -88,6 +90,7 @@ function AdminDashboard() {
         leadsTotal,
         leadsNew,
         leadsLast7d,
+        reviewsPending,
         leadsSeriesRes,
         productsSeriesRes,
       ] = await Promise.all([
@@ -104,6 +107,7 @@ function AdminDashboard() {
         countBy("leads", (q) => q),
         countBy("leads", (q) => q.eq("status", "new")),
         countBy("leads", (q) => q.gte("created_at", since)),
+        countBy("company_reviews", (q) => q.eq("status", "pending")),
         supabase.from("leads").select("created_at").gte("created_at", since30).limit(5000),
         supabase.from("products").select("created_at").gte("created_at", since30).is("deleted_at", null).limit(5000),
       ]);
@@ -136,6 +140,7 @@ function AdminDashboard() {
         leadsTotal,
         leadsNew,
         leadsLast7d,
+        reviewsPending,
         series: Object.values(days),
       };
     },
@@ -280,6 +285,14 @@ function AdminDashboard() {
           icon={Inbox}
           tone="warning"
           to="/painel/admin"
+          loading={kpiLoading}
+        />
+        <KpiCard
+          title="Avaliações pendentes"
+          value={kpi?.reviewsPending}
+          icon={Star}
+          tone="warning"
+          to="/painel/admin/avaliacoes"
           loading={kpiLoading}
         />
       </section>
