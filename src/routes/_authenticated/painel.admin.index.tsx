@@ -42,6 +42,7 @@ type KPI = {
   leadsTotal: number;
   leadsNew: number;
   leadsLast7d: number;
+  reviewsPending: number;
   series: { date: string; leads: number; products: number }[];
 };
 
