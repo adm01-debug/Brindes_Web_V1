@@ -90,6 +90,7 @@ function AdminDashboard() {
         leadsTotal,
         leadsNew,
         leadsLast7d,
+        reviewsPending,
         leadsSeriesRes,
         productsSeriesRes,
       ] = await Promise.all([
@@ -106,6 +107,7 @@ function AdminDashboard() {
         countBy("leads", (q) => q),
         countBy("leads", (q) => q.eq("status", "new")),
         countBy("leads", (q) => q.gte("created_at", since)),
+        countBy("company_reviews", (q) => q.eq("status", "pending")),
         supabase.from("leads").select("created_at").gte("created_at", since30).limit(5000),
         supabase.from("products").select("created_at").gte("created_at", since30).is("deleted_at", null).limit(5000),
       ]);
