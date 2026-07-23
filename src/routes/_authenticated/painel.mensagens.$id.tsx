@@ -407,6 +407,13 @@ function MessageThreadPage() {
                         )
                       )}
                     </div>
+                    <MessageReactions
+                      messageId={m.id}
+                      reactions={reactionsByMessage.get(m.id)}
+                      me={me}
+                      mine={mine}
+                      onToggle={toggleReaction}
+                    />
                   </div>
                 </li>
               );
