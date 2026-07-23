@@ -28,6 +28,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as KitsIndexRouteImport } from './routes/kits.index'
 import { Route as IdeiasIndexRouteImport } from './routes/ideias.index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
 import { Route as KitSlugRouteImport } from './routes/kit.$slug'
@@ -145,6 +146,11 @@ const IdeiasIndexRoute = IdeiasIndexRouteImport.update({
 const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
   id: '/empresas/',
   path: '/empresas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutoIdRoute = ProdutoIdRouteImport.update({
@@ -303,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/blog/': typeof BlogIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
@@ -346,6 +353,7 @@ export interface FileRoutesByTo {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/blog': typeof BlogIndexRoute
   '/empresas': typeof EmpresasIndexRoute
   '/ideias': typeof IdeiasIndexRoute
   '/kits': typeof KitsIndexRoute
@@ -392,6 +400,7 @@ export interface FileRoutesById {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/blog/': typeof BlogIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
@@ -438,6 +447,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/blog/'
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
@@ -481,6 +491,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/blog'
     | '/empresas'
     | '/ideias'
     | '/kits'
@@ -526,6 +537,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/blog/'
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
@@ -570,6 +582,7 @@ export interface RootRouteChildren {
   IdeiasSlugRoute: typeof IdeiasSlugRoute
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
+  BlogIndexRoute: typeof BlogIndexRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
   IdeiasIndexRoute: typeof IdeiasIndexRoute
   KitsIndexRoute: typeof KitsIndexRoute
@@ -713,6 +726,13 @@ declare module '@tanstack/react-router' {
       path: '/empresas'
       fullPath: '/empresas/'
       preLoaderRoute: typeof EmpresasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produto/$id': {
@@ -968,6 +988,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdeiasSlugRoute: IdeiasSlugRoute,
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
+  BlogIndexRoute: BlogIndexRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
   IdeiasIndexRoute: IdeiasIndexRoute,
   KitsIndexRoute: KitsIndexRoute,
