@@ -1,4 +1,4 @@
-import { useRouter } from "@tanstack/react-router";
+
 import { Bell, Check, MessageSquare, Sparkles, Star, Trash2, Package, Info } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -22,7 +22,6 @@ const ICONS: Record<NotificationKind, typeof Bell> = {
 
 export function NotificationsBell() {
   const { notifications, unreadCount, markRead, markAllRead, remove } = useNotifications();
-  const router = useRouter();
 
   return (
     <DropdownMenu>
@@ -105,7 +104,7 @@ export function NotificationsBell() {
                         type="button"
                         onClick={() => {
                           if (unread) void markRead(n.id);
-                          router.navigate({ to: n.url! });
+                          if (n.url) window.location.href = n.url;
                         }}
                         className={cn("block w-full text-left hover:bg-muted/50", unread && "bg-primary/[0.03]")}
                       >
