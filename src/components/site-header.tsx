@@ -49,6 +49,9 @@ export function SiteHeader() {
           <Link to="/buscar" className="text-muted-foreground transition-colors hover:text-foreground">
             Produtos
           </Link>
+          <Link to="/kits" className="text-muted-foreground transition-colors hover:text-foreground">
+            Kits
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
