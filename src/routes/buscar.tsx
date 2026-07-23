@@ -112,6 +112,10 @@ function SearchPage() {
   const [term, setTerm] = useState(search.q);
   const [priceMin, setPriceMin] = useState(search.min ? String(search.min) : "");
   const [priceMax, setPriceMax] = useState(search.max ? String(search.max) : "");
+  const [material, setMaterial] = useState(search.material);
+  const [cor, setCor] = useState(search.cor);
+  const [moq, setMoq] = useState(search.moq ? String(search.moq) : "");
+  const [prazo, setPrazo] = useState(search.prazo ? String(search.prazo) : "");
 
   const { data: categories } = useQuery({
     queryKey: ["all-categories-active"],
