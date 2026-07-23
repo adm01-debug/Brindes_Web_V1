@@ -32,8 +32,19 @@ type Row = {
   seller_archived_at: string | null;
   buyer_muted: boolean;
   seller_muted: boolean;
+  buyer_muted_until: string | null;
+  seller_muted_until: string | null;
   company: { id: string; name: string; slug: string; owner_id: string } | null;
 };
+
+const MUTE_PRESETS: Array<{ label: string; minutes: number | null }> = [
+  { label: "15 minutos", minutes: 15 },
+  { label: "1 hora", minutes: 60 },
+  { label: "8 horas", minutes: 60 * 8 },
+  { label: "24 horas", minutes: 60 * 24 },
+  { label: "7 dias", minutes: 60 * 24 * 7 },
+  { label: "Até eu reativar", minutes: null },
+];
 
 function normalize(v: string) {
   return v
