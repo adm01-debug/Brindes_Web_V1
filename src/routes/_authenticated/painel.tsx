@@ -26,6 +26,7 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/painel/admin/empresas", label: "Admin: empresas", icon: ShieldCheck },
   { to: "/painel/admin/produtos", label: "Admin: produtos", icon: Package },
   { to: "/painel/admin/categorias", label: "Admin: categorias", icon: Tag },
+  { to: "/painel/admin/avaliacoes", label: "Admin: avaliações", icon: Star },
   { to: "/painel/admin/observabilidade", label: "Admin: observabilidade", icon: Activity },
 ];
 
