@@ -39,6 +39,7 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
+import { Route as AuthenticatedPainelPerguntasRouteImport } from './routes/_authenticated/painel.perguntas'
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
 import { Route as AuthenticatedPainelLeadsRouteImport } from './routes/_authenticated/painel.leads'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
@@ -205,6 +206,12 @@ const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
   path: '/api/public/health',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPainelPerguntasRoute =
+  AuthenticatedPainelPerguntasRouteImport.update({
+    id: '/perguntas',
+    path: '/perguntas',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 const AuthenticatedPainelPerfilRoute =
   AuthenticatedPainelPerfilRouteImport.update({
     id: '/perfil',
@@ -322,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/kits/': typeof KitsIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
+  '/painel/perguntas': typeof AuthenticatedPainelPerguntasRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/painel/': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/avaliacoes': typeof AuthenticatedPainelAdminAvaliacoesRoute
@@ -367,6 +375,7 @@ export interface FileRoutesByTo {
   '/kits': typeof KitsIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
+  '/painel/perguntas': typeof AuthenticatedPainelPerguntasRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/painel': typeof AuthenticatedPainelIndexRoute
   '/painel/admin/avaliacoes': typeof AuthenticatedPainelAdminAvaliacoesRoute
@@ -415,6 +424,7 @@ export interface FileRoutesById {
   '/kits/': typeof KitsIndexRoute
   '/_authenticated/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
+  '/_authenticated/painel/perguntas': typeof AuthenticatedPainelPerguntasRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/_authenticated/painel/': typeof AuthenticatedPainelIndexRoute
   '/_authenticated/painel/admin/avaliacoes': typeof AuthenticatedPainelAdminAvaliacoesRoute
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/kits/'
     | '/painel/leads'
     | '/painel/perfil'
+    | '/painel/perguntas'
     | '/api/public/health'
     | '/painel/'
     | '/painel/admin/avaliacoes'
@@ -508,6 +519,7 @@ export interface FileRouteTypes {
     | '/kits'
     | '/painel/leads'
     | '/painel/perfil'
+    | '/painel/perguntas'
     | '/api/public/health'
     | '/painel'
     | '/painel/admin/avaliacoes'
@@ -555,6 +567,7 @@ export interface FileRouteTypes {
     | '/kits/'
     | '/_authenticated/painel/leads'
     | '/_authenticated/painel/perfil'
+    | '/_authenticated/painel/perguntas'
     | '/api/public/health'
     | '/_authenticated/painel/'
     | '/_authenticated/painel/admin/avaliacoes'
@@ -818,6 +831,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/painel/perguntas': {
+      id: '/_authenticated/painel/perguntas'
+      path: '/perguntas'
+      fullPath: '/painel/perguntas'
+      preLoaderRoute: typeof AuthenticatedPainelPerguntasRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
     '/_authenticated/painel/perfil': {
       id: '/_authenticated/painel/perfil'
       path: '/perfil'
@@ -929,6 +949,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelLeadsRoute: typeof AuthenticatedPainelLeadsRoute
   AuthenticatedPainelPerfilRoute: typeof AuthenticatedPainelPerfilRoute
+  AuthenticatedPainelPerguntasRoute: typeof AuthenticatedPainelPerguntasRoute
   AuthenticatedPainelIndexRoute: typeof AuthenticatedPainelIndexRoute
   AuthenticatedPainelAdminAvaliacoesRoute: typeof AuthenticatedPainelAdminAvaliacoesRoute
   AuthenticatedPainelAdminCategoriasRoute: typeof AuthenticatedPainelAdminCategoriasRoute
@@ -944,6 +965,7 @@ interface AuthenticatedPainelRouteChildren {
 const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelLeadsRoute: AuthenticatedPainelLeadsRoute,
   AuthenticatedPainelPerfilRoute: AuthenticatedPainelPerfilRoute,
+  AuthenticatedPainelPerguntasRoute: AuthenticatedPainelPerguntasRoute,
   AuthenticatedPainelIndexRoute: AuthenticatedPainelIndexRoute,
   AuthenticatedPainelAdminAvaliacoesRoute:
     AuthenticatedPainelAdminAvaliacoesRoute,
