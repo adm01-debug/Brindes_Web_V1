@@ -230,7 +230,18 @@ function MessageThreadPage() {
                       mine ? "bg-primary text-primary-foreground" : "bg-card text-card-foreground border",
                     )}
                   >
-                    <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                    {m.attachment_url && (
+                      <MessageAttachment
+                        path={m.attachment_url}
+                        type={m.attachment_type}
+                        name={m.attachment_name}
+                        size={m.attachment_size}
+                        mine={mine}
+                      />
+                    )}
+                    {m.body && m.body.length > 0 && (
+                      <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                    )}
                     <div className={cn("mt-1 text-[10px] opacity-70", mine ? "text-right" : "")}>
                       {formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}
                     </div>
