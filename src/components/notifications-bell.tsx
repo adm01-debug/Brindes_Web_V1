@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { Bell, Check, MessageSquare, Sparkles, Star, Trash2, Package, Info } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -22,6 +22,7 @@ const ICONS: Record<NotificationKind, typeof Bell> = {
 
 export function NotificationsBell() {
   const { notifications, unreadCount, markRead, markAllRead, remove } = useNotifications();
+  const router = useRouter();
 
   return (
     <DropdownMenu>
