@@ -66,7 +66,7 @@ function AdminDashboard() {
     queryFn: async (): Promise<KPI> => {
       const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const countBy = async (
-        table: "companies" | "products" | "categories" | "leads",
+        table: "companies" | "products" | "categories" | "leads" | "company_reviews",
         filter: (q: any) => any,
       ) => {
         const q = supabase.from(table).select("id", { count: "exact", head: true });
