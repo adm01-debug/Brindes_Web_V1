@@ -133,9 +133,9 @@ function MessagesListPage() {
     e.preventDefault();
     e.stopPropagation();
     const role = roleOf(c);
-    const col = role === "buyer" ? "buyer_muted" : "seller_muted";
     const value = !isMuted(c);
-    const { error } = await supabase.from("conversations").update({ [col]: value }).eq("id", c.id);
+    const patch = role === "buyer" ? { buyer_muted: value } : { seller_muted: value };
+    const { error } = await supabase.from("conversations").update(patch).eq("id", c.id);
     if (error) {
       toast.error("Não foi possível atualizar", { description: error.message });
       return;
