@@ -52,6 +52,9 @@ export function SiteHeader() {
           <Link to="/kits" className="text-muted-foreground transition-colors hover:text-foreground">
             Kits
           </Link>
+          <Link to="/planos" className="text-muted-foreground transition-colors hover:text-foreground">
+            Planos
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">

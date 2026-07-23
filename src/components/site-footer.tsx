@@ -28,6 +28,7 @@ export function SiteFooter() {
             <h3 className="text-sm font-semibold">Para empresas</h3>
             <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               <li><Link to="/auth" className="hover:text-foreground">Cadastrar empresa</Link></li>
+              <li><Link to="/planos" className="hover:text-foreground">Planos e destaques</Link></li>
               <li><Link to="/painel" className="hover:text-foreground">Painel</Link></li>
             </ul>
           </div>
