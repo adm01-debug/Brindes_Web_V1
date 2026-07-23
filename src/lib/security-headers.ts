@@ -15,6 +15,9 @@ const INLINE_SCRIPT_HASHES = [
 const CONNECT_SRC =
   "'self' https://*.supabase.co wss://*.supabase.co https://*.lovable.app https://*.lovable.dev";
 
+const REPORT_ENDPOINT = "/api/public/hooks/csp-report";
+const REPORT_TO_GROUP = "csp-endpoint";
+
 function baseDirectives(nonce: string): string[] {
   return [
     "default-src 'self'",
@@ -39,6 +42,8 @@ function baseDirectives(nonce: string): string[] {
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     "upgrade-insecure-requests",
+    `report-uri ${REPORT_ENDPOINT}`,
+    `report-to ${REPORT_TO_GROUP}`,
   ];
 }
 
@@ -117,6 +122,22 @@ export const applySecurityHeaders = createIsomorphicFn()
 
       setResponseHeader("Content-Security-Policy", enforcedCsp);
       setResponseHeader("Content-Security-Policy-Report-Only", reportOnlyCsp(nonce));
+
+      // Reporting API v1 (Chrome/Edge) — grupo referenciado por `report-to` no CSP.
+      setResponseHeader(
+        "Reporting-Endpoints",
+        `${REPORT_TO_GROUP}="${REPORT_ENDPOINT}"`,
+      );
+      // Report-To (legado, ainda usado por Chrome estável).
+      setResponseHeader(
+        "Report-To",
+        JSON.stringify({
+          group: REPORT_TO_GROUP,
+          max_age: 10886400,
+          endpoints: [{ url: REPORT_ENDPOINT }],
+          include_subdomains: true,
+        }),
+      );
     } catch {
       /* fora de contexto de request SSR */
     }
