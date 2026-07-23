@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { withRetry } from "@/lib/fetch-retry";
+
 
 const PLACEHOLDER_SVG = `<?xml version="1.0"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
@@ -40,24 +42,38 @@ export const Route = createFileRoute("/api/public/og/produto/$id")({
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-          const { data: img } = await supabaseAdmin
-            .from("product_images")
-            .select("url, product:products!inner(id, is_active, deleted_at, moderation_status)")
-            .eq("product_id", params.id)
-            .eq("is_primary", true)
-            .maybeSingle();
+          const img = await withRetry(
+            async () => {
+              const { data, error } = await supabaseAdmin
+                .from("product_images")
+                .select("url, product:products!inner(id, is_active, deleted_at, moderation_status)")
+                .eq("product_id", params.id)
+                .eq("is_primary", true)
+                .maybeSingle();
+              if (error) throw error;
+              return data;
+            },
+            { retries: 1, timeoutMs: 3_000, totalBudgetMs: 6_000, label: "og.produto.select" },
+          );
 
           let path = (img as { url?: string } | null)?.url ?? null;
           const prod = (img as { product?: { is_active: boolean; deleted_at: string | null; moderation_status: string } } | null)?.product;
 
           if (!path) {
-            const { data: any1 } = await supabaseAdmin
-              .from("product_images")
-              .select("url")
-              .eq("product_id", params.id)
-              .order("sort_order", { ascending: true })
-              .limit(1)
-              .maybeSingle();
+            const any1 = await withRetry(
+              async () => {
+                const { data, error } = await supabaseAdmin
+                  .from("product_images")
+                  .select("url")
+                  .eq("product_id", params.id)
+                  .order("sort_order", { ascending: true })
+                  .limit(1)
+                  .maybeSingle();
+                if (error) throw error;
+                return data;
+              },
+              { retries: 1, timeoutMs: 3_000, totalBudgetMs: 5_000, label: "og.produto.fallback" },
+            );
             path = (any1 as { url?: string } | null)?.url ?? null;
           }
 
@@ -65,10 +81,17 @@ export const Route = createFileRoute("/api/public/og/produto/$id")({
             return placeholderResponse();
           }
 
-          const { data: file, error } = await supabaseAdmin.storage
-            .from("product-images")
-            .download(path);
-          if (error || !file) return placeholderResponse();
+          const file = await withRetry(
+            async () => {
+              const { data, error } = await supabaseAdmin.storage
+                .from("product-images")
+                .download(path!);
+              if (error || !data) throw error ?? new Error("no file");
+              return data;
+            },
+            { retries: 2, timeoutMs: 4_000, totalBudgetMs: 9_000, label: "og.produto.download" },
+          );
+
 
           const bytes = new Uint8Array(await file.arrayBuffer());
           const type = file.type || "image/jpeg";

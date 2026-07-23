@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { withRetry } from "@/lib/fetch-retry";
+
 
 const PLACEHOLDER_SVG = `<?xml version="1.0"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
@@ -40,20 +42,34 @@ export const Route = createFileRoute("/api/public/og/empresa/$slug")({
         try {
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-          const { data: company } = await supabaseAdmin
-            .from("companies")
-            .select("banner_url, logo_url, status")
-            .eq("slug", params.slug)
-            .maybeSingle();
+          const company = await withRetry(
+            async () => {
+              const { data, error } = await supabaseAdmin
+                .from("companies")
+                .select("banner_url, logo_url, status")
+                .eq("slug", params.slug)
+                .maybeSingle();
+              if (error) throw error;
+              return data;
+            },
+            { retries: 1, timeoutMs: 3_000, totalBudgetMs: 6_000, label: "og.empresa.select" },
+          );
 
           if (!company || company.status !== "approved") return placeholderResponse();
           const path = company.banner_url ?? company.logo_url;
           if (!path) return placeholderResponse();
 
-          const { data: file, error } = await supabaseAdmin.storage
-            .from("company-assets")
-            .download(path);
-          if (error || !file) return placeholderResponse();
+          const file = await withRetry(
+            async () => {
+              const { data, error } = await supabaseAdmin.storage
+                .from("company-assets")
+                .download(path);
+              if (error || !data) throw error ?? new Error("no file");
+              return data;
+            },
+            { retries: 2, timeoutMs: 4_000, totalBudgetMs: 9_000, label: "og.empresa.download" },
+          );
+
 
           const bytes = new Uint8Array(await file.arrayBuffer());
           const type = file.type || "image/jpeg";

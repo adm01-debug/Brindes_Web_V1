@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import { withRetry } from "@/lib/fetch-retry";
+
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -30,12 +32,17 @@ export const Route = createFileRoute("/api/public/health")({
             process.env.SUPABASE_PUBLISHABLE_KEY!,
             { auth: { persistSession: false, autoRefreshToken: false, storage: undefined } },
           );
-          const { error } = await supabase
-            .from("companies")
-            .select("id", { count: "exact", head: true })
-            .limit(1);
-          result.db = error ? "degraded" : "ok";
-          if (error) result.status = "degraded";
+          await withRetry(
+            async () => {
+              const { error } = await supabase
+                .from("companies")
+                .select("id", { count: "exact", head: true })
+                .limit(1);
+              if (error) throw error;
+            },
+            { retries: 1, timeoutMs: 3_000, totalBudgetMs: 7_000, label: "health.db" },
+          );
+          result.db = "ok";
         } catch {
           result.db = "down";
           result.status = "degraded";
