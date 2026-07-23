@@ -90,6 +90,11 @@ function MessageThreadPage() {
   });
 
   const messageIds = useMemo(() => messages.map((m) => m.id), [messages]);
+  const messageById = useMemo(() => {
+    const m = new Map<string, Message>();
+    for (const msg of messages) m.set(msg.id, msg);
+    return m;
+  }, [messages]);
 
   const { data: reactions = [] } = useQuery({
     queryKey: ["message-reactions", id, messageIds.length],
