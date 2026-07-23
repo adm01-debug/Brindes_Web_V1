@@ -20,7 +20,9 @@ type CompareProduct = {
   price_on_request: boolean;
   short_description: string | null;
   min_order_quantity: number | null;
-  lead_time_days: number | null;
+  production_time_days: number | null;
+  material: string | null;
+  dimensions: string | null;
   company: { id: string; slug: string; name: string; status: string } | null;
   category: { name: string } | null;
   images: { url: string; is_primary: boolean; sort_order: number }[] | null;
@@ -52,13 +54,13 @@ function ComparePage() {
       const { data, error } = await supabase
         .from("products")
         .select(
-          "id, name, slug, price, price_on_request, short_description, min_order_quantity, lead_time_days, company:companies!inner(id, slug, name, status), category:categories(name), images:product_images(url, is_primary, sort_order), variants:product_variants(id, name)",
+          "id, name, slug, price, price_on_request, short_description, min_order_quantity, production_time_days, material, dimensions, company:companies!inner(id, slug, name, status), category:categories(name), images:product_images(url, is_primary, sort_order), variants:product_variants(id, name)",
         )
         .in("id", ids)
         .eq("is_active", true)
         .eq("moderation_status", "approved");
       if (error) throw error;
-      const rows = (data ?? []).filter((p: any) => p.company?.status === "approved") as CompareProduct[];
+      const rows = ((data ?? []) as unknown as CompareProduct[]).filter((p) => p.company?.status === "approved");
       // preserve ordem dos ids selecionados
       return ids.map((id) => rows.find((r) => r.id === id)).filter(Boolean) as CompareProduct[];
     },
