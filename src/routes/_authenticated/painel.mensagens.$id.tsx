@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Loader2, Send } from "lucide-react";
+import { ArrowLeft, FileText, Loader2, Paperclip, Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,7 +15,20 @@ export const Route = createFileRoute("/_authenticated/painel/mensagens/$id")({
   head: () => ({ meta: [{ title: "Conversa — BrindesHub" }] }),
 });
 
-type Message = { id: string; body: string; sender_id: string; created_at: string; read_at: string | null };
+const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+const ALLOWED_ATTACHMENT_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"];
+
+type Message = {
+  id: string;
+  body: string | null;
+  sender_id: string;
+  created_at: string;
+  read_at: string | null;
+  attachment_url: string | null;
+  attachment_type: string | null;
+  attachment_name: string | null;
+  attachment_size: number | null;
+};
 type Conversation = {
   id: string;
   subject: string | null;
