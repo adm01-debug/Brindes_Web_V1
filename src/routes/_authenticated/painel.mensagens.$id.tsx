@@ -267,6 +267,26 @@ function MessageThreadPage() {
         )}
       </div>
 
+      {pendingFile && (
+        <div className="mt-2 flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-2 text-xs">
+          <Paperclip className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <span className="min-w-0 truncate">{pendingFile.name}</span>
+          <span className="shrink-0 text-muted-foreground">
+            {(pendingFile.size / 1024).toFixed(0)} KB
+          </span>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="ml-auto h-6 w-6"
+            onClick={() => handlePickFile(null)}
+            aria-label="Remover anexo"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -274,6 +294,23 @@ function MessageThreadPage() {
         }}
         className="mt-3 flex items-end gap-2"
       >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={ALLOWED_ATTACHMENT_TYPES.join(",")}
+          className="hidden"
+          onChange={(e) => handlePickFile(e.target.files?.[0] ?? null)}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={busy}
+          aria-label="Anexar arquivo"
+        >
+          <Paperclip className="h-4 w-4" />
+        </Button>
         <Textarea
           value={body}
           onChange={(e) => {
@@ -290,10 +327,71 @@ function MessageThreadPage() {
             }
           }}
         />
-        <Button type="submit" disabled={busy || body.trim().length === 0}>
+        <Button type="submit" disabled={busy || (body.trim().length === 0 && !pendingFile)}>
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </form>
     </div>
+  );
+}
+
+function MessageAttachment({
+  path,
+  type,
+  name,
+  size,
+  mine,
+}: {
+  path: string;
+  type: string | null;
+  name: string | null;
+  size: number | null;
+  mine: boolean;
+}) {
+  const { data: signedUrl } = useQuery({
+    queryKey: ["chat-attach-url", path],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("chat-attachments")
+        .createSignedUrl(path, 60 * 60);
+      if (error) throw error;
+      return data.signedUrl;
+    },
+    staleTime: 55 * 60 * 1000,
+  });
+  const isImage = type?.startsWith("image/") ?? false;
+  if (!signedUrl) {
+    return (
+      <div className="mb-1 flex items-center gap-2 text-xs opacity-70">
+        <Loader2 className="h-3 w-3 animate-spin" /> Carregando anexo…
+      </div>
+    );
+  }
+  if (isImage) {
+    return (
+      <a href={signedUrl} target="_blank" rel="noreferrer" className="mb-1 block">
+        <img
+          src={signedUrl}
+          alt={name ?? "anexo"}
+          loading="lazy"
+          className="max-h-64 rounded-lg object-cover"
+        />
+      </a>
+    );
+  }
+  return (
+    <a
+      href={signedUrl}
+      target="_blank"
+      rel="noreferrer"
+      className={cn(
+        "mb-1 flex items-center gap-2 rounded-lg border px-2 py-1.5 text-xs hover:underline",
+        mine ? "border-primary-foreground/30" : "border-border bg-muted/40",
+      )}
+    >
+      <FileText className="h-4 w-4 shrink-0" />
+      <span className="min-w-0 truncate">{name ?? "arquivo.pdf"}</span>
+      {size ? <span className="shrink-0 opacity-70">{(size / 1024).toFixed(0)} KB</span> : null}
+    </a>
   );
 }
