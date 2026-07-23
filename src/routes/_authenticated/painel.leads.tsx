@@ -20,6 +20,8 @@ import { Mail, Phone, Package, Inbox, ExternalLink, Download, Search } from "luc
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "@tanstack/react-router";
+import { LeadNotes } from "@/components/lead-notes";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/painel/leads")({
   component: LeadsPage,
@@ -50,6 +52,7 @@ const STATUS_META: Record<LeadStatus, { label: string; className: string }> = {
 
 function LeadsPage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
   const [search, setSearch] = useState("");
 
@@ -278,6 +281,8 @@ function LeadsPage() {
                     Marcar como lido
                   </Button>
                 )}
+
+                <LeadNotes leadId={lead.id} currentUserId={user?.id ?? null} />
               </CardContent>
             </Card>
           );
