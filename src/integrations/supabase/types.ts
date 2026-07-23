@@ -240,6 +240,7 @@ export type Database = {
           buyer_archived_at: string | null
           buyer_id: string
           buyer_muted: boolean
+          buyer_muted_until: string | null
           company_id: string
           created_at: string
           id: string
@@ -248,12 +249,14 @@ export type Database = {
           product_id: string | null
           seller_archived_at: string | null
           seller_muted: boolean
+          seller_muted_until: string | null
           subject: string | null
         }
         Insert: {
           buyer_archived_at?: string | null
           buyer_id: string
           buyer_muted?: boolean
+          buyer_muted_until?: string | null
           company_id: string
           created_at?: string
           id?: string
@@ -262,12 +265,14 @@ export type Database = {
           product_id?: string | null
           seller_archived_at?: string | null
           seller_muted?: boolean
+          seller_muted_until?: string | null
           subject?: string | null
         }
         Update: {
           buyer_archived_at?: string | null
           buyer_id?: string
           buyer_muted?: boolean
+          buyer_muted_until?: string | null
           company_id?: string
           created_at?: string
           id?: string
@@ -276,6 +281,7 @@ export type Database = {
           product_id?: string | null
           seller_archived_at?: string | null
           seller_muted?: boolean
+          seller_muted_until?: string | null
           subject?: string | null
         }
         Relationships: [
@@ -1177,6 +1183,7 @@ export type Database = {
         Args: { _older_than_days?: number }
         Returns: number
       }
+      expire_conversation_mutes: { Args: never; Returns: undefined }
       extract_storage_path: {
         Args: { _bucket: string; _url: string }
         Returns: string
