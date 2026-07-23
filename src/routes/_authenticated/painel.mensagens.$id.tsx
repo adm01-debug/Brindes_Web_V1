@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, FileText, Loader2, Paperclip, Send, X } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, FileText, Loader2, Paperclip, Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -85,7 +85,7 @@ function MessageThreadPage() {
       .channel(`conv-${id}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${id}` },
+        { event: "*", schema: "public", table: "messages", filter: `conversation_id=eq.${id}` },
         () => qc.invalidateQueries({ queryKey: ["messages", id] }),
       )
       .subscribe();
@@ -242,8 +242,15 @@ function MessageThreadPage() {
                     {m.body && m.body.length > 0 && (
                       <p className="whitespace-pre-wrap break-words">{m.body}</p>
                     )}
-                    <div className={cn("mt-1 text-[10px] opacity-70", mine ? "text-right" : "")}>
-                      {formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}
+                    <div className={cn("mt-1 flex items-center gap-1 text-[10px] opacity-70", mine ? "justify-end" : "")}>
+                      <span>{formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}</span>
+                      {mine && (
+                        m.read_at ? (
+                          <CheckCheck className="h-3 w-3" aria-label="Visto" />
+                        ) : (
+                          <Check className="h-3 w-3" aria-label="Enviado" />
+                        )
+                      )}
                     </div>
                   </div>
                 </li>
