@@ -155,18 +155,40 @@ function MessagesListPage() {
     qc.invalidateQueries({ queryKey: ["conversations"] });
   }
 
-  async function toggleMute(c: Row, e: React.MouseEvent) {
+  async function applyMute(c: Row, minutes: number | null, e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     const role = roleOf(c);
-    const value = !isMuted(c);
-    const patch = role === "buyer" ? { buyer_muted: value } : { seller_muted: value };
+    const until = minutes == null ? null : new Date(Date.now() + minutes * 60_000).toISOString();
+    const patch =
+      role === "buyer"
+        ? { buyer_muted: true, buyer_muted_until: until }
+        : { seller_muted: true, seller_muted_until: until };
+    const { error } = await supabase.from("conversations").update(patch).eq("id", c.id);
+    if (error) {
+      toast.error("Não foi possível silenciar", { description: error.message });
+      return;
+    }
+    toast.success(
+      minutes == null ? "Silenciada até você reativar" : `Silenciada por ${formatMinutes(minutes)}`,
+    );
+    qc.invalidateQueries({ queryKey: ["conversations"] });
+  }
+
+  async function unmute(c: Row, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const role = roleOf(c);
+    const patch =
+      role === "buyer"
+        ? { buyer_muted: false, buyer_muted_until: null }
+        : { seller_muted: false, seller_muted_until: null };
     const { error } = await supabase.from("conversations").update(patch).eq("id", c.id);
     if (error) {
       toast.error("Não foi possível atualizar", { description: error.message });
       return;
     }
-    toast.success(value ? "Notificações silenciadas" : "Notificações reativadas");
+    toast.success("Notificações reativadas");
     qc.invalidateQueries({ queryKey: ["conversations"] });
   }
 
