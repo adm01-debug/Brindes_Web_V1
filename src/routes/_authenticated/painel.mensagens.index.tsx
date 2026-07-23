@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/painel/mensagens/")({
   component: MessagesListPage,
@@ -20,8 +22,23 @@ type Row = {
   company: { id: string; name: string; slug: string; owner_id: string } | null;
 };
 
+function normalize(v: string) {
+  return v
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 function MessagesListPage() {
   const qc = useQueryClient();
+  const [q, setQ] = useState("");
+  const [debounced, setDebounced] = useState("");
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(q.trim()), 250);
+    return () => clearTimeout(t);
+  }, [q]);
+
   const { data = [], isLoading } = useQuery({
     queryKey: ["conversations"],
     queryFn: async (): Promise<Row[]> => {
@@ -34,6 +51,35 @@ function MessagesListPage() {
       return (data ?? []) as unknown as Row[];
     },
   });
+
+  // Busca profunda: quando o usuário digita, procura também dentro dos corpos das mensagens.
+  const { data: deepMatches } = useQuery({
+    queryKey: ["conversations-deep-search", debounced],
+    enabled: debounced.length >= 2,
+    staleTime: 15_000,
+    queryFn: async (): Promise<Set<string>> => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("conversation_id")
+        .ilike("body", `%${debounced}%`)
+        .limit(200);
+      if (error) throw error;
+      return new Set((data ?? []).map((m) => m.conversation_id as string));
+    },
+  });
+
+  const filtered = useMemo(() => {
+    if (debounced.length === 0) return data;
+    const needle = normalize(debounced);
+    return data.filter((c) => {
+      const haystack = normalize(
+        `${c.company?.name ?? ""} ${c.subject ?? ""} ${c.last_message_preview ?? ""}`,
+      );
+      if (haystack.includes(needle)) return true;
+      if (deepMatches?.has(c.id)) return true;
+      return false;
+    });
+  }, [data, debounced, deepMatches]);
 
   useEffect(() => {
     const ch = supabase
@@ -53,16 +99,40 @@ function MessagesListPage() {
         <h1 className="text-2xl font-bold tracking-tight">Mensagens</h1>
         <p className="text-sm text-muted-foreground">Conversas diretas com compradores e vendedores.</p>
       </div>
+
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Buscar por empresa, assunto ou conteúdo…"
+          className="pl-9 pr-9"
+          aria-label="Buscar em conversas"
+        />
+        {q && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
+            onClick={() => setQ("")}
+            aria-label="Limpar busca"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        )}
+      </div>
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Carregando…</p>
-      ) : data.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
           <MessageSquare className="mx-auto mb-2 h-8 w-8" />
-          Nenhuma conversa ainda.
+          {debounced ? "Nenhuma conversa encontrada para sua busca." : "Nenhuma conversa ainda."}
         </div>
       ) : (
         <ul className="divide-y rounded-xl border bg-card">
-          {data.map((c) => (
+          {filtered.map((c) => (
             <li key={c.id}>
               <Link
                 to="/painel/mensagens/$id"
