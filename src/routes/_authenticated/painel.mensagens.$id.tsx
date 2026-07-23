@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Check, CheckCheck, ChevronDown, ChevronUp, FileText, Loader2, Paperclip, Search, Send, SmilePlus, X } from "lucide-react";
+import { ArrowLeft, Check, CheckCheck, ChevronDown, ChevronUp, CornerUpLeft, FileText, Loader2, Paperclip, Reply, Search, Send, SmilePlus, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -30,6 +30,7 @@ type Message = {
   attachment_type: string | null;
   attachment_name: string | null;
   attachment_size: number | null;
+  reply_to_id: string | null;
 };
 type Conversation = {
   id: string;
@@ -46,6 +47,8 @@ function MessageThreadPage() {
   const [busy, setBusy] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [replyTo, setReplyTo] = useState<Message | null>(null);
+  const composerRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -78,7 +81,7 @@ function MessageThreadPage() {
     queryFn: async (): Promise<Message[]> => {
       const { data, error } = await supabase
         .from("messages")
-        .select("id, body, sender_id, created_at, read_at, attachment_url, attachment_type, attachment_name, attachment_size")
+        .select("id, body, sender_id, created_at, read_at, attachment_url, attachment_type, attachment_name, attachment_size, reply_to_id")
         .eq("conversation_id", id)
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -87,6 +90,11 @@ function MessageThreadPage() {
   });
 
   const messageIds = useMemo(() => messages.map((m) => m.id), [messages]);
+  const messageById = useMemo(() => {
+    const m = new Map<string, Message>();
+    for (const msg of messages) m.set(msg.id, msg);
+    return m;
+  }, [messages]);
 
   const { data: reactions = [] } = useQuery({
     queryKey: ["message-reactions", id, messageIds.length],
@@ -262,6 +270,7 @@ function MessageThreadPage() {
       conversation_id: id,
       sender_id: me,
       body: trimmed.length > 0 ? trimmed : "",
+      reply_to_id: replyTo?.id ?? null,
       ...(attachment ?? {}),
     };
     const { error } = await supabase.from("messages").insert(payload);
@@ -272,8 +281,22 @@ function MessageThreadPage() {
     }
     setBody("");
     setPendingFile(null);
+    setReplyTo(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
     qc.invalidateQueries({ queryKey: ["messages", id] });
+  }
+
+  function startReply(m: Message) {
+    setReplyTo(m);
+    setTimeout(() => composerRef.current?.focus(), 0);
+  }
+
+  function jumpToMessage(mid: string) {
+    const el = messageRefs.current.get(mid);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("ring-2", "ring-primary");
+    setTimeout(() => el.classList.remove("ring-2", "ring-primary"), 1400);
   }
 
   return (
@@ -383,6 +406,35 @@ function MessageThreadPage() {
                       isActive && "ring-yellow-500 ring-offset-2 ring-offset-background",
                     )}
                   >
+                    {m.reply_to_id && (() => {
+                      const parent = messageById.get(m.reply_to_id);
+                      const preview = parent
+                        ? (parent.body?.trim() || parent.attachment_name || "Anexo")
+                        : "Mensagem removida";
+                      const parentMine = parent?.sender_id === me;
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => parent && jumpToMessage(parent.id)}
+                          disabled={!parent}
+                          className={cn(
+                            "mb-1.5 flex w-full items-start gap-1.5 rounded-md border-l-2 px-2 py-1 text-left text-xs transition",
+                            mine
+                              ? "border-primary-foreground/60 bg-primary-foreground/10 hover:bg-primary-foreground/15"
+                              : "border-primary/60 bg-muted/60 hover:bg-muted",
+                            !parent && "cursor-not-allowed opacity-70",
+                          )}
+                        >
+                          <CornerUpLeft className="mt-0.5 h-3 w-3 shrink-0 opacity-70" />
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[10px] font-semibold opacity-80">
+                              {parent ? (parentMine ? "Você" : conv?.company?.name ?? "Empresa") : ""}
+                            </span>
+                            <span className="line-clamp-2 opacity-90">{preview}</span>
+                          </span>
+                        </button>
+                      );
+                    })()}
                     {m.attachment_url && (
                       <MessageAttachment
                         path={m.attachment_url}
@@ -398,6 +450,15 @@ function MessageThreadPage() {
                       </p>
                     )}
                     <div className={cn("mt-1 flex items-center gap-1 text-[10px] opacity-70", mine ? "justify-end" : "")}>
+                      <button
+                        type="button"
+                        onClick={() => startReply(m)}
+                        className="inline-flex items-center gap-0.5 rounded px-1 opacity-0 transition hover:bg-black/10 group-hover:opacity-100"
+                        aria-label="Responder mensagem"
+                        title="Responder"
+                      >
+                        <Reply className="h-3 w-3" />
+                      </button>
                       <span>{formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}</span>
                       {mine && (
                         m.read_at ? (
@@ -456,6 +517,30 @@ function MessageThreadPage() {
         </div>
       )}
 
+      {replyTo && (
+        <div className="mt-2 flex items-start gap-2 rounded-lg border-l-2 border-primary bg-muted/40 px-3 py-2 text-xs">
+          <CornerUpLeft className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] font-semibold text-muted-foreground">
+              Respondendo a {replyTo.sender_id === me ? "você" : conv?.company?.name ?? "Empresa"}
+            </div>
+            <div className="line-clamp-2 text-foreground/90">
+              {replyTo.body?.trim() || replyTo.attachment_name || "Anexo"}
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={() => setReplyTo(null)}
+            aria-label="Cancelar resposta"
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+      )}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -481,6 +566,7 @@ function MessageThreadPage() {
           <Paperclip className="h-4 w-4" />
         </Button>
         <Textarea
+          ref={composerRef}
           value={body}
           onChange={(e) => {
             setBody(e.target.value);
