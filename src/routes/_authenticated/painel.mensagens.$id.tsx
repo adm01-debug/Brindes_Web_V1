@@ -29,6 +29,10 @@ function MessageThreadPage() {
   const [me, setMe] = useState<string | null>(null);
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
+  const [otherTyping, setOtherTyping] = useState(false);
+  const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSentRef = useRef<number>(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
