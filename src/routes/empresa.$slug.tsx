@@ -211,6 +211,7 @@ function CompanyPage() {
                   {[company.city, company.state].filter(Boolean).join(", ")}
                 </p>
               )}
+              <div className="mt-2"><CompanyRatingSummary companyId={company.id} /></div>
             </div>
             {whatsappLink && (
               <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
