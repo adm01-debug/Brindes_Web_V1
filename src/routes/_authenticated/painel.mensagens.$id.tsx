@@ -43,6 +43,8 @@ function MessageThreadPage() {
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef<number>(0);
