@@ -204,7 +204,10 @@ function MessageThreadPage() {
       >
         <Textarea
           value={body}
-          onChange={(e) => setBody(e.target.value)}
+          onChange={(e) => {
+            setBody(e.target.value);
+            emitTyping();
+          }}
           placeholder="Escreva sua mensagem…"
           rows={2}
           maxLength={4000}
