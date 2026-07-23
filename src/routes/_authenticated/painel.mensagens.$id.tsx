@@ -242,8 +242,15 @@ function MessageThreadPage() {
                     {m.body && m.body.length > 0 && (
                       <p className="whitespace-pre-wrap break-words">{m.body}</p>
                     )}
-                    <div className={cn("mt-1 text-[10px] opacity-70", mine ? "text-right" : "")}>
-                      {formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}
+                    <div className={cn("mt-1 flex items-center gap-1 text-[10px] opacity-70", mine ? "justify-end" : "")}>
+                      <span>{formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}</span>
+                      {mine && (
+                        m.read_at ? (
+                          <CheckCheck className="h-3 w-3" aria-label="Visto" />
+                        ) : (
+                          <Check className="h-3 w-3" aria-label="Enviado" />
+                        )
+                      )}
                     </div>
                   </div>
                 </li>
