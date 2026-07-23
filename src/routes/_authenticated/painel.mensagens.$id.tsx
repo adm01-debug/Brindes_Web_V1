@@ -86,6 +86,32 @@ function MessageThreadPage() {
     },
   });
 
+  const messageIds = useMemo(() => messages.map((m) => m.id), [messages]);
+
+  const { data: reactions = [] } = useQuery({
+    queryKey: ["message-reactions", id, messageIds.length],
+    enabled: messageIds.length > 0,
+    queryFn: async (): Promise<Array<{ message_id: string; user_id: string; emoji: string }>> => {
+      const { data, error } = await supabase
+        .from("message_reactions")
+        .select("message_id, user_id, emoji")
+        .in("message_id", messageIds);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const reactionsByMessage = useMemo(() => {
+    const map = new Map<string, Map<string, string[]>>();
+    for (const r of reactions) {
+      if (!map.has(r.message_id)) map.set(r.message_id, new Map());
+      const em = map.get(r.message_id)!;
+      if (!em.has(r.emoji)) em.set(r.emoji, []);
+      em.get(r.emoji)!.push(r.user_id);
+    }
+    return map;
+  }, [reactions]);
+
   useEffect(() => {
     const ch = supabase
       .channel(`conv-${id}`)
@@ -94,11 +120,36 @@ function MessageThreadPage() {
         { event: "*", schema: "public", table: "messages", filter: `conversation_id=eq.${id}` },
         () => qc.invalidateQueries({ queryKey: ["messages", id] }),
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "message_reactions" },
+        () => qc.invalidateQueries({ queryKey: ["message-reactions", id] }),
+      )
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
     };
   }, [id, qc]);
+
+  async function toggleReaction(messageId: string, emoji: string) {
+    if (!me) return;
+    const existing = reactionsByMessage.get(messageId)?.get(emoji)?.includes(me);
+    if (existing) {
+      const { error } = await supabase
+        .from("message_reactions")
+        .delete()
+        .eq("message_id", messageId)
+        .eq("user_id", me)
+        .eq("emoji", emoji);
+      if (error) toast.error("Falha ao remover reação", { description: error.message });
+    } else {
+      const { error } = await supabase
+        .from("message_reactions")
+        .insert({ message_id: messageId, user_id: me, emoji });
+      if (error) toast.error("Falha ao reagir", { description: error.message });
+    }
+    qc.invalidateQueries({ queryKey: ["message-reactions", id] });
+  }
 
   const normalizedSearch = search.trim().toLowerCase();
   const matches = useMemo(() => {
