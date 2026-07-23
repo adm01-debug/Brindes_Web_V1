@@ -287,6 +287,14 @@ function AdminDashboard() {
           to="/painel/admin"
           loading={kpiLoading}
         />
+        <KpiCard
+          title="Avaliações pendentes"
+          value={kpi?.reviewsPending}
+          icon={Star}
+          tone="warning"
+          to="/painel/admin/avaliacoes"
+          loading={kpiLoading}
+        />
       </section>
 
       {/* Gráfico global 30 dias */}
