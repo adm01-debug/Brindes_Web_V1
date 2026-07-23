@@ -313,12 +313,22 @@ function MessageThreadPage() {
           <ul className="space-y-3">
             {messages.map((m) => {
               const mine = m.sender_id === me;
+              const isMatch = normalizedSearch.length > 0 && matches.includes(m.id);
+              const isActive = m.id === activeMatchId;
               return (
-                <li key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
+                <li
+                  key={m.id}
+                  ref={(el) => {
+                    messageRefs.current.set(m.id, el);
+                  }}
+                  className={cn("flex", mine ? "justify-end" : "justify-start")}
+                >
                   <div
                     className={cn(
-                      "max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm",
+                      "max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm transition",
                       mine ? "bg-primary text-primary-foreground" : "bg-card text-card-foreground border",
+                      isMatch && "ring-2 ring-yellow-400/70",
+                      isActive && "ring-yellow-500 ring-offset-2 ring-offset-background",
                     )}
                   >
                     {m.attachment_url && (
@@ -331,7 +341,9 @@ function MessageThreadPage() {
                       />
                     )}
                     {m.body && m.body.length > 0 && (
-                      <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                      <p className="whitespace-pre-wrap break-words">
+                        {normalizedSearch.length > 0 ? highlight(m.body, normalizedSearch) : m.body}
+                      </p>
                     )}
                     <div className={cn("mt-1 flex items-center gap-1 text-[10px] opacity-70", mine ? "justify-end" : "")}>
                       <span>{formatDistanceToNow(new Date(m.created_at), { addSuffix: true, locale: ptBR })}</span>
