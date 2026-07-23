@@ -182,12 +182,13 @@ function MessageThreadPage() {
         attachment_size: pendingFile.size,
       };
     }
-    const { error } = await supabase.from("messages").insert({
+    const payload = {
       conversation_id: id,
       sender_id: me,
-      body: trimmed.length > 0 ? trimmed : null,
+      body: trimmed.length > 0 ? trimmed : "",
       ...(attachment ?? {}),
-    });
+    };
+    const { error } = await supabase.from("messages").insert(payload);
     setBusy(false);
     if (error) {
       toast.error("Falha ao enviar", { description: error.message });
