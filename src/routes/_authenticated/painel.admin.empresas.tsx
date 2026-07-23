@@ -69,7 +69,7 @@ function AdminEmpresasPage() {
     queryFn: async () => {
       let q = supabase
         .from("companies")
-        .select("id, name, slug, email, phone, status, created_at, logo_url, city, state")
+        .select("id, name, slug, email, phone, status, created_at, logo_url, city, state, plan, featured_until")
         .order("created_at", { ascending: false });
       if (statusFilter !== "all") q = q.eq("status", statusFilter);
       const { data, error } = await q;
@@ -91,6 +91,31 @@ function AdminEmpresasPage() {
       qc.invalidateQueries({ queryKey: ["admin-companies"] });
     },
     onError: (e) => toast.error(pgErrorMessage(e, "Não foi possível atualizar a empresa.")),
+  });
+
+  const planMutation = useMutation({
+    mutationFn: async ({
+      id,
+      plan,
+      featured_until,
+    }: {
+      id: string;
+      plan: "free" | "pro" | "premium";
+      featured_until: string | null;
+    }) => {
+      const { error } = await supabase
+        .from("companies")
+        .update({ plan, featured_until })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Plano atualizado.");
+      qc.invalidateQueries({ queryKey: ["admin-companies"] });
+      qc.invalidateQueries({ queryKey: ["featured-companies"] });
+      qc.invalidateQueries({ queryKey: ["companies"] });
+    },
+    onError: (e) => toast.error(pgErrorMessage(e, "Não foi possível atualizar o plano.")),
   });
 
   if (checkingAdmin) {
