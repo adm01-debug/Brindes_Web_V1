@@ -99,9 +99,28 @@ function MessageThreadPage() {
     };
   }, [id, qc]);
 
+  const normalizedSearch = search.trim().toLowerCase();
+  const matches = useMemo(() => {
+    if (normalizedSearch.length < 1) return [] as string[];
+    return messages
+      .filter((m) => (m.body ?? "").toLowerCase().includes(normalizedSearch))
+      .map((m) => m.id);
+  }, [messages, normalizedSearch]);
+  const activeMatchId = matches[matchIdx];
+
   useEffect(() => {
+    setMatchIdx(0);
+  }, [normalizedSearch]);
+
+  useEffect(() => {
+    if (!activeMatchId) return;
+    messageRefs.current.get(activeMatchId)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeMatchId]);
+
+  useEffect(() => {
+    if (matches.length > 0) return;
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length]);
+  }, [messages.length, matches.length]);
 
   // marca as mensagens do outro como lidas
   useEffect(() => {
