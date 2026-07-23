@@ -566,6 +566,7 @@ function MessageThreadPage() {
           <Paperclip className="h-4 w-4" />
         </Button>
         <Textarea
+          ref={composerRef}
           value={body}
           onChange={(e) => {
             setBody(e.target.value);
