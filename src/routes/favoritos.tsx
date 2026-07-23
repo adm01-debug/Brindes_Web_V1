@@ -61,9 +61,11 @@ function FavoritesPage() {
             <Heart className="h-7 w-7 text-red-500" aria-hidden />
             Meus favoritos
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Faça login para sincronizar seus favoritos entre dispositivos. Sem login, ficam salvos apenas neste navegador.
-          </p>
+          {!user && (
+            <p className="mt-2 text-muted-foreground">
+              Faça login para sincronizar seus favoritos entre dispositivos. Sem login, ficam salvos apenas neste navegador.
+            </p>
+          )}
         </header>
 
         {!hydrated || isLoading ? (
