@@ -101,7 +101,7 @@ function AuthPage() {
     setLoading(false);
     if (error) return toast.error(translateAuthError(error.message));
     toast.success("Bem-vindo!");
-    navigate({ to: "/painel" });
+    goNext();
   };
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -126,7 +126,7 @@ function AuthPage() {
     setLoading(false);
     if (error) return toast.error(translateAuthError(error.message));
     toast.success("Cadastro criado! Você já está no ar.");
-    navigate({ to: "/painel" });
+    goNext();
   };
 
   const handleGoogle = async () => {
@@ -140,7 +140,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/painel" });
+    goNext();
   };
 
   return (
