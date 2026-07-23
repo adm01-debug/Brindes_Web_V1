@@ -26,10 +26,12 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as KitsIndexRouteImport } from './routes/kits.index'
+import { Route as IdeiasIndexRouteImport } from './routes/ideias.index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
 import { Route as KitSlugRouteImport } from './routes/kit.$slug'
+import { Route as IdeiasSlugRouteImport } from './routes/ideias.$slug'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
@@ -135,6 +137,11 @@ const KitsIndexRoute = KitsIndexRouteImport.update({
   path: '/kits/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IdeiasIndexRoute = IdeiasIndexRouteImport.update({
+  id: '/ideias/',
+  path: '/ideias/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
   id: '/empresas/',
   path: '/empresas/',
@@ -153,6 +160,11 @@ const OrcamentoEnviadoRoute = OrcamentoEnviadoRouteImport.update({
 const KitSlugRoute = KitSlugRouteImport.update({
   id: '/kit/$slug',
   path: '/kit/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdeiasSlugRoute = IdeiasSlugRouteImport.update({
+  id: '/ideias/$slug',
+  path: '/ideias/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
@@ -287,10 +299,12 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
@@ -328,10 +342,12 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas': typeof EmpresasIndexRoute
+  '/ideias': typeof IdeiasIndexRoute
   '/kits': typeof KitsIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
@@ -372,10 +388,12 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
+  '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/empresas/': typeof EmpresasIndexRoute
+  '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
   '/_authenticated/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
@@ -416,10 +434,12 @@ export interface FileRouteTypes {
     | '/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas/'
+    | '/ideias/'
     | '/kits/'
     | '/painel/leads'
     | '/painel/perfil'
@@ -457,10 +477,12 @@ export interface FileRouteTypes {
     | '/termos'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas'
+    | '/ideias'
     | '/kits'
     | '/painel/leads'
     | '/painel/perfil'
@@ -500,10 +522,12 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/categoria/$slug'
     | '/empresa/$slug'
+    | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/empresas/'
+    | '/ideias/'
     | '/kits/'
     | '/_authenticated/painel/leads'
     | '/_authenticated/painel/perfil'
@@ -543,9 +567,11 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
+  IdeiasSlugRoute: typeof IdeiasSlugRoute
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
+  IdeiasIndexRoute: typeof IdeiasIndexRoute
   KitsIndexRoute: typeof KitsIndexRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicHooksCspReportRoute: typeof ApiPublicHooksCspReportRoute
@@ -675,6 +701,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KitsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ideias/': {
+      id: '/ideias/'
+      path: '/ideias'
+      fullPath: '/ideias/'
+      preLoaderRoute: typeof IdeiasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/empresas/': {
       id: '/empresas/'
       path: '/empresas'
@@ -701,6 +734,13 @@ declare module '@tanstack/react-router' {
       path: '/kit/$slug'
       fullPath: '/kit/$slug'
       preLoaderRoute: typeof KitSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ideias/$slug': {
+      id: '/ideias/$slug'
+      path: '/ideias/$slug'
+      fullPath: '/ideias/$slug'
+      preLoaderRoute: typeof IdeiasSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/empresa/$slug': {
@@ -925,9 +965,11 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
+  IdeiasSlugRoute: IdeiasSlugRoute,
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
+  IdeiasIndexRoute: IdeiasIndexRoute,
   KitsIndexRoute: KitsIndexRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicHooksCspReportRoute: ApiPublicHooksCspReportRoute,
