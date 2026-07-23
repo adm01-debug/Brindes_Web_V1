@@ -93,7 +93,13 @@ export const Route = createFileRoute("/api/public/hooks/web-vitals")({
             process.env.SUPABASE_PUBLISHABLE_KEY!,
             { auth: { persistSession: false, autoRefreshToken: false, storage: undefined } },
           );
-          await supabase.from("web_vitals_events").insert(parsed.data);
+          await withRetry(
+            async () => {
+              const { error } = await supabase.from("web_vitals_events").insert(parsed.data);
+              if (error) throw error;
+            },
+            { retries: 1, timeoutMs: 2_500, totalBudgetMs: 5_000, label: "web-vitals.insert" },
+          ).catch(() => { /* best-effort */ });
           return new Response(null, { status: 204, headers: CORS });
         } catch {
           return new Response(null, { status: 204, headers: CORS });
