@@ -43,10 +43,12 @@ import { Route as AuthenticatedPainelPerguntasRouteImport } from './routes/_auth
 import { Route as AuthenticatedPainelPerfilRouteImport } from './routes/_authenticated/painel.perfil'
 import { Route as AuthenticatedPainelLeadsRouteImport } from './routes/_authenticated/painel.leads'
 import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_authenticated/painel.produtos.index'
+import { Route as AuthenticatedPainelMensagensIndexRouteImport } from './routes/_authenticated/painel.mensagens.index'
 import { Route as AuthenticatedPainelAdminIndexRouteImport } from './routes/_authenticated/painel.admin.index'
 import { Route as ApiPublicHooksWebVitalsRouteImport } from './routes/api/public/hooks/web-vitals'
 import { Route as ApiPublicHooksCspReportRouteImport } from './routes/api/public/hooks/csp-report'
 import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
+import { Route as AuthenticatedPainelMensagensIdRouteImport } from './routes/_authenticated/painel.mensagens.$id'
 import { Route as AuthenticatedPainelAdminProdutosRouteImport } from './routes/_authenticated/painel.admin.produtos'
 import { Route as AuthenticatedPainelAdminObservabilidadeRouteImport } from './routes/_authenticated/painel.admin.observabilidade'
 import { Route as AuthenticatedPainelAdminEmpresasRouteImport } from './routes/_authenticated/painel.admin.empresas'
@@ -230,6 +232,12 @@ const AuthenticatedPainelProdutosIndexRoute =
     path: '/produtos/',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
+const AuthenticatedPainelMensagensIndexRoute =
+  AuthenticatedPainelMensagensIndexRouteImport.update({
+    id: '/mensagens/',
+    path: '/mensagens/',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
 const AuthenticatedPainelAdminIndexRoute =
   AuthenticatedPainelAdminIndexRouteImport.update({
     id: '/admin/',
@@ -250,6 +258,12 @@ const AuthenticatedPainelProdutosNovoRoute =
   AuthenticatedPainelProdutosNovoRouteImport.update({
     id: '/produtos/novo',
     path: '/produtos/novo',
+    getParentRoute: () => AuthenticatedPainelRoute,
+  } as any)
+const AuthenticatedPainelMensagensIdRoute =
+  AuthenticatedPainelMensagensIdRouteImport.update({
+    id: '/mensagens/$id',
+    path: '/mensagens/$id',
     getParentRoute: () => AuthenticatedPainelRoute,
   } as any)
 const AuthenticatedPainelAdminProdutosRoute =
@@ -337,10 +351,12 @@ export interface FileRoutesByFullPath {
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
+  '/painel/mensagens/$id': typeof AuthenticatedPainelMensagensIdRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/api/public/hooks/csp-report': typeof ApiPublicHooksCspReportRoute
   '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
+  '/painel/mensagens/': typeof AuthenticatedPainelMensagensIndexRoute
   '/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
   '/api/public/og/empresa/$slug': typeof ApiPublicOgEmpresaSlugRoute
@@ -383,10 +399,12 @@ export interface FileRoutesByTo {
   '/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
+  '/painel/mensagens/$id': typeof AuthenticatedPainelMensagensIdRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/api/public/hooks/csp-report': typeof ApiPublicHooksCspReportRoute
   '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/painel/admin': typeof AuthenticatedPainelAdminIndexRoute
+  '/painel/mensagens': typeof AuthenticatedPainelMensagensIndexRoute
   '/painel/produtos': typeof AuthenticatedPainelProdutosIndexRoute
   '/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
   '/api/public/og/empresa/$slug': typeof ApiPublicOgEmpresaSlugRoute
@@ -432,10 +450,12 @@ export interface FileRoutesById {
   '/_authenticated/painel/admin/empresas': typeof AuthenticatedPainelAdminEmpresasRoute
   '/_authenticated/painel/admin/observabilidade': typeof AuthenticatedPainelAdminObservabilidadeRoute
   '/_authenticated/painel/admin/produtos': typeof AuthenticatedPainelAdminProdutosRoute
+  '/_authenticated/painel/mensagens/$id': typeof AuthenticatedPainelMensagensIdRoute
   '/_authenticated/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/api/public/hooks/csp-report': typeof ApiPublicHooksCspReportRoute
   '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/_authenticated/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
+  '/_authenticated/painel/mensagens/': typeof AuthenticatedPainelMensagensIndexRoute
   '/_authenticated/painel/produtos/': typeof AuthenticatedPainelProdutosIndexRoute
   '/_authenticated/painel/produtos/$id/editar': typeof AuthenticatedPainelProdutosIdEditarRoute
   '/api/public/og/empresa/$slug': typeof ApiPublicOgEmpresaSlugRoute
@@ -481,10 +501,12 @@ export interface FileRouteTypes {
     | '/painel/admin/empresas'
     | '/painel/admin/observabilidade'
     | '/painel/admin/produtos'
+    | '/painel/mensagens/$id'
     | '/painel/produtos/novo'
     | '/api/public/hooks/csp-report'
     | '/api/public/hooks/web-vitals'
     | '/painel/admin/'
+    | '/painel/mensagens/'
     | '/painel/produtos/'
     | '/painel/produtos/$id/editar'
     | '/api/public/og/empresa/$slug'
@@ -527,10 +549,12 @@ export interface FileRouteTypes {
     | '/painel/admin/empresas'
     | '/painel/admin/observabilidade'
     | '/painel/admin/produtos'
+    | '/painel/mensagens/$id'
     | '/painel/produtos/novo'
     | '/api/public/hooks/csp-report'
     | '/api/public/hooks/web-vitals'
     | '/painel/admin'
+    | '/painel/mensagens'
     | '/painel/produtos'
     | '/painel/produtos/$id/editar'
     | '/api/public/og/empresa/$slug'
@@ -575,10 +599,12 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/admin/empresas'
     | '/_authenticated/painel/admin/observabilidade'
     | '/_authenticated/painel/admin/produtos'
+    | '/_authenticated/painel/mensagens/$id'
     | '/_authenticated/painel/produtos/novo'
     | '/api/public/hooks/csp-report'
     | '/api/public/hooks/web-vitals'
     | '/_authenticated/painel/admin/'
+    | '/_authenticated/painel/mensagens/'
     | '/_authenticated/painel/produtos/'
     | '/_authenticated/painel/produtos/$id/editar'
     | '/api/public/og/empresa/$slug'
@@ -859,6 +885,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPainelProdutosIndexRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
+    '/_authenticated/painel/mensagens/': {
+      id: '/_authenticated/painel/mensagens/'
+      path: '/mensagens'
+      fullPath: '/painel/mensagens/'
+      preLoaderRoute: typeof AuthenticatedPainelMensagensIndexRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
     '/_authenticated/painel/admin/': {
       id: '/_authenticated/painel/admin/'
       path: '/admin'
@@ -885,6 +918,13 @@ declare module '@tanstack/react-router' {
       path: '/produtos/novo'
       fullPath: '/painel/produtos/novo'
       preLoaderRoute: typeof AuthenticatedPainelProdutosNovoRouteImport
+      parentRoute: typeof AuthenticatedPainelRoute
+    }
+    '/_authenticated/painel/mensagens/$id': {
+      id: '/_authenticated/painel/mensagens/$id'
+      path: '/mensagens/$id'
+      fullPath: '/painel/mensagens/$id'
+      preLoaderRoute: typeof AuthenticatedPainelMensagensIdRouteImport
       parentRoute: typeof AuthenticatedPainelRoute
     }
     '/_authenticated/painel/admin/produtos': {
@@ -956,8 +996,10 @@ interface AuthenticatedPainelRouteChildren {
   AuthenticatedPainelAdminEmpresasRoute: typeof AuthenticatedPainelAdminEmpresasRoute
   AuthenticatedPainelAdminObservabilidadeRoute: typeof AuthenticatedPainelAdminObservabilidadeRoute
   AuthenticatedPainelAdminProdutosRoute: typeof AuthenticatedPainelAdminProdutosRoute
+  AuthenticatedPainelMensagensIdRoute: typeof AuthenticatedPainelMensagensIdRoute
   AuthenticatedPainelProdutosNovoRoute: typeof AuthenticatedPainelProdutosNovoRoute
   AuthenticatedPainelAdminIndexRoute: typeof AuthenticatedPainelAdminIndexRoute
+  AuthenticatedPainelMensagensIndexRoute: typeof AuthenticatedPainelMensagensIndexRoute
   AuthenticatedPainelProdutosIndexRoute: typeof AuthenticatedPainelProdutosIndexRoute
   AuthenticatedPainelProdutosIdEditarRoute: typeof AuthenticatedPainelProdutosIdEditarRoute
 }
@@ -975,8 +1017,11 @@ const AuthenticatedPainelRouteChildren: AuthenticatedPainelRouteChildren = {
   AuthenticatedPainelAdminObservabilidadeRoute:
     AuthenticatedPainelAdminObservabilidadeRoute,
   AuthenticatedPainelAdminProdutosRoute: AuthenticatedPainelAdminProdutosRoute,
+  AuthenticatedPainelMensagensIdRoute: AuthenticatedPainelMensagensIdRoute,
   AuthenticatedPainelProdutosNovoRoute: AuthenticatedPainelProdutosNovoRoute,
   AuthenticatedPainelAdminIndexRoute: AuthenticatedPainelAdminIndexRoute,
+  AuthenticatedPainelMensagensIndexRoute:
+    AuthenticatedPainelMensagensIndexRoute,
   AuthenticatedPainelProdutosIndexRoute: AuthenticatedPainelProdutosIndexRoute,
   AuthenticatedPainelProdutosIdEditarRoute:
     AuthenticatedPainelProdutosIdEditarRoute,
