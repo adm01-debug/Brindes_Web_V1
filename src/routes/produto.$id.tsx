@@ -18,6 +18,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
 import { RecentlyViewed } from "@/components/recently-viewed";
 import { ImageLightbox } from "@/components/image-lightbox";
+import { ProductQA } from "@/components/product-qa";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
@@ -395,6 +396,12 @@ function ProductPage() {
             currentId={product.id}
             categoryId={product.category_id}
             companyId={product.company!.id}
+          />
+
+          <ProductQA
+            productId={product.id}
+            companyId={product.company!.id}
+            productName={product.name}
           />
 
           <RecentlyViewed excludeId={product.id} className="mt-12" />
