@@ -176,6 +176,16 @@ function LeadsPage() {
           <Button variant="outline" size="sm" onClick={exportCsv} disabled={!data?.length}>
             <Download className="mr-2 h-4 w-4" /> Exportar CSV
           </Button>
+          <Select value={kindFilter} onValueChange={(v) => setKindFilter(v as LeadKind | "all")}>
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os tipos</SelectItem>
+              <SelectItem value="quote">Orçamento</SelectItem>
+              <SelectItem value="sample">Amostra</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as LeadStatus | "all")}>
             <SelectTrigger className="w-48">
               <SelectValue />
