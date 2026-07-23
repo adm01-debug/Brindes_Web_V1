@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck, Tag, Gauge, Inbox, Activity } from "lucide-react";
+import { LayoutDashboard, Package2, User, LogOut, Package, ArrowLeft, ShieldCheck, Tag, Gauge, Inbox, Activity, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsAdmin } from "@/hooks/use-is-admin";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
