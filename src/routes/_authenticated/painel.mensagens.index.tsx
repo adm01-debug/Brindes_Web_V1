@@ -101,13 +101,38 @@ function MessagesListPage() {
   const isArchived = (c: Row) => (roleOf(c) === "buyer" ? !!c.buyer_archived_at : !!c.seller_archived_at);
   const mutedUntil = (c: Row): string | null =>
     roleOf(c) === "buyer" ? c.buyer_muted_until : c.seller_muted_until;
+
+  const [now, setNow] = useState(() => Date.now());
   const isMuted = (c: Row) => {
     const base = roleOf(c) === "buyer" ? c.buyer_muted : c.seller_muted;
     if (!base) return false;
     const until = mutedUntil(c);
-    if (until && new Date(until).getTime() <= Date.now()) return false;
+    if (until && new Date(until).getTime() <= now) return false;
     return true;
   };
+
+  // Tick automaticamente quando o próximo mute expirar, sem precisar recarregar.
+  useEffect(() => {
+    const upcoming = data
+      .map((c) => {
+        const base = roleOf(c) === "buyer" ? c.buyer_muted : c.seller_muted;
+        if (!base) return null;
+        const until = mutedUntil(c);
+        if (!until) return null;
+        const t = new Date(until).getTime();
+        return t > now ? t : null;
+      })
+      .filter((t): t is number => t != null);
+    if (upcoming.length === 0) return;
+    const nextAt = Math.min(...upcoming);
+    const delay = Math.max(250, nextAt - Date.now() + 50);
+    const timer = setTimeout(() => {
+      setNow(Date.now());
+      qc.invalidateQueries({ queryKey: ["conversations"] });
+    }, delay);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, now, me]);
 
   const filtered = useMemo(() => {
     const base = data.filter((c) => (tab === "arquivadas" ? isArchived(c) : !isArchived(c)));
