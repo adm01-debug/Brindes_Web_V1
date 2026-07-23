@@ -237,33 +237,45 @@ export type Database = {
       }
       conversations: {
         Row: {
+          buyer_archived_at: string | null
           buyer_id: string
+          buyer_muted: boolean
           company_id: string
           created_at: string
           id: string
           last_message_at: string
           last_message_preview: string | null
           product_id: string | null
+          seller_archived_at: string | null
+          seller_muted: boolean
           subject: string | null
         }
         Insert: {
+          buyer_archived_at?: string | null
           buyer_id: string
+          buyer_muted?: boolean
           company_id: string
           created_at?: string
           id?: string
           last_message_at?: string
           last_message_preview?: string | null
           product_id?: string | null
+          seller_archived_at?: string | null
+          seller_muted?: boolean
           subject?: string | null
         }
         Update: {
+          buyer_archived_at?: string | null
           buyer_id?: string
+          buyer_muted?: boolean
           company_id?: string
           created_at?: string
           id?: string
           last_message_at?: string
           last_message_preview?: string | null
           product_id?: string | null
+          seller_archived_at?: string | null
+          seller_muted?: boolean
           subject?: string | null
         }
         Relationships: [
