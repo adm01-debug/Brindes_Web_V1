@@ -54,7 +54,7 @@ function FavoritesPage() {
             Meus favoritos
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Seus produtos salvos ficam disponíveis somente neste navegador.
+            Faça login para sincronizar seus favoritos entre dispositivos. Sem login, ficam salvos apenas neste navegador.
           </p>
         </header>
 

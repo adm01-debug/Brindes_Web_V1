@@ -24,10 +24,10 @@ export function FavoriteButton({
   const { isFavorite, toggle, hydrated } = useFavorites();
   const active = hydrated && isFavorite(productId);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const nowActive = toggle(productId);
+    const nowActive = await toggle(productId);
     toast.success(
       nowActive
         ? `${productName ?? "Produto"} adicionado aos favoritos`
