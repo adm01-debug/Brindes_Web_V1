@@ -62,6 +62,10 @@ export function SiteHeader() {
           <Link to="/planos" className="text-muted-foreground transition-colors hover:text-foreground">
             Planos
           </Link>
+          <Link to="/vender" className="font-medium text-primary transition-colors hover:text-primary/80">
+            Vender
+          </Link>
+
         </nav>
 
         <div className="flex items-center gap-2">
