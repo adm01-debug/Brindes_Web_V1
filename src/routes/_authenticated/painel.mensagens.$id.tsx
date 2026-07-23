@@ -182,6 +182,19 @@ function MessageThreadPage() {
         )}
       </div>
 
+      <div className="mt-2 h-5 text-xs text-muted-foreground" aria-live="polite">
+        {otherTyping && (
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-flex gap-0.5">
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground" />
+            </span>
+            digitando…
+          </span>
+        )}
+      </div>
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
