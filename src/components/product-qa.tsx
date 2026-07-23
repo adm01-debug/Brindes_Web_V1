@@ -114,7 +114,7 @@ export function ProductQA({ productId, companyId, productName }: Props) {
             <div className="rounded-md border bg-muted/40 p-4 text-sm">
               <p className="text-muted-foreground mb-2">Faça login para enviar uma pergunta ao vendedor.</p>
               <Button asChild size="sm" variant="outline">
-                <Link to="/auth" search={{ redirect: `/produto/${productId}` }}>Entrar</Link>
+                <Link to="/auth">Entrar</Link>
               </Button>
             </div>
           )}
