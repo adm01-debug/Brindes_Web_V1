@@ -95,7 +95,9 @@ export function ProductForm({
   });
 
   const [images, setImages] = useState<ImageState[]>([]);
+  const [tierDrafts, setTierDrafts] = useState<PriceTierDraft[]>([]);
   const [initialLoaded, setInitialLoaded] = useState(!productId);
+
 
   const {
     register,
