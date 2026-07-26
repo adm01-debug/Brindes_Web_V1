@@ -368,6 +368,42 @@ export function ProductForm({
       </Card>
 
       <Card>
+        <CardHeader><CardTitle className="text-base">Vitrines e mídia</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Controller
+              control={control}
+              name="is_clearance"
+              render={({ field }) => (
+                <Switch id="is_clearance" checked={field.value} onCheckedChange={field.onChange} />
+              )}
+            />
+            <Label htmlFor="is_clearance" className="cursor-pointer">
+              Ponta de estoque <span className="text-muted-foreground">(exibe em /ofertas)</span>
+            </Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <Controller
+              control={control}
+              name="is_unusual"
+              render={({ field }) => (
+                <Switch id="is_unusual" checked={field.value} onCheckedChange={field.onChange} />
+              )}
+            />
+            <Label htmlFor="is_unusual" className="cursor-pointer">
+              Brinde inusitado <span className="text-muted-foreground">(exibe em /inusitados)</span>
+            </Label>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="video_url">Vídeo do produto (URL)</Label>
+            <Input id="video_url" type="url" placeholder="https://www.youtube.com/watch?v=..." {...register("video_url")} />
+          </div>
+        </CardContent>
+      </Card>
+
+
+
+      <Card>
         <CardContent className="flex items-center gap-3 p-5">
           <Controller
             control={control}
