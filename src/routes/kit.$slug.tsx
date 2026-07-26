@@ -48,6 +48,10 @@ type KitItem = {
     short_description: string | null;
     price: number | null;
     price_on_request: boolean;
+    promo_price: number | null;
+    is_clearance: boolean | null;
+    is_unusual: boolean | null;
+    video_url: string | null;
     is_active: boolean;
     deleted_at: string | null;
     moderation_status: string;
@@ -56,6 +60,8 @@ type KitItem = {
       slug: string;
       name: string;
       status: string;
+      plan: string | null;
+      featured_until: string | null;
     } | null;
     images: { url: string; sort_order: number }[] | null;
   } | null;
@@ -83,8 +89,9 @@ function KitDetailPage() {
           `id, suggested_quantity, sort_order,
            product:products (
              id, name, slug, short_description, price, price_on_request,
+             promo_price, is_clearance, is_unusual, video_url,
              is_active, deleted_at, moderation_status,
-             company:companies ( id, slug, name, status ),
+             company:companies ( id, slug, name, status, plan, featured_until ),
              images:product_images ( url, sort_order )
            )`,
         )
@@ -226,11 +233,17 @@ function KitDetailPage() {
                     price: i.product!.price,
                     price_on_request: i.product!.price_on_request,
                     short_description: i.product!.short_description,
+                    promo_price: i.product!.promo_price,
+                    is_clearance: i.product!.is_clearance,
+                    is_unusual: i.product!.is_unusual,
+                    video_url: i.product!.video_url,
                     company: i.product!.company
                       ? {
                           id: i.product!.company.id,
                           slug: i.product!.company.slug,
                           name: i.product!.company.name,
+                          plan: i.product!.company.plan as never,
+                          featured_until: i.product!.company.featured_until,
                         }
                       : null,
                     images: i.product!.images ?? [],

@@ -32,7 +32,8 @@ const categoryProductsQueryOptions = (categoryId: string | undefined) =>
         .from("products")
         .select(`
           id, name, price, price_on_request, short_description,
-          company:companies!inner(id, slug, name, status),
+          promo_price, is_clearance, is_unusual, video_url,
+          company:companies!inner(id, slug, name, status, plan, featured_until),
           images:product_images(url, sort_order)
         `)
         .eq("category_id", categoryId)

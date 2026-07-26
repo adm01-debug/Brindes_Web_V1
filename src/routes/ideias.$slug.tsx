@@ -27,6 +27,10 @@ type RpcRow = {
   category_slug: string | null;
   category_name: string | null;
   primary_image_url: string | null;
+  promo_price: number | null;
+  is_clearance: boolean | null;
+  is_unusual: boolean | null;
+  video_url: string | null;
   total_count: number;
 };
 
@@ -172,6 +176,10 @@ function IntentPage() {
                     price: p.price,
                     price_on_request: p.price_on_request,
                     short_description: p.short_description,
+                    promo_price: p.promo_price,
+                    is_clearance: p.is_clearance,
+                    is_unusual: p.is_unusual,
+                    video_url: p.video_url,
                     company: {
                       id: p.company_id,
                       slug: p.company_slug,
