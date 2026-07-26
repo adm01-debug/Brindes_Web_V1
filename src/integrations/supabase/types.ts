@@ -1472,6 +1472,15 @@ export type Database = {
         Args: { _bucket: string; _url: string }
         Returns: string
       }
+      facet_term_counts: {
+        Args: { _axis_slug?: string }
+        Returns: {
+          axis_slug: string
+          products_count: number
+          term_id: string
+          term_slug: string
+        }[]
+      }
       get_admin_metrics_range: {
         Args: { _from?: string; _to?: string }
         Returns: {

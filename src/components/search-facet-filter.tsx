@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { facetCountsQO } from "@/lib/facet-queries";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 
@@ -49,6 +50,8 @@ export function SearchFacetFilter({ selected, onChange, className }: SearchFacet
       };
     },
   });
+
+  const { data: counts } = useQuery(facetCountsQO());
 
   const groups = useMemo(() => {
     if (!data) return [];
@@ -99,6 +102,11 @@ export function SearchFacetFilter({ selected, onChange, className }: SearchFacet
                 >
                   {active && <Check className="h-3 w-3" aria-hidden="true" />}
                   {term.name}
+                  {typeof counts?.[term.slug] === "number" && counts[term.slug] > 0 && (
+                    <span className={cn("tabular-nums", active ? "opacity-80" : "text-muted-foreground")}>
+                      ({counts[term.slug]})
+                    </span>
+                  )}
                 </button>
               );
             })}

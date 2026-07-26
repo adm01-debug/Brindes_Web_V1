@@ -125,3 +125,30 @@ export const facetProductsQO = (termId: string) =>
         ) as FacetListedProduct[];
     },
   });
+
+export type FacetTermCount = {
+  term_id: string;
+  term_slug: string;
+  axis_slug: string;
+  products_count: number;
+};
+
+/**
+ * Contagem de produtos publicados por termo de faceta.
+ * Alimenta os selos "N produtos" nos hubs e nos filtros da busca.
+ */
+export const facetCountsQO = (axisSlug?: string) =>
+  queryOptions({
+    queryKey: ["facet-term-counts", axisSlug ?? "all"],
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<Record<string, number>> => {
+      const { data, error } = await supabase.rpc("facet_term_counts", {
+        _axis_slug: axisSlug ?? undefined,
+      });
+      // Contadores são enfeite: falha não pode derrubar a página.
+      if (error) return {};
+      return Object.fromEntries(
+        ((data ?? []) as FacetTermCount[]).map((r) => [r.term_slug, Number(r.products_count)]),
+      );
+    },
+  });
