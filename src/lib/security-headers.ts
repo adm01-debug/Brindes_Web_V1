@@ -91,14 +91,6 @@ function reportOnlyCsp(nonce: string): string {
 }
 
 
-function isPreviewHost(host: string | undefined): boolean {
-  if (!host) return false;
-  return (
-    host.includes("lovable.dev") ||
-    host.startsWith("id-preview") ||
-    host.includes("-preview--")
-  );
-}
 
 /**
  * Injeta headers de segurança na resposta HTML raiz.
