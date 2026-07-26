@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Package, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Package, ChevronLeft, ChevronRight, X, History } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const searchSchema = z.object({
@@ -38,6 +38,9 @@ const searchSchema = z.object({
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
 const PAGE_SIZE = 24;
+
+const RECENT_KEY = "brindeshub:recent-searches";
+const MAX_RECENT = 8;
 
 const BUSCAR_URL = "https://brinde-gallery.lovable.app/buscar";
 
@@ -122,6 +125,43 @@ function SearchPage() {
   const [cor, setCor] = useState(search.cor);
   const [moq, setMoq] = useState(search.moq ? String(search.moq) : "");
   const [prazo, setPrazo] = useState(search.prazo ? String(search.prazo) : "");
+  const [recent, setRecent] = useState<string[]>([]);
+
+  // Buscas recentes: lidas apenas no cliente (evita mismatch de hidratação).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) {
+        setRecent(parsed.filter((v): v is string => typeof v === "string").slice(0, MAX_RECENT));
+      }
+    } catch {
+      /* storage indisponível/corrompido: degrada silenciosamente */
+    }
+  }, []);
+
+  const pushRecent = useCallback((raw: string) => {
+    const value = raw.trim().slice(0, 80);
+    if (value.length < 2) return;
+    setRecent((prev) => {
+      const next = [value, ...prev.filter((v) => v.toLowerCase() !== value.toLowerCase())].slice(0, MAX_RECENT);
+      try {
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      } catch {
+        /* quota cheia: mantém apenas em memória */
+      }
+      return next;
+    });
+  }, []);
+
+  const clearRecent = () => {
+    setRecent([]);
+    try {
+      localStorage.removeItem(RECENT_KEY);
+    } catch {
+      /* noop */
+    }
+  };
 
   const { data: categories } = useQuery({
     queryKey: ["all-categories-active"],
@@ -181,6 +221,7 @@ function SearchPage() {
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    pushRecent(term);
     navigate({
       search: (prev: SearchState) => ({
         ...prev,
@@ -209,6 +250,26 @@ function SearchPage() {
   const setFilter = <K extends keyof SearchState>(key: K, value: SearchState[K]) => {
     navigate({ search: (prev: SearchState) => ({ ...prev, [key]: value, page: 1 }) });
   };
+
+  /** Chips de filtros ativos: label legível + ação de remoção (URL + estado local). */
+  const activeChips = useMemo(() => {
+    const categoryName = categories?.find((c) => c.slug === search.categoria)?.name ?? search.categoria;
+    const chips: Array<{ key: string; label: string; clear: () => void }> = [];
+
+    if (search.q) chips.push({ key: "q", label: `Termo: "${search.q}"`, clear: () => { setTerm(""); setFilter("q", ""); } });
+    if (search.categoria) chips.push({ key: "categoria", label: `Categoria: ${categoryName}`, clear: () => setFilter("categoria", "") });
+    if (search.min > 0) chips.push({ key: "min", label: `Mín: R$ ${search.min}`, clear: () => { setPriceMin(""); setFilter("min", 0); } });
+    if (search.max > 0) chips.push({ key: "max", label: `Máx: R$ ${search.max}`, clear: () => { setPriceMax(""); setFilter("max", 0); } });
+    if (search.material) chips.push({ key: "material", label: `Material: ${search.material}`, clear: () => { setMaterial(""); setFilter("material", ""); } });
+    if (search.cor) chips.push({ key: "cor", label: `Cor: ${search.cor}`, clear: () => { setCor(""); setFilter("cor", ""); } });
+    if (search.moq > 0) chips.push({ key: "moq", label: `Pedido até ${search.moq} un.`, clear: () => { setMoq(""); setFilter("moq", 0); } });
+    if (search.prazo > 0) chips.push({ key: "prazo", label: `Prazo até ${search.prazo} dias`, clear: () => { setPrazo(""); setFilter("prazo", 0); } });
+    if (search.uf) chips.push({ key: "uf", label: `Estado: ${search.uf}`, clear: () => setFilter("uf", "") });
+    if (search.video) chips.push({ key: "video", label: "Somente com vídeo", clear: () => setFilter("video", false) });
+
+    return chips;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, categories]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -308,6 +369,48 @@ function SearchPage() {
               </Button>
             </div>
           </details>
+
+          {activeChips.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="Filtros ativos">
+              <span className="text-sm text-muted-foreground">Filtros ativos:</span>
+              {activeChips.map((chip) => (
+                <button
+                  key={chip.key}
+                  type="button"
+                  onClick={chip.clear}
+                  className="inline-flex items-center gap-1 rounded-full border bg-card px-3 py-1 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={`Remover filtro ${chip.label}`}
+                >
+                  {chip.label}
+                  <X className="h-3 w-3" aria-hidden="true" />
+                </button>
+              ))}
+              <Button type="button" size="sm" variant="ghost" onClick={clearAll}>
+                Limpar tudo
+              </Button>
+            </div>
+          )}
+
+          {recent.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="Buscas recentes">
+              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                <History className="h-3.5 w-3.5" aria-hidden="true" /> Recentes:
+              </span>
+              {recent.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => { setTerm(r); pushRecent(r); setFilter("q", r); }}
+                  className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {r}
+                </button>
+              ))}
+              <Button type="button" size="sm" variant="ghost" onClick={clearRecent}>
+                Limpar histórico
+              </Button>
+            </div>
+          )}
 
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row">
