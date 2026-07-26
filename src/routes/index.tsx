@@ -1,6 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+  homeCategoriesQO,
+  homeFeaturedCompaniesQO,
+  homeRecentProductsQO,
+} from "@/lib/home-queries";
+
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
@@ -42,7 +47,16 @@ const HOME_JSONLD = {
 };
 
 export const Route = createFileRoute("/")({
+  // Pré-carrega no servidor: HTML já sai com categorias, destaques e produtos.
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(homeCategoriesQO()),
+      context.queryClient.ensureQueryData(homeFeaturedCompaniesQO()),
+      context.queryClient.ensureQueryData(homeRecentProductsQO()),
+    ]);
+  },
   component: HomePage,
+
   head: () => ({
     meta: [
       { title: "BrindesHub — Portal de Empresas de Brindes Corporativos no Brasil" },
@@ -71,62 +85,11 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("id, slug, name, icon")
-        .is("parent_id", null)
-        .order("sort_order");
-      return data ?? [];
-    },
-  });
+  // Dados já vêm quentes do loader (SSR): sem skeleton no primeiro paint.
+  const { data: categories } = useSuspenseQuery(homeCategoriesQO());
+  const { data: featuredCompanies } = useSuspenseQuery(homeFeaturedCompaniesQO());
+  const { data: recentProducts } = useSuspenseQuery(homeRecentProductsQO());
 
-  const { data: featuredCompanies } = useQuery({
-    queryKey: ["featured-companies"],
-    queryFn: async () => {
-      const nowIso = new Date().toISOString();
-      const { data } = await supabase
-        .from("companies")
-        .select("id, slug, name, tagline, city, state, logo_url, banner_url, plan, featured_until")
-        .eq("status", "approved")
-        .or(`plan.eq.premium,plan.eq.pro,featured_until.gt.${nowIso}`)
-        .order("plan", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(6);
-      if (data && data.length > 0) return data;
-      // Fallback: nenhum destaque cadastrado — mostra recentes
-      const { data: recent } = await supabase
-        .from("companies")
-        .select("id, slug, name, tagline, city, state, logo_url, banner_url, plan, featured_until")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(6);
-      return recent ?? [];
-    },
-  });
-
-  const { data: recentProducts } = useQuery({
-    queryKey: ["recent-products"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("products")
-        .select(`
-          id, name, price, price_on_request, short_description,
-          promo_price, is_clearance, is_unusual, video_url,
-          price_tiers:product_price_tiers(min_qty, max_qty, unit_price),
-          company:companies!inner(id, slug, name, status, plan, featured_until),
-          images:product_images(url, sort_order)
-        `)
-        .eq("is_active", true)
-        .is("deleted_at", null)
-        .eq("company.status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(8);
-      return data ?? [];
-    },
-  });
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -174,12 +137,10 @@ function HomePage() {
             <h2 className="text-2xl font-bold tracking-tight">Explore por categoria</h2>
             <p className="mt-1 text-muted-foreground">Encontre exatamente o brinde que você procura</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              {(categories ?? []).map((cat) => (
+              {categories.map((cat) => (
                 <CategoryPill key={cat.id} slug={cat.slug} name={cat.name} />
               ))}
-              {!categories && Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-10 w-32 animate-pulse rounded-full bg-muted" />
-              ))}
+
             </div>
           </div>
         </section>

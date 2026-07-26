@@ -63,8 +63,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * Fallback usado quando o contexto não está disponível (ex.: durante o SSR,
+ * onde o módulo do provider pode ser instanciado em outro chunk). Lançar erro
+ * aqui derrubava toda a árvore no servidor e forçava client-rendering da
+ * página inteira — o que zerava o HTML indexável. Degradar para tema claro é
+ * seguro: o tema real é aplicado no cliente pelo ThemeProvider.
+ */
+const SSR_THEME_FALLBACK: ThemeContextValue = {
+  theme: "system",
+  resolved: "light",
+  setTheme: () => {},
+};
+
 export function useTheme(): ThemeContextValue {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used inside ThemeProvider");
-  return ctx;
+  return ctx ?? SSR_THEME_FALLBACK;
 }
