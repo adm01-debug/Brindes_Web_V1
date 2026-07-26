@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Package, ChevronLeft, ChevronRight } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -30,6 +31,7 @@ const searchSchema = z.object({
   moq: fallback(z.number().int(), 0).default(0),
   prazo: fallback(z.number().int(), 0).default(0),
   uf: fallback(z.string(), "").default(""),
+  video: fallback(z.boolean(), false).default(false),
   page: fallback(z.number().int(), 1).default(1),
 });
 
@@ -103,6 +105,10 @@ type RpcRow = {
   category_slug: string | null;
   category_name: string | null;
   primary_image_url: string | null;
+  promo_price: number | null;
+  is_clearance: boolean | null;
+  is_unusual: boolean | null;
+  video_url: string | null;
   total_count: number;
 };
 
@@ -143,6 +149,7 @@ function SearchPage() {
       search.moq,
       search.prazo,
       search.uf,
+      search.video,
       search.page,
     ],
     placeholderData: keepPreviousData,
@@ -160,6 +167,7 @@ function SearchPage() {
         _max_moq: search.moq > 0 ? search.moq : undefined,
         _max_days: search.prazo > 0 ? search.prazo : undefined,
         _state: search.uf || undefined,
+        _has_video: search.video ? true : undefined,
       });
       if (error) throw error;
       return (data ?? []) as RpcRow[];
@@ -193,7 +201,7 @@ function SearchPage() {
     navigate({
       search: () => ({
         q: "", categoria: "", ordenar: "relevance", min: 0, max: 0,
-        material: "", cor: "", moq: 0, prazo: 0, uf: "", page: 1,
+        material: "", cor: "", moq: 0, prazo: 0, uf: "", video: false, page: 1,
       }),
     });
   };
@@ -282,6 +290,14 @@ function SearchPage() {
                   {UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
                 </SelectContent>
               </Select>
+              <label className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
+                <Checkbox
+                  checked={search.video}
+                  onCheckedChange={(v) => setFilter("video", v === true)}
+                  aria-label="Somente produtos com vídeo"
+                />
+                Somente com vídeo
+              </label>
             </div>
             <div className="mt-3 flex gap-2">
               <Button type="button" size="sm" onClick={(e) => submitSearch(e as unknown as React.FormEvent)}>
@@ -348,6 +364,10 @@ function SearchPage() {
                       slug: p.company_slug,
                       name: p.company_name,
                     },
+                    promo_price: p.promo_price,
+                    is_clearance: p.is_clearance,
+                    is_unusual: p.is_unusual,
+                    video_url: p.video_url,
                     images: p.primary_image_url
                       ? [{ url: p.primary_image_url, sort_order: 0 }]
                       : [],
