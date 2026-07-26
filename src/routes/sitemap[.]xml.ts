@@ -59,7 +59,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
           );
 
-          const [companiesRes, productsRes, categoriesRes] = await Promise.all([
+          const [companiesRes, productsRes, categoriesRes, datesRes] = await Promise.all([
             supabase
               .from("companies")
               .select("slug, updated_at")
@@ -79,7 +79,14 @@ export const Route = createFileRoute("/sitemap.xml")({
               .select("slug")
               .order("sort_order", { ascending: true })
               .limit(500),
+            supabase
+              .from("commemorative_dates")
+              .select("slug, updated_at")
+              .eq("is_active", true)
+              .order("sort_order", { ascending: true })
+              .limit(200),
           ]);
+
 
           const parts: string[] = [];
           parts.push('<?xml version="1.0" encoding="UTF-8"?>');
