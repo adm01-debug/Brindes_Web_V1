@@ -47,6 +47,12 @@ export function AddToQuoteCartButton({
       toast.error(`Limite de ${maxItems} itens por orçamento atingido.`);
       return;
     }
+    // Com quantidade + faixas, anexamos o unitário de tabela à observação:
+    // o vendedor recebe a referência exata que o comprador viu na vitrine.
+    const tier = tierForQuantity(normalizeTiers(priceTiers), item.quantity ?? 0);
+    const tierNote = tier ? `Preço de tabela para a quantidade: ${formatBRL(tier.unit_price)}/un.` : null;
+    const notes = [item.notes?.trim() || null, tierNote].filter(Boolean).join(" · ") || null;
+
     add({
       product_id: item.product_id,
       product_name: item.product_name,
@@ -54,8 +60,9 @@ export function AddToQuoteCartButton({
       company_name: item.company_name ?? null,
       image_url: item.image_url ?? null,
       quantity: item.quantity ?? null,
-      notes: item.notes ?? null,
+      notes,
     });
+
     toast.success("Adicionado ao orçamento", {
       action: { label: "Ver carrinho", onClick: () => window.dispatchEvent(new CustomEvent("brindeshub:open-quote-cart")) },
     });
