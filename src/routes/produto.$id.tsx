@@ -249,9 +249,16 @@ function ProductPage() {
   }
   if (isError || !product) throw notFound();
 
-  const priceLabel = product.price_on_request || product.price == null
-    ? "Sob consulta"
-    : formatBRL(Number(product.price));
+  const tiers = normalizeTiers((product as { tiers?: unknown }).tiers);
+  const tierLow = lowestTierPrice(tiers);
+
+  const priceLabel =
+    tierLow != null
+      ? `A partir de ${formatBRL(tierLow)}`
+      : product.price_on_request || product.price == null
+        ? "Sob consulta"
+        : formatBRL(Number(product.price));
+
 
   const whatsappLink = product.company?.whatsapp
     ? `https://wa.me/${product.company.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
