@@ -68,7 +68,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
           );
 
-          const [companiesRes, productsRes, categoriesRes, datesRes] = await Promise.all([
+          const [companiesRes, productsRes, categoriesRes, datesRes, facetsRes] = await Promise.all([
             supabase
               .from("companies")
               .select("slug, updated_at")
@@ -94,7 +94,14 @@ export const Route = createFileRoute("/sitemap.xml")({
               .eq("is_active", true)
               .order("sort_order", { ascending: true })
               .limit(200),
+            // Termos de faceta + eixo, para gerar as vitrines multi-eixo.
+            supabase
+              .from("facet_terms")
+              .select("slug, updated_at, axis:facet_axes!inner(slug, is_active)")
+              .eq("is_active", true)
+              .limit(1000),
           ]);
+
 
 
           const parts: string[] = [];
