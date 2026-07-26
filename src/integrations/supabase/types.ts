@@ -1519,6 +1519,15 @@ export type Database = {
         Args: { _customer: Json; _items: Json }
         Returns: Json
       }
+      suggest_search_terms: {
+        Args: { _limit?: number; _q: string }
+        Returns: {
+          extra: string
+          kind: string
+          label: string
+          slug: string
+        }[]
+      }
       unaccent_safe: { Args: { input: string }; Returns: string }
       web_vitals_rollup: { Args: { _day?: string }; Returns: number }
     }
