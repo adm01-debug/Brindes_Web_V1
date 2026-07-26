@@ -232,6 +232,14 @@ export function ProductForm({
     const tiersError = tiers.length > 0 ? validateTiers(tiers) : null;
     if (tiersError) return toast.error(tiersError);
 
+    // Facetas: deduplica (a PK é composta) e valida o limite antes de chamar
+    // o banco, para o vendedor receber a mensagem sem uma ida ao servidor.
+    const facets = dedupeFacetIds(facetIds);
+    const facetsParsed = facetSelectionSchema.safeParse(facets);
+    if (!facetsParsed.success) {
+      return toast.error(facetsParsed.error.issues[0]?.message ?? "Facetas inválidas.");
+    }
+
     const payload = { ...parsed.data, company_id: companyId };
 
 
