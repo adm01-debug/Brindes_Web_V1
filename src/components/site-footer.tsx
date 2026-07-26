@@ -24,6 +24,9 @@ export function SiteFooter() {
               <li><Link to="/buscar" className="hover:text-foreground">Produtos</Link></li>
               <li><Link to="/categorias" className="hover:text-foreground">Categorias</Link></li>
               <li><Link to="/kits" className="hover:text-foreground">Kits temáticos</Link></li>
+              <li><Link to="/datas-comemorativas" className="hover:text-foreground">Datas comemorativas</Link></li>
+              <li><Link to="/brindes-a-z" className="hover:text-foreground">Brindes de A a Z</Link></li>
+
             </ul>
           </div>
           <div>
