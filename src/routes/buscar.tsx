@@ -281,7 +281,7 @@ function SearchPage() {
     navigate({
       search: () => ({
         q: "", categoria: "", ordenar: "relevance", min: 0, max: 0,
-        material: "", cor: "", moq: 0, prazo: 0, uf: "", video: false, page: 1,
+        material: "", cor: "", moq: 0, prazo: 0, uf: "", video: false, facetas: "", page: 1,
       }),
     });
   };
@@ -289,6 +289,35 @@ function SearchPage() {
   const setFilter = <K extends keyof SearchState>(key: K, value: SearchState[K]) => {
     navigate({ search: (prev: SearchState) => ({ ...prev, [key]: value, page: 1 }) });
   };
+
+  /** Aplica a nova seleção de vitrines na URL (fonte de verdade do filtro). */
+  const setFacets = useCallback(
+    (next: string[]) => {
+      navigate({
+        search: (prev: SearchState) => ({
+          ...prev,
+          facetas: parseFacets(next.join(",")).join(","),
+          page: 1,
+        }),
+      });
+    },
+    [navigate],
+  );
+
+  /** Rótulos legíveis das vitrines selecionadas (para os chips de filtros ativos). */
+  const { data: facetLabels } = useQuery({
+    queryKey: ["search-facet-labels", selectedFacets.join(",")],
+    enabled: selectedFacets.length > 0,
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("facet_terms")
+        .select("slug, name")
+        .in("slug", selectedFacets);
+      if (error) return {} as Record<string, string>;
+      return Object.fromEntries((data ?? []).map((t) => [t.slug, t.name])) as Record<string, string>;
+    },
+  });
 
   /** Chips de filtros ativos: label legível + ação de remoção (URL + estado local). */
   const activeChips = useMemo(() => {
@@ -305,10 +334,17 @@ function SearchPage() {
     if (search.prazo > 0) chips.push({ key: "prazo", label: `Prazo até ${search.prazo} dias`, clear: () => { setPrazo(""); setFilter("prazo", 0); } });
     if (search.uf) chips.push({ key: "uf", label: `Estado: ${search.uf}`, clear: () => setFilter("uf", "") });
     if (search.video) chips.push({ key: "video", label: "Somente com vídeo", clear: () => setFilter("video", false) });
+    for (const slug of selectedFacets) {
+      chips.push({
+        key: `faceta:${slug}`,
+        label: `Vitrine: ${facetLabels?.[slug] ?? slug}`,
+        clear: () => setFacets(selectedFacets.filter((s) => s !== slug)),
+      });
+    }
 
     return chips;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, categories]);
+  }, [search, categories, selectedFacets, facetLabels]);
 
   return (
     <div className="flex min-h-screen flex-col">
