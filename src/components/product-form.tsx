@@ -212,7 +212,20 @@ export function ProductForm({
       return toast.error(first?.message ?? "Dados inválidos");
     }
 
+    // Faixas de preço: valida cada linha isoladamente e depois o conjunto
+    // (ordem, sobreposição e limite), espelhando as regras do banco.
+    const tiers = draftsToTiers(tierDrafts);
+    for (const tier of tiers) {
+      const tierParsed = priceTierSchema.safeParse(tier);
+      if (!tierParsed.success) {
+        return toast.error(tierParsed.error.issues[0]?.message ?? "Faixa de preço inválida.");
+      }
+    }
+    const tiersError = tiers.length > 0 ? validateTiers(tiers) : null;
+    if (tiersError) return toast.error(tiersError);
+
     const payload = { ...parsed.data, company_id: companyId };
+
 
     try {
       let finalProductId = productId;
