@@ -7,7 +7,8 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { facetProductsQO } from "@/lib/facet-queries";
-import type { FacetTerm } from "@/lib/facets";
+import { FacetRelated } from "@/components/facet-related";
+import { FACET_AXIS_HUB, type FacetAxisSlug, type FacetTerm } from "@/lib/facets";
 
 export type FacetTermPageProps = {
   term: FacetTerm;
@@ -23,6 +24,10 @@ export type FacetTermPageProps = {
  */
 export function FacetTermPage({ term, hubPath, hubLabel }: FacetTermPageProps) {
   const { data: products } = useSuspenseQuery(facetProductsQO(term.id));
+  // Deriva o eixo a partir do hub para priorizar vitrines irmãs nas sugestões.
+  const currentAxisSlug = (Object.keys(FACET_AXIS_HUB) as FacetAxisSlug[]).find(
+    (a) => FACET_AXIS_HUB[a] === hubPath,
+  );
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -62,6 +67,14 @@ export function FacetTermPage({ term, hubPath, hubLabel }: FacetTermPageProps) {
                 <ProductCard key={p.id} product={p as never} />
               ))}
             </div>
+          )}
+
+          {currentAxisSlug && (
+            <FacetRelated
+              className="mt-12"
+              currentTermId={term.id}
+              currentAxisSlug={currentAxisSlug}
+            />
           )}
         </section>
       </main>
