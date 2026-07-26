@@ -66,7 +66,7 @@ export function SearchFacetFilter({ selected, onChange, className }: SearchFacet
         ),
       }))
       .filter((g) => g.terms.length > 0);
-  }, [data]);
+  }, [data, counts, selected]);
 
   if (groups.length === 0) return null;
 
