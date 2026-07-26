@@ -238,6 +238,8 @@ function KitDetailPage() {
                     is_clearance: i.product!.is_clearance,
                     is_unusual: i.product!.is_unusual,
                     video_url: i.product!.video_url,
+                    price_tiers: i.product!.price_tiers,
+
                     company: i.product!.company
                       ? {
                           id: i.product!.company.id,
