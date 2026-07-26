@@ -187,16 +187,30 @@ export const Route = createFileRoute("/sitemap.xml")({
             data: "/brindes-por-data",
             tipo: "/tipos-de-brinde",
           };
+          // Etapa 10: vitrines sem nenhum produto publicado são páginas finas —
+          // ficam fora do sitemap até terem conteúdo, e as populadas ganham
+          // prioridade proporcional ao acervo.
+          const facetCounts = new Map<string, number>();
+          {
+            const { data: countRows } = await supabase.rpc("facet_term_counts", {
+              _axis_slug: undefined,
+            });
+            for (const row of (countRows ?? []) as Array<{ term_slug: string; products_count: number }>) {
+              facetCounts.set(row.term_slug, Number(row.products_count) || 0);
+            }
+          }
           for (const t of facetsRes.data ?? []) {
             const axis = (t as { axis: { slug: string } | null }).axis;
             const base = axis ? FACET_AXIS_PATH[axis.slug] : undefined;
             if (!base) continue;
+            const count = facetCounts.get(t.slug) ?? 0;
+            if (count === 0) continue;
             parts.push(
               urlEntry(
                 `${SITE_URL}${base}/${t.slug}`,
                 t.updated_at ? new Date(t.updated_at).toISOString() : undefined,
                 "weekly",
-                "0.7",
+                count >= 20 ? "0.8" : count >= 5 ? "0.7" : "0.6",
               ),
             );
           }
