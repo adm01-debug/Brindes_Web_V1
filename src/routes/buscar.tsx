@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Search, Package, ChevronLeft, ChevronRight, X, History } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SearchFacetFilter, MAX_SEARCH_FACETS } from "@/components/search-facet-filter";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -33,8 +34,23 @@ const searchSchema = z.object({
   prazo: fallback(z.number().int(), 0).default(0),
   uf: fallback(z.string(), "").default(""),
   video: fallback(z.boolean(), false).default(false),
+  /** Slugs de vitrines (facetas) separados por vírgula. Ex.: "canecas,formatura". */
+  facetas: fallback(z.string(), "").default(""),
   page: fallback(z.number().int(), 1).default(1),
 });
+
+/** Converte o parâmetro CSV da URL em lista de slugs limpa e sem duplicatas. */
+function parseFacets(csv: string): string[] {
+  return Array.from(
+    new Set(
+      csv
+        .split(",")
+        .map((s) => s.trim().toLowerCase())
+        .filter((s) => s.length > 0),
+    ),
+  ).slice(0, MAX_SEARCH_FACETS);
+}
+
 
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
@@ -177,6 +193,9 @@ function SearchPage() {
     staleTime: 5 * 60_000,
   });
 
+  /** Facetas normalizadas a partir da URL (fonte única para query e UI). */
+  const selectedFacets = useMemo(() => parseFacets(search.facetas), [search.facetas]);
+
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [
       "search-products-rpc",
@@ -191,6 +210,7 @@ function SearchPage() {
       search.prazo,
       search.uf,
       search.video,
+      selectedFacets.join(","),
       search.page,
     ],
     placeholderData: keepPreviousData,
@@ -209,6 +229,7 @@ function SearchPage() {
         _max_days: search.prazo > 0 ? search.prazo : undefined,
         _state: search.uf || undefined,
         _has_video: search.video ? true : undefined,
+        _facets: selectedFacets.length > 0 ? selectedFacets : undefined,
       });
       if (error) throw error;
       return (data ?? []) as RpcRow[];
@@ -260,7 +281,7 @@ function SearchPage() {
     navigate({
       search: () => ({
         q: "", categoria: "", ordenar: "relevance", min: 0, max: 0,
-        material: "", cor: "", moq: 0, prazo: 0, uf: "", video: false, page: 1,
+        material: "", cor: "", moq: 0, prazo: 0, uf: "", video: false, facetas: "", page: 1,
       }),
     });
   };
@@ -268,6 +289,35 @@ function SearchPage() {
   const setFilter = <K extends keyof SearchState>(key: K, value: SearchState[K]) => {
     navigate({ search: (prev: SearchState) => ({ ...prev, [key]: value, page: 1 }) });
   };
+
+  /** Aplica a nova seleção de vitrines na URL (fonte de verdade do filtro). */
+  const setFacets = useCallback(
+    (next: string[]) => {
+      navigate({
+        search: (prev: SearchState) => ({
+          ...prev,
+          facetas: parseFacets(next.join(",")).join(","),
+          page: 1,
+        }),
+      });
+    },
+    [navigate],
+  );
+
+  /** Rótulos legíveis das vitrines selecionadas (para os chips de filtros ativos). */
+  const { data: facetLabels } = useQuery({
+    queryKey: ["search-facet-labels", selectedFacets.join(",")],
+    enabled: selectedFacets.length > 0,
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("facet_terms")
+        .select("slug, name")
+        .in("slug", selectedFacets);
+      if (error) return {} as Record<string, string>;
+      return Object.fromEntries((data ?? []).map((t) => [t.slug, t.name])) as Record<string, string>;
+    },
+  });
 
   /** Chips de filtros ativos: label legível + ação de remoção (URL + estado local). */
   const activeChips = useMemo(() => {
@@ -284,10 +334,17 @@ function SearchPage() {
     if (search.prazo > 0) chips.push({ key: "prazo", label: `Prazo até ${search.prazo} dias`, clear: () => { setPrazo(""); setFilter("prazo", 0); } });
     if (search.uf) chips.push({ key: "uf", label: `Estado: ${search.uf}`, clear: () => setFilter("uf", "") });
     if (search.video) chips.push({ key: "video", label: "Somente com vídeo", clear: () => setFilter("video", false) });
+    for (const slug of selectedFacets) {
+      chips.push({
+        key: `faceta:${slug}`,
+        label: `Vitrine: ${facetLabels?.[slug] ?? slug}`,
+        clear: () => setFacets(selectedFacets.filter((s) => s !== slug)),
+      });
+    }
 
     return chips;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, categories]);
+  }, [search, categories, selectedFacets, facetLabels]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -375,6 +432,10 @@ function SearchPage() {
                 />
                 Somente com vídeo
               </label>
+            </div>
+            <div className="mt-5 border-t pt-4">
+              <p className="mb-3 text-sm font-medium">Vitrines (evento, público, tipo e datas)</p>
+              <SearchFacetFilter selected={selectedFacets} onChange={setFacets} />
             </div>
             <div className="mt-3 flex gap-2">
               <Button type="button" size="sm" onClick={(e) => submitSearch(e as unknown as React.FormEvent)}>

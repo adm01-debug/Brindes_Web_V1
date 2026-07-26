@@ -1,0 +1,2 @@
+-- Remove a assinatura antiga (sem _facets) para evitar ambiguidade no PostgREST.
+DROP FUNCTION IF EXISTS public.search_products(text, text, numeric, numeric, text, integer, integer, text, text, integer, integer, text, boolean);

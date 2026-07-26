@@ -1603,6 +1603,7 @@ export type Database = {
         Args: {
           _category_slug?: string
           _color?: string
+          _facets?: string[]
           _has_video?: boolean
           _material?: string
           _max_days?: number
