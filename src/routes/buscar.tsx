@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Package, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Package, ChevronLeft, ChevronRight, X, History } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const searchSchema = z.object({
@@ -38,6 +38,9 @@ const searchSchema = z.object({
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
 const PAGE_SIZE = 24;
+
+const RECENT_KEY = "brindeshub:recent-searches";
+const MAX_RECENT = 8;
 
 const BUSCAR_URL = "https://brinde-gallery.lovable.app/buscar";
 
@@ -122,6 +125,43 @@ function SearchPage() {
   const [cor, setCor] = useState(search.cor);
   const [moq, setMoq] = useState(search.moq ? String(search.moq) : "");
   const [prazo, setPrazo] = useState(search.prazo ? String(search.prazo) : "");
+  const [recent, setRecent] = useState<string[]>([]);
+
+  // Buscas recentes: lidas apenas no cliente (evita mismatch de hidratação).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY);
+      const parsed: unknown = raw ? JSON.parse(raw) : [];
+      if (Array.isArray(parsed)) {
+        setRecent(parsed.filter((v): v is string => typeof v === "string").slice(0, MAX_RECENT));
+      }
+    } catch {
+      /* storage indisponível/corrompido: degrada silenciosamente */
+    }
+  }, []);
+
+  const pushRecent = useCallback((raw: string) => {
+    const value = raw.trim().slice(0, 80);
+    if (value.length < 2) return;
+    setRecent((prev) => {
+      const next = [value, ...prev.filter((v) => v.toLowerCase() !== value.toLowerCase())].slice(0, MAX_RECENT);
+      try {
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      } catch {
+        /* quota cheia: mantém apenas em memória */
+      }
+      return next;
+    });
+  }, []);
+
+  const clearRecent = () => {
+    setRecent([]);
+    try {
+      localStorage.removeItem(RECENT_KEY);
+    } catch {
+      /* noop */
+    }
+  };
 
   const { data: categories } = useQuery({
     queryKey: ["all-categories-active"],
@@ -181,6 +221,7 @@ function SearchPage() {
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    pushRecent(term);
     navigate({
       search: (prev: SearchState) => ({
         ...prev,
