@@ -62,8 +62,7 @@ export const Route = createFileRoute("/api/public/hooks/indexnow")({
             supabase
               .from("companies")
               .select("slug")
-              .eq("is_active", true)
-              .eq("moderation_status", "approved")
+              .eq("status", "approved")
               .gte("updated_at", since)
               .limit(MAX_URLS),
           ]);
