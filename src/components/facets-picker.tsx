@@ -9,7 +9,7 @@ import { MAX_FACETS_PER_PRODUCT } from "@/lib/facets";
  * Eixos exibidos no painel. `categoria` fica de fora porque o produto já tem
  * `category_id` — duplicar o mesmo eixo confundiria o vendedor.
  */
-const PANEL_AXES = ["evento", "publico", "data"] as const;
+const PANEL_AXES = ["tipo", "evento", "publico", "data"] as const;
 
 type FacetTermOption = {
   id: string;
