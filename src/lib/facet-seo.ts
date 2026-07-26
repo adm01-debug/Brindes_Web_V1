@@ -34,7 +34,9 @@ export function facetTermHead(params: {
   }
 
   const term = params.term;
-  const title = term.seo_title ?? `${term.name} — Brindes Corporativos | BrindesHub`;
+  const baseTitle = term.seo_title ?? `${term.name} — Brindes Corporativos | BrindesHub`;
+  // Páginas 2+ recebem sufixo para evitar títulos duplicados no index.
+  const title = page > 1 ? `${baseTitle} — Página ${page}` : baseTitle;
   const description =
     term.seo_description ??
     term.description ??
@@ -52,7 +54,15 @@ export function facetTermHead(params: {
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
     ],
-    links: [{ rel: "canonical", href: url }],
+    links: [
+      // Cada página é seu próprio canonical; prev/next descrevem a série.
+      { rel: "canonical", href: url },
+      ...(page > 1
+        ? [{ rel: "prev", href: page === 2 ? base : `${base}?page=${page - 1}` }]
+        : []),
+      ...(page < pageCount ? [{ rel: "next", href: `${base}?page=${page + 1}` }] : []),
+    ],
+
     scripts: [
       {
         type: "application/ld+json",
