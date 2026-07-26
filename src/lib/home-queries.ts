@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { CompanyPlan } from "@/components/plan-badge";
 
 /**
  * Consultas da home isoladas em queryOptions para que o loader da rota possa
@@ -24,7 +25,7 @@ export type HomeCompany = {
   state: string | null;
   logo_url: string | null;
   banner_url: string | null;
-  plan: string | null;
+  plan: CompanyPlan | null;
   featured_until: string | null;
 };
 
