@@ -66,12 +66,19 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         try {
           const supabase = sitemapSupabase();
-          const [companies, products, terms, dates] = await Promise.all([
+          const [companies, products, terms, dates, productChunks] = await Promise.all([
             maxUpdatedAt(supabase, "companies"),
             maxUpdatedAt(supabase, "products"),
             maxUpdatedAt(supabase, "facet_terms"),
             maxUpdatedAt(supabase, "commemorative_dates"),
+            countProductChunks(),
           ]);
+
+          // Fatia 1 mantém a URL histórica; as demais são numeradas.
+          const productSections = Array.from({ length: productChunks }, (_, i) => ({
+            path: i === 0 ? "/sitemap-produtos.xml" : `/sitemap-produtos/${i + 1}.xml`,
+            lastmod: products,
+          }));
 
           return xmlResponse(
             request,
@@ -80,7 +87,7 @@ export const Route = createFileRoute("/sitemap.xml")({
               // Vitrines derivam de termos + datas comemorativas.
               { path: "/sitemap-vitrines.xml", lastmod: newest(terms, dates) },
               { path: "/sitemap-empresas.xml", lastmod: companies },
-              { path: "/sitemap-produtos.xml", lastmod: products },
+              ...productSections,
               { path: "/sitemap-conteudo.xml", lastmod: conteudoLastmod },
             ]),
           );
