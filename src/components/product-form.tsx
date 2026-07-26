@@ -394,6 +394,9 @@ export function ProductForm({
         </CardContent>
       </Card>
 
+      <PriceTiersEditor drafts={tierDrafts} onChange={setTierDrafts} />
+
+
       <Card>
         <CardHeader><CardTitle className="text-base">Especificações</CardTitle></CardHeader>
         <CardContent className="space-y-4">
