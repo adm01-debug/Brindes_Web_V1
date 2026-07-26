@@ -45,6 +45,7 @@ import { Route as BrindesPorEventoIndexRouteImport } from './routes/brindes-por-
 import { Route as BrindesPorDataIndexRouteImport } from './routes/brindes-por-data.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as TiposDeBrindeSlugRouteImport } from './routes/tipos-de-brinde.$slug'
+import { Route as SitemapProdutosPageDotxmlRouteImport } from './routes/sitemap-produtos.$page[.]xml'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
 import { Route as KitSlugRouteImport } from './routes/kit.$slug'
@@ -259,6 +260,12 @@ const TiposDeBrindeSlugRoute = TiposDeBrindeSlugRouteImport.update({
   path: '/tipos-de-brinde/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapProdutosPageDotxmlRoute =
+  SitemapProdutosPageDotxmlRouteImport.update({
+    id: '/sitemap-produtos/$page.xml',
+    path: '/sitemap-produtos/$page.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ProdutoIdRoute = ProdutoIdRouteImport.update({
   id: '/produto/$id',
   path: '/produto/$id',
@@ -480,6 +487,7 @@ export interface FileRoutesByFullPath {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/sitemap-produtos/$page.xml': typeof SitemapProdutosPageDotxmlRoute
   '/tipos-de-brinde/$slug': typeof TiposDeBrindeSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/brindes-por-data/': typeof BrindesPorDataIndexRoute
@@ -549,6 +557,7 @@ export interface FileRoutesByTo {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/sitemap-produtos/$page.xml': typeof SitemapProdutosPageDotxmlRoute
   '/tipos-de-brinde/$slug': typeof TiposDeBrindeSlugRoute
   '/blog': typeof BlogIndexRoute
   '/brindes-por-data': typeof BrindesPorDataIndexRoute
@@ -621,6 +630,7 @@ export interface FileRoutesById {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/sitemap-produtos/$page.xml': typeof SitemapProdutosPageDotxmlRoute
   '/tipos-de-brinde/$slug': typeof TiposDeBrindeSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/brindes-por-data/': typeof BrindesPorDataIndexRoute
@@ -693,6 +703,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/sitemap-produtos/$page.xml'
     | '/tipos-de-brinde/$slug'
     | '/blog/'
     | '/brindes-por-data/'
@@ -762,6 +773,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/sitemap-produtos/$page.xml'
     | '/tipos-de-brinde/$slug'
     | '/blog'
     | '/brindes-por-data'
@@ -833,6 +845,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/sitemap-produtos/$page.xml'
     | '/tipos-de-brinde/$slug'
     | '/blog/'
     | '/brindes-por-data/'
@@ -903,6 +916,7 @@ export interface RootRouteChildren {
   IdeiasSlugRoute: typeof IdeiasSlugRoute
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
+  SitemapProdutosPageDotxmlRoute: typeof SitemapProdutosPageDotxmlRoute
   TiposDeBrindeSlugRoute: typeof TiposDeBrindeSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   BrindesPorDataIndexRoute: typeof BrindesPorDataIndexRoute
@@ -1172,6 +1186,13 @@ declare module '@tanstack/react-router' {
       path: '/tipos-de-brinde/$slug'
       fullPath: '/tipos-de-brinde/$slug'
       preLoaderRoute: typeof TiposDeBrindeSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-produtos/$page.xml': {
+      id: '/sitemap-produtos/$page.xml'
+      path: '/sitemap-produtos/$page.xml'
+      fullPath: '/sitemap-produtos/$page.xml'
+      preLoaderRoute: typeof SitemapProdutosPageDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produto/$id': {
@@ -1513,6 +1534,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdeiasSlugRoute: IdeiasSlugRoute,
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
+  SitemapProdutosPageDotxmlRoute: SitemapProdutosPageDotxmlRoute,
   TiposDeBrindeSlugRoute: TiposDeBrindeSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   BrindesPorDataIndexRoute: BrindesPorDataIndexRoute,
