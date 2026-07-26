@@ -178,6 +178,29 @@ export const Route = createFileRoute("/sitemap.xml")({
             );
           }
 
+          // Vitrines multi-eixo. O mapa evita hardcodar caminhos em dois lugares:
+          // um eixo novo só entra no sitemap depois de ganhar rota pública.
+          const FACET_AXIS_PATH: Record<string, string> = {
+            evento: "/brindes-por-evento",
+            publico: "/brindes-por-publico-alvo",
+            data: "/brindes-por-data",
+          };
+          for (const t of facetsRes.data ?? []) {
+            const axis = (t as { axis: { slug: string } | null }).axis;
+            const base = axis ? FACET_AXIS_PATH[axis.slug] : undefined;
+            if (!base) continue;
+            parts.push(
+              urlEntry(
+                `${SITE_URL}${base}/${t.slug}`,
+                t.updated_at ? new Date(t.updated_at).toISOString() : undefined,
+                "weekly",
+                "0.7",
+              ),
+            );
+          }
+
+
+
 
           for (const i of INTENTS) {
             parts.push(
