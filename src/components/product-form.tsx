@@ -252,9 +252,20 @@ export function ProductForm({
         }
       }
 
+      // Substituição atômica do ponto de vista do usuário: apaga as faixas
+      // antigas e reinsere as atuais em uma única ida ao banco.
+      await supabase.from("product_price_tiers").delete().eq("product_id", finalProductId!);
+      if (tiers.length > 0) {
+        const { error: tierErr } = await supabase.from("product_price_tiers").insert(
+          tiers.map((t) => ({ ...t, product_id: finalProductId! })),
+        );
+        if (tierErr) throw tierErr;
+      }
+
       toast.success(productId ? "Produto atualizado!" : "Produto criado!");
       qc.invalidateQueries({ queryKey: ["my-products"] });
       navigate({ to: "/painel/produtos" });
+
     } catch (err: unknown) {
       toast.error(pgErrorMessage(err, "Erro ao salvar produto"));
     }
