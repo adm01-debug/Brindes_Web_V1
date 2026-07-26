@@ -185,6 +185,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             evento: "/brindes-por-evento",
             publico: "/brindes-por-publico-alvo",
             data: "/brindes-por-data",
+            tipo: "/tipos-de-brinde",
           };
           for (const t of facetsRes.data ?? []) {
             const axis = (t as { axis: { slug: string } | null }).axis;
