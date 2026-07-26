@@ -94,9 +94,14 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             <img
               src={imgUrl}
               alt={product.name}
-              loading="lazy"
+              width={400}
+              height={400}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
+              decoding="async"
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
             />
+
           ) : (
             <div className="flex h-full w-full items-center justify-center text-muted-foreground">
               <Package className="h-10 w-10" />
