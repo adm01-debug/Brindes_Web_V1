@@ -23,6 +23,7 @@ type Props = {
 
 export function AddToQuoteCartButton({
   item,
+  priceTiers,
   size = "sm",
   variant = "secondary",
   showLabel = true,
@@ -31,6 +32,7 @@ export function AddToQuoteCartButton({
 }: Props) {
   const { has, add, maxItems, items } = useQuoteCart();
   const already = has(item.product_id);
+
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
