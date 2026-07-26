@@ -14,6 +14,12 @@ type Product = {
   price: number | null;
   price_on_request: boolean;
   short_description: string | null;
+  /** Preço promocional vigente (ponta de estoque / oferta). Deve ser menor que `price`. */
+  promo_price?: number | null;
+  /** Sinaliza item de ponta de estoque / liquidação. */
+  is_clearance?: boolean | null;
+  /** Sinaliza brinde curado como inusitado/diferente. */
+  is_unusual?: boolean | null;
   company:
     | { id: string; slug: string; name: string; plan?: CompanyPlan | null; featured_until?: string | null }
     | null;
@@ -36,9 +42,22 @@ export function ProductCard({ product }: { product: Product }) {
     };
   }, [rawUrl]);
 
+  // Preço promocional só é considerado válido quando existe, é positivo e
+  // realmente menor que o preço base — evita "descontos" negativos por dado sujo.
+  const hasPromo =
+    !product.price_on_request &&
+    product.promo_price != null &&
+    product.promo_price > 0 &&
+    product.price != null &&
+    product.promo_price < product.price;
+
+  const discountPct = hasPromo
+    ? Math.round(((product.price! - product.promo_price!) / product.price!) * 100)
+    : 0;
+
   const priceLabel = product.price_on_request || product.price == null
     ? "Sob consulta"
-    : formatBRL(product.price);
+    : formatBRL(hasPromo ? product.promo_price! : product.price);
 
   return (
     <Card className="group relative h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
@@ -71,6 +90,23 @@ export function ProductCard({ product }: { product: Product }) {
               <PlanBadge plan={product.company.plan} featuredUntil={product.company.featured_until} />
             </div>
           )}
+          <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
+            {hasPromo && (
+              <span className="rounded-full bg-destructive px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-destructive-foreground shadow-sm">
+                -{discountPct}%
+              </span>
+            )}
+            {product.is_clearance && (
+              <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground shadow-sm">
+                Ponta de estoque
+              </span>
+            )}
+            {product.is_unusual && (
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary-foreground shadow-sm">
+                Inusitado
+              </span>
+            )}
+          </div>
         </div>
         <CardContent className="p-4">
           <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold group-hover:text-primary">
@@ -79,7 +115,14 @@ export function ProductCard({ product }: { product: Product }) {
           {product.company && (
             <p className="mt-1 truncate text-xs text-muted-foreground">{product.company.name}</p>
           )}
-          <p className="mt-2 text-sm font-semibold text-primary">{priceLabel}</p>
+          <p className="mt-2 flex items-baseline gap-2 text-sm font-semibold text-primary">
+            {priceLabel}
+            {hasPromo && (
+              <span className="text-xs font-normal text-muted-foreground line-through">
+                {formatBRL(product.price!)}
+              </span>
+            )}
+          </p>
         </CardContent>
       </Link>
       {product.company && (
