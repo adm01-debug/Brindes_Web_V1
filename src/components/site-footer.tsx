@@ -27,6 +27,8 @@ export function SiteFooter() {
               <li><Link to="/datas-comemorativas" className="hover:text-foreground">Datas comemorativas</Link></li>
               <li><Link to="/brindes-a-z" className="hover:text-foreground">Brindes de A a Z</Link></li>
               <li><Link to="/empresas-a-z" className="hover:text-foreground">Fornecedores de A a Z</Link></li>
+              <li><Link to="/ofertas" className="hover:text-foreground">Ofertas e ponta de estoque</Link></li>
+              <li><Link to="/inusitados" className="hover:text-foreground">Brindes inusitados</Link></li>
 
 
             </ul>
