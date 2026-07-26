@@ -251,6 +251,26 @@ function SearchPage() {
     navigate({ search: (prev: SearchState) => ({ ...prev, [key]: value, page: 1 }) });
   };
 
+  /** Chips de filtros ativos: label legível + ação de remoção (URL + estado local). */
+  const activeChips = useMemo(() => {
+    const categoryName = categories?.find((c) => c.slug === search.categoria)?.name ?? search.categoria;
+    const chips: Array<{ key: string; label: string; clear: () => void }> = [];
+
+    if (search.q) chips.push({ key: "q", label: `Termo: "${search.q}"`, clear: () => { setTerm(""); setFilter("q", ""); } });
+    if (search.categoria) chips.push({ key: "categoria", label: `Categoria: ${categoryName}`, clear: () => setFilter("categoria", "") });
+    if (search.min > 0) chips.push({ key: "min", label: `Mín: R$ ${search.min}`, clear: () => { setPriceMin(""); setFilter("min", 0); } });
+    if (search.max > 0) chips.push({ key: "max", label: `Máx: R$ ${search.max}`, clear: () => { setPriceMax(""); setFilter("max", 0); } });
+    if (search.material) chips.push({ key: "material", label: `Material: ${search.material}`, clear: () => { setMaterial(""); setFilter("material", ""); } });
+    if (search.cor) chips.push({ key: "cor", label: `Cor: ${search.cor}`, clear: () => { setCor(""); setFilter("cor", ""); } });
+    if (search.moq > 0) chips.push({ key: "moq", label: `Pedido até ${search.moq} un.`, clear: () => { setMoq(""); setFilter("moq", 0); } });
+    if (search.prazo > 0) chips.push({ key: "prazo", label: `Prazo até ${search.prazo} dias`, clear: () => { setPrazo(""); setFilter("prazo", 0); } });
+    if (search.uf) chips.push({ key: "uf", label: `Estado: ${search.uf}`, clear: () => setFilter("uf", "") });
+    if (search.video) chips.push({ key: "video", label: "Somente com vídeo", clear: () => setFilter("video", false) });
+
+    return chips;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, categories]);
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -349,6 +369,48 @@ function SearchPage() {
               </Button>
             </div>
           </details>
+
+          {activeChips.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="Filtros ativos">
+              <span className="text-sm text-muted-foreground">Filtros ativos:</span>
+              {activeChips.map((chip) => (
+                <button
+                  key={chip.key}
+                  type="button"
+                  onClick={chip.clear}
+                  className="inline-flex items-center gap-1 rounded-full border bg-card px-3 py-1 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={`Remover filtro ${chip.label}`}
+                >
+                  {chip.label}
+                  <X className="h-3 w-3" aria-hidden="true" />
+                </button>
+              ))}
+              <Button type="button" size="sm" variant="ghost" onClick={clearAll}>
+                Limpar tudo
+              </Button>
+            </div>
+          )}
+
+          {recent.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-2" aria-label="Buscas recentes">
+              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
+                <History className="h-3.5 w-3.5" aria-hidden="true" /> Recentes:
+              </span>
+              {recent.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => { setTerm(r); pushRecent(r); setFilter("q", r); }}
+                  className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {r}
+                </button>
+              ))}
+              <Button type="button" size="sm" variant="ghost" onClick={clearRecent}>
+                Limpar histórico
+              </Button>
+            </div>
+          )}
 
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row">
