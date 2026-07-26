@@ -128,7 +128,19 @@ export const facetProductsQO = (termId: string, page = 1) =>
         .eq("product.company.status", "approved")
         .order("name", { referencedTable: "product", ascending: true })
         .range(from, to);
+      // PGRST103: página além do fim da lista. Não é falha — devolvemos uma
+      // página vazia para que a UI mostre o estado "sem produtos nesta página".
+      if (error && error.code === "PGRST103") {
+        return {
+          items: [],
+          total: count ?? 0,
+          page: safePage,
+          pageSize: FACET_PAGE_SIZE,
+          pageCount: Math.max(1, Math.ceil((count ?? 0) / FACET_PAGE_SIZE)),
+        };
+      }
       if (error) throw error;
+
 
       const items = (data ?? [])
         .map((row) => (row as { product: unknown }).product as (FacetListedProduct & {
