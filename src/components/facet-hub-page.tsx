@@ -74,7 +74,9 @@ export function FacetHubPage({ axisSlug, heading, intro, termLinkTo }: FacetHubP
                   <Card
                     className={cn(
                       "h-full transition-colors group-hover:border-primary",
-                      counts?.[term.slug] === 0 && "opacity-60",
+                      // Vitrines vazias ficam visualmente secundárias sem usar opacidade:
+                      // opacidade reduz o contraste do texto abaixo do mínimo WCAG AA.
+                      counts?.[term.slug] === 0 && "border-dashed bg-muted/40",
                     )}
                   >
                     <CardContent className="p-5">
