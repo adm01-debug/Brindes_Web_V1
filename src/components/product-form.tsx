@@ -19,6 +19,8 @@ import {
   draftsToTiers,
   type PriceTierDraft,
 } from "@/components/price-tiers-editor";
+import { FacetsPicker } from "@/components/facets-picker";
+import { dedupeFacetIds, facetSelectionSchema } from "@/lib/facets";
 import { validateTiers } from "@/lib/price-tiers";
 import { Loader2, Upload, X } from "lucide-react";
 
@@ -96,6 +98,7 @@ export function ProductForm({
 
   const [images, setImages] = useState<ImageState[]>([]);
   const [tierDrafts, setTierDrafts] = useState<PriceTierDraft[]>([]);
+  const [facetIds, setFacetIds] = useState<string[]>([]);
   const [initialLoaded, setInitialLoaded] = useState(!productId);
 
 
@@ -114,7 +117,7 @@ export function ProductForm({
   useEffect(() => {
     if (!productId) return;
     (async () => {
-      const [imagesRes, tiersRes] = await Promise.all([
+      const [imagesRes, tiersRes, facetsRes] = await Promise.all([
         supabase
           .from("product_images")
           .select("id, url, sort_order")
@@ -125,6 +128,10 @@ export function ProductForm({
           .select("id, min_qty, max_qty, unit_price")
           .eq("product_id", productId)
           .order("min_qty"),
+        supabase
+          .from("product_facets")
+          .select("term_id")
+          .eq("product_id", productId),
       ]);
       const rows = imagesRes.data ?? [];
       const withUrls = await Promise.all(
@@ -144,6 +151,7 @@ export function ProductForm({
           unit_price: String(t.unit_price),
         })),
       );
+      setFacetIds((facetsRes.data ?? []).map((f) => f.term_id));
       setInitialLoaded(true);
     })();
   }, [productId]);
@@ -224,6 +232,14 @@ export function ProductForm({
     const tiersError = tiers.length > 0 ? validateTiers(tiers) : null;
     if (tiersError) return toast.error(tiersError);
 
+    // Facetas: deduplica (a PK é composta) e valida o limite antes de chamar
+    // o banco, para o vendedor receber a mensagem sem uma ida ao servidor.
+    const facets = dedupeFacetIds(facetIds);
+    const facetsParsed = facetSelectionSchema.safeParse(facets);
+    if (!facetsParsed.success) {
+      return toast.error(facetsParsed.error.issues[0]?.message ?? "Facetas inválidas.");
+    }
+
     const payload = { ...parsed.data, company_id: companyId };
 
 
@@ -260,6 +276,15 @@ export function ProductForm({
           tiers.map((t) => ({ ...t, product_id: finalProductId! })),
         );
         if (tierErr) throw tierErr;
+      }
+
+      // Mesma estratégia para as facetas: estado final substitui o anterior.
+      await supabase.from("product_facets").delete().eq("product_id", finalProductId!);
+      if (facets.length > 0) {
+        const { error: facetErr } = await supabase.from("product_facets").insert(
+          facets.map((term_id) => ({ product_id: finalProductId!, term_id })),
+        );
+        if (facetErr) throw facetErr;
       }
 
       toast.success(productId ? "Produto atualizado!" : "Produto criado!");
@@ -395,6 +420,10 @@ export function ProductForm({
       </Card>
 
       <PriceTiersEditor drafts={tierDrafts} onChange={setTierDrafts} />
+
+      <FacetsPicker value={facetIds} onChange={setFacetIds} disabled={isSubmitting} />
+
+
 
 
       <Card>

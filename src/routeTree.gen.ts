@@ -34,6 +34,9 @@ import { Route as KitsIndexRouteImport } from './routes/kits.index'
 import { Route as IdeiasIndexRouteImport } from './routes/ideias.index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
 import { Route as DatasComemorativasIndexRouteImport } from './routes/datas-comemorativas.index'
+import { Route as BrindesPorPublicoAlvoIndexRouteImport } from './routes/brindes-por-publico-alvo.index'
+import { Route as BrindesPorEventoIndexRouteImport } from './routes/brindes-por-evento.index'
+import { Route as BrindesPorDataIndexRouteImport } from './routes/brindes-por-data.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
@@ -43,6 +46,9 @@ import { Route as FornecedoresSlugRouteImport } from './routes/fornecedores.$slu
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as DatasComemorativasSlugRouteImport } from './routes/datas-comemorativas.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
+import { Route as BrindesPorPublicoAlvoSlugRouteImport } from './routes/brindes-por-publico-alvo.$slug'
+import { Route as BrindesPorEventoSlugRouteImport } from './routes/brindes-por-evento.$slug'
+import { Route as BrindesPorDataSlugRouteImport } from './routes/brindes-por-data.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
 import { Route as AuthenticatedPainelIndexRouteImport } from './routes/_authenticated/painel.index'
@@ -190,6 +196,22 @@ const DatasComemorativasIndexRoute = DatasComemorativasIndexRouteImport.update({
   path: '/datas-comemorativas/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BrindesPorPublicoAlvoIndexRoute =
+  BrindesPorPublicoAlvoIndexRouteImport.update({
+    id: '/brindes-por-publico-alvo/',
+    path: '/brindes-por-publico-alvo/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const BrindesPorEventoIndexRoute = BrindesPorEventoIndexRouteImport.update({
+  id: '/brindes-por-evento/',
+  path: '/brindes-por-evento/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrindesPorDataIndexRoute = BrindesPorDataIndexRouteImport.update({
+  id: '/brindes-por-data/',
+  path: '/brindes-por-data/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -233,6 +255,22 @@ const DatasComemorativasSlugRoute = DatasComemorativasSlugRouteImport.update({
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   id: '/categoria/$slug',
   path: '/categoria/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrindesPorPublicoAlvoSlugRoute =
+  BrindesPorPublicoAlvoSlugRouteImport.update({
+    id: '/brindes-por-publico-alvo/$slug',
+    path: '/brindes-por-publico-alvo/$slug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const BrindesPorEventoSlugRoute = BrindesPorEventoSlugRouteImport.update({
+  id: '/brindes-por-evento/$slug',
+  path: '/brindes-por-evento/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrindesPorDataSlugRoute = BrindesPorDataSlugRouteImport.update({
+  id: '/brindes-por-data/$slug',
+  path: '/brindes-por-data/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
@@ -384,6 +422,9 @@ export interface FileRoutesByFullPath {
   '/vender': typeof VenderRoute
   '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/brindes-por-data/$slug': typeof BrindesPorDataSlugRoute
+  '/brindes-por-evento/$slug': typeof BrindesPorEventoSlugRoute
+  '/brindes-por-publico-alvo/$slug': typeof BrindesPorPublicoAlvoSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
@@ -393,6 +434,9 @@ export interface FileRoutesByFullPath {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog/': typeof BlogIndexRoute
+  '/brindes-por-data/': typeof BrindesPorDataIndexRoute
+  '/brindes-por-evento/': typeof BrindesPorEventoIndexRoute
+  '/brindes-por-publico-alvo/': typeof BrindesPorPublicoAlvoIndexRoute
   '/datas-comemorativas/': typeof DatasComemorativasIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
@@ -440,6 +484,9 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/vender': typeof VenderRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/brindes-por-data/$slug': typeof BrindesPorDataSlugRoute
+  '/brindes-por-evento/$slug': typeof BrindesPorEventoSlugRoute
+  '/brindes-por-publico-alvo/$slug': typeof BrindesPorPublicoAlvoSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
@@ -449,6 +496,9 @@ export interface FileRoutesByTo {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog': typeof BlogIndexRoute
+  '/brindes-por-data': typeof BrindesPorDataIndexRoute
+  '/brindes-por-evento': typeof BrindesPorEventoIndexRoute
+  '/brindes-por-publico-alvo': typeof BrindesPorPublicoAlvoIndexRoute
   '/datas-comemorativas': typeof DatasComemorativasIndexRoute
   '/empresas': typeof EmpresasIndexRoute
   '/ideias': typeof IdeiasIndexRoute
@@ -499,6 +549,9 @@ export interface FileRoutesById {
   '/vender': typeof VenderRoute
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/brindes-por-data/$slug': typeof BrindesPorDataSlugRoute
+  '/brindes-por-evento/$slug': typeof BrindesPorEventoSlugRoute
+  '/brindes-por-publico-alvo/$slug': typeof BrindesPorPublicoAlvoSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
@@ -508,6 +561,9 @@ export interface FileRoutesById {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog/': typeof BlogIndexRoute
+  '/brindes-por-data/': typeof BrindesPorDataIndexRoute
+  '/brindes-por-evento/': typeof BrindesPorEventoIndexRoute
+  '/brindes-por-publico-alvo/': typeof BrindesPorPublicoAlvoIndexRoute
   '/datas-comemorativas/': typeof DatasComemorativasIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
@@ -558,6 +614,9 @@ export interface FileRouteTypes {
     | '/vender'
     | '/painel'
     | '/blog/$slug'
+    | '/brindes-por-data/$slug'
+    | '/brindes-por-evento/$slug'
+    | '/brindes-por-publico-alvo/$slug'
     | '/categoria/$slug'
     | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
@@ -567,6 +626,9 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog/'
+    | '/brindes-por-data/'
+    | '/brindes-por-evento/'
+    | '/brindes-por-publico-alvo/'
     | '/datas-comemorativas/'
     | '/empresas/'
     | '/ideias/'
@@ -614,6 +676,9 @@ export interface FileRouteTypes {
     | '/termos'
     | '/vender'
     | '/blog/$slug'
+    | '/brindes-por-data/$slug'
+    | '/brindes-por-evento/$slug'
+    | '/brindes-por-publico-alvo/$slug'
     | '/categoria/$slug'
     | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
@@ -623,6 +688,9 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog'
+    | '/brindes-por-data'
+    | '/brindes-por-evento'
+    | '/brindes-por-publico-alvo'
     | '/datas-comemorativas'
     | '/empresas'
     | '/ideias'
@@ -672,6 +740,9 @@ export interface FileRouteTypes {
     | '/vender'
     | '/_authenticated/painel'
     | '/blog/$slug'
+    | '/brindes-por-data/$slug'
+    | '/brindes-por-evento/$slug'
+    | '/brindes-por-publico-alvo/$slug'
     | '/categoria/$slug'
     | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
@@ -681,6 +752,9 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog/'
+    | '/brindes-por-data/'
+    | '/brindes-por-evento/'
+    | '/brindes-por-publico-alvo/'
     | '/datas-comemorativas/'
     | '/empresas/'
     | '/ideias/'
@@ -730,6 +804,9 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   VenderRoute: typeof VenderRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  BrindesPorDataSlugRoute: typeof BrindesPorDataSlugRoute
+  BrindesPorEventoSlugRoute: typeof BrindesPorEventoSlugRoute
+  BrindesPorPublicoAlvoSlugRoute: typeof BrindesPorPublicoAlvoSlugRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   DatasComemorativasSlugRoute: typeof DatasComemorativasSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
@@ -738,6 +815,9 @@ export interface RootRouteChildren {
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  BrindesPorDataIndexRoute: typeof BrindesPorDataIndexRoute
+  BrindesPorEventoIndexRoute: typeof BrindesPorEventoIndexRoute
+  BrindesPorPublicoAlvoIndexRoute: typeof BrindesPorPublicoAlvoIndexRoute
   DatasComemorativasIndexRoute: typeof DatasComemorativasIndexRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
   IdeiasIndexRoute: typeof IdeiasIndexRoute
@@ -926,6 +1006,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DatasComemorativasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/brindes-por-publico-alvo/': {
+      id: '/brindes-por-publico-alvo/'
+      path: '/brindes-por-publico-alvo'
+      fullPath: '/brindes-por-publico-alvo/'
+      preLoaderRoute: typeof BrindesPorPublicoAlvoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brindes-por-evento/': {
+      id: '/brindes-por-evento/'
+      path: '/brindes-por-evento'
+      fullPath: '/brindes-por-evento/'
+      preLoaderRoute: typeof BrindesPorEventoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brindes-por-data/': {
+      id: '/brindes-por-data/'
+      path: '/brindes-por-data'
+      fullPath: '/brindes-por-data/'
+      preLoaderRoute: typeof BrindesPorDataIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -987,6 +1088,27 @@ declare module '@tanstack/react-router' {
       path: '/categoria/$slug'
       fullPath: '/categoria/$slug'
       preLoaderRoute: typeof CategoriaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brindes-por-publico-alvo/$slug': {
+      id: '/brindes-por-publico-alvo/$slug'
+      path: '/brindes-por-publico-alvo/$slug'
+      fullPath: '/brindes-por-publico-alvo/$slug'
+      preLoaderRoute: typeof BrindesPorPublicoAlvoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brindes-por-evento/$slug': {
+      id: '/brindes-por-evento/$slug'
+      path: '/brindes-por-evento/$slug'
+      fullPath: '/brindes-por-evento/$slug'
+      preLoaderRoute: typeof BrindesPorEventoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brindes-por-data/$slug': {
+      id: '/brindes-por-data/$slug'
+      path: '/brindes-por-data/$slug'
+      fullPath: '/brindes-por-data/$slug'
+      preLoaderRoute: typeof BrindesPorDataSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/$slug': {
@@ -1236,6 +1358,9 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   VenderRoute: VenderRoute,
   BlogSlugRoute: BlogSlugRoute,
+  BrindesPorDataSlugRoute: BrindesPorDataSlugRoute,
+  BrindesPorEventoSlugRoute: BrindesPorEventoSlugRoute,
+  BrindesPorPublicoAlvoSlugRoute: BrindesPorPublicoAlvoSlugRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   DatasComemorativasSlugRoute: DatasComemorativasSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
@@ -1244,6 +1369,9 @@ const rootRouteChildren: RootRouteChildren = {
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   BlogIndexRoute: BlogIndexRoute,
+  BrindesPorDataIndexRoute: BrindesPorDataIndexRoute,
+  BrindesPorEventoIndexRoute: BrindesPorEventoIndexRoute,
+  BrindesPorPublicoAlvoIndexRoute: BrindesPorPublicoAlvoIndexRoute,
   DatasComemorativasIndexRoute: DatasComemorativasIndexRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
   IdeiasIndexRoute: IdeiasIndexRoute,
@@ -1257,13 +1385,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
