@@ -60,6 +60,31 @@ export const productSchema = z.object({
 
 export type ProductInput = z.infer<typeof productSchema>;
 
+/** Faixa de preço por quantidade (linha da tabela `product_price_tiers`). */
+export const priceTierSchema = z.object({
+  min_qty: z
+    .number({ error: "Quantidade inicial inválida." })
+    .int("Quantidade inicial deve ser um número inteiro.")
+    .min(1, "Quantidade inicial deve ser no mínimo 1.")
+    .max(100_000_000, "Quantidade inicial muito alta."),
+  max_qty: z
+    .number({ error: "Quantidade final inválida." })
+    .int("Quantidade final deve ser um número inteiro.")
+    .min(2, "Quantidade final deve ser maior que 1.")
+    .max(100_000_000, "Quantidade final muito alta.")
+    .nullable(),
+  unit_price: z
+    .number({ error: "Preço unitário inválido." })
+    .min(0, "Preço unitário não pode ser negativo.")
+    .max(10_000_000, "Preço unitário muito alto."),
+}).refine((t) => t.max_qty == null || t.max_qty > t.min_qty, {
+  path: ["max_qty"],
+  message: "A quantidade final deve ser maior que a inicial.",
+});
+
+export type PriceTierInput = z.infer<typeof priceTierSchema>;
+
+
 export const companySchema = z.object({
   name: trimmedString(2, 150, "Nome da empresa"),
   tagline: z.string().trim().max(200).nullable(),

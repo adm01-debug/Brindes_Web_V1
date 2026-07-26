@@ -7,6 +7,8 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { CompareButton } from "@/components/compare-button";
 import { AddToQuoteCartButton } from "@/components/add-to-quote-cart-button";
 import { PlanBadge, type CompanyPlan } from "@/components/plan-badge";
+import { lowestTierPrice, normalizeTiers } from "@/lib/price-tiers";
+
 
 type Product = {
   id: string;
@@ -22,11 +24,14 @@ type Product = {
   is_unusual?: boolean | null;
   /** URL de vídeo do produto (apenas para exibir o selo "Vídeo"). */
   video_url?: string | null;
+  /** Faixas de preço por quantidade — quando existem, o card mostra "a partir de". */
+  price_tiers?: { min_qty: number; max_qty: number | null; unit_price: number }[] | null;
   company:
     | { id: string; slug: string; name: string; plan?: CompanyPlan | null; featured_until?: string | null }
     | null;
   images: { url: string; sort_order: number }[] | null;
 };
+
 
 export function ProductCard({ product }: { product: Product }) {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
@@ -57,9 +62,17 @@ export function ProductCard({ product }: { product: Product }) {
     ? Math.round(((product.price! - product.promo_price!) / product.price!) * 100)
     : 0;
 
-  const priceLabel = product.price_on_request || product.price == null
-    ? "Sob consulta"
-    : formatBRL(hasPromo ? product.promo_price! : product.price);
+  // Faixas por quantidade têm precedência de exibição: o comprador precisa
+  // enxergar o menor unitário possível ("a partir de"), não o preço cheio.
+  const tierLow = lowestTierPrice(normalizeTiers(product.price_tiers));
+
+  const priceLabel =
+    tierLow != null
+      ? `A partir de ${formatBRL(tierLow)}`
+      : product.price_on_request || product.price == null
+        ? "Sob consulta"
+        : formatBRL(hasPromo ? product.promo_price! : product.price);
+
 
   return (
     <Card className="group relative h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">

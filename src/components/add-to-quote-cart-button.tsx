@@ -3,12 +3,16 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuoteCart, type QuoteCartItem } from "@/hooks/use-quote-cart";
+import { formatBRL } from "@/lib/portal";
+import { normalizeTiers, tierForQuantity } from "@/lib/price-tiers";
 
 type Props = {
   item: Omit<QuoteCartItem, "added_at" | "quantity" | "notes"> & {
     quantity?: number | null;
     notes?: string | null;
   };
+  /** Faixas do produto: com quantidade informada, sugerimos o unitário da faixa. */
+  priceTiers?: { min_qty: number; max_qty: number | null; unit_price: number }[] | null;
   size?: "default" | "sm" | "lg" | "icon";
   variant?: "default" | "secondary" | "outline" | "ghost";
   showLabel?: boolean;
@@ -16,8 +20,10 @@ type Props = {
   onAdded?: () => void;
 };
 
+
 export function AddToQuoteCartButton({
   item,
+  priceTiers,
   size = "sm",
   variant = "secondary",
   showLabel = true,
@@ -26,6 +32,7 @@ export function AddToQuoteCartButton({
 }: Props) {
   const { has, add, maxItems, items } = useQuoteCart();
   const already = has(item.product_id);
+
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,6 +47,12 @@ export function AddToQuoteCartButton({
       toast.error(`Limite de ${maxItems} itens por orçamento atingido.`);
       return;
     }
+    // Com quantidade + faixas, anexamos o unitário de tabela à observação:
+    // o vendedor recebe a referência exata que o comprador viu na vitrine.
+    const tier = tierForQuantity(normalizeTiers(priceTiers), item.quantity ?? 0);
+    const tierNote = tier ? `Preço de tabela para a quantidade: ${formatBRL(tier.unit_price)}/un.` : null;
+    const notes = [item.notes?.trim() || null, tierNote].filter(Boolean).join(" · ") || null;
+
     add({
       product_id: item.product_id,
       product_name: item.product_name,
@@ -47,8 +60,9 @@ export function AddToQuoteCartButton({
       company_name: item.company_name ?? null,
       image_url: item.image_url ?? null,
       quantity: item.quantity ?? null,
-      notes: item.notes ?? null,
+      notes,
     });
+
     toast.success("Adicionado ao orçamento", {
       action: { label: "Ver carrinho", onClick: () => window.dispatchEvent(new CustomEvent("brindeshub:open-quote-cart")) },
     });

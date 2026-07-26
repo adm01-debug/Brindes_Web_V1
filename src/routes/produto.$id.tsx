@@ -21,6 +21,8 @@ import { ImageLightbox } from "@/components/image-lightbox";
 import { ProductQA } from "@/components/product-qa";
 import { MessageSellerButton } from "@/components/message-seller-button";
 import { ProductVideo } from "@/components/product-video";
+import { PriceTiersTable } from "@/components/price-tiers-table";
+import { normalizeTiers, lowestTierPrice, highestTierPrice } from "@/lib/price-tiers";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
@@ -32,8 +34,10 @@ const productQueryOptions = (id: string) =>
           *,
           company:companies!inner(id, slug, name, status, whatsapp, phone, email, logo_url),
           images:product_images(id, url, sort_order),
-          variants:product_variants(id, name, attributes)
+          variants:product_variants(id, name, attributes),
+          tiers:product_price_tiers(id, min_qty, max_qty, unit_price)
         `)
+
         .eq("id", id)
         .eq("is_active", true)
         .eq("moderation_status", "approved")
@@ -50,10 +54,15 @@ export const Route = createFileRoute("/produto/$id")({
   loader: async ({ params, context }) => {
     const product = await context.queryClient.ensureQueryData(productQueryOptions(params.id));
     if (!product) throw notFound();
+    const tiers = normalizeTiers((product as { tiers?: unknown }).tiers);
+    const tierLow = lowestTierPrice(tiers);
+    const tierHigh = highestTierPrice(tiers);
     const priceLabel =
-      product.price_on_request || product.price == null
-        ? "sob consulta"
-        : `R$ ${Number(product.price).toFixed(2).replace(".", ",")}`;
+      tierLow != null
+        ? `a partir de R$ ${tierLow.toFixed(2).replace(".", ",")}`
+        : product.price_on_request || product.price == null
+          ? "sob consulta"
+          : `R$ ${Number(product.price).toFixed(2).replace(".", ",")}`;
     const desc =
       product.short_description ??
       product.description?.slice(0, 155) ??
@@ -68,7 +77,11 @@ export const Route = createFileRoute("/produto/$id")({
       priceOnRequest: product.price_on_request ?? false,
       videoUrl: product.video_url ?? null,
       uploadDate: product.created_at ?? null,
+      tierLow,
+      tierHigh,
+      tierCount: tiers.length,
     };
+
   },
   head: ({ params, loaderData }) => {
     const url = `https://brinde-gallery.lovable.app/produto/${params.id}`;
@@ -87,16 +100,31 @@ export const Route = createFileRoute("/produto/$id")({
               description,
               url,
               brand: { "@type": "Brand", name: loaderData.companyName },
-              offers: {
-                "@type": "Offer",
-                url,
-                priceCurrency: loaderData.currency,
-                price: loaderData.price ?? undefined,
-                availability: loaderData.priceOnRequest
-                  ? "https://schema.org/PreOrder"
-                  : "https://schema.org/InStock",
-                seller: { "@type": "Organization", name: loaderData.companyName },
-              },
+              // Com faixas de preço, o schema correto é AggregateOffer
+              // (intervalo de preços), não um Offer de valor único.
+              offers:
+                loaderData.tierCount > 0 && loaderData.tierLow != null
+                  ? {
+                      "@type": "AggregateOffer",
+                      url,
+                      priceCurrency: loaderData.currency,
+                      lowPrice: loaderData.tierLow,
+                      highPrice: loaderData.tierHigh ?? loaderData.tierLow,
+                      offerCount: loaderData.tierCount,
+                      availability: "https://schema.org/InStock",
+                      seller: { "@type": "Organization", name: loaderData.companyName },
+                    }
+                  : {
+                      "@type": "Offer",
+                      url,
+                      priceCurrency: loaderData.currency,
+                      price: loaderData.price ?? undefined,
+                      availability: loaderData.priceOnRequest
+                        ? "https://schema.org/PreOrder"
+                        : "https://schema.org/InStock",
+                      seller: { "@type": "Organization", name: loaderData.companyName },
+                    },
+
             }),
           },
           ...(loaderData.videoUrl
@@ -221,9 +249,16 @@ function ProductPage() {
   }
   if (isError || !product) throw notFound();
 
-  const priceLabel = product.price_on_request || product.price == null
-    ? "Sob consulta"
-    : formatBRL(Number(product.price));
+  const tiers = normalizeTiers((product as { tiers?: unknown }).tiers);
+  const tierLow = lowestTierPrice(tiers);
+
+  const priceLabel =
+    tierLow != null
+      ? `A partir de ${formatBRL(tierLow)}`
+      : product.price_on_request || product.price == null
+        ? "Sob consulta"
+        : formatBRL(Number(product.price));
+
 
   const whatsappLink = product.company?.whatsapp
     ? `https://wa.me/${product.company.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
@@ -352,6 +387,10 @@ function ProductPage() {
 
               </div>
 
+              <PriceTiersTable tiers={tiers} minOrderQuantity={product.min_order_quantity} />
+
+
+
               {/* Attributes grid */}
               <dl className="mt-6 grid grid-cols-2 gap-3">
                 {product.material && (
@@ -417,8 +456,11 @@ function ProductPage() {
                     company_id: product.company!.id,
                     company_name: product.company!.name,
                     image_url: product.images?.sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)[0]?.url ?? null,
+                    quantity: product.min_order_quantity ?? null,
                   }}
+                  priceTiers={tiers}
                   variant="default"
+
                   size="lg"
                   className="w-full"
                 />

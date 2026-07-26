@@ -12,9 +12,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { getSignedUrl, uploadFile, deleteFile } from "@/lib/portal";
-import { productSchema, type ProductInput } from "@/lib/schemas";
+import { productSchema, priceTierSchema, type ProductInput } from "@/lib/schemas";
 import { pgErrorMessage } from "@/lib/pg-errors";
+import {
+  PriceTiersEditor,
+  draftsToTiers,
+  type PriceTierDraft,
+} from "@/components/price-tiers-editor";
+import { validateTiers } from "@/lib/price-tiers";
 import { Loader2, Upload, X } from "lucide-react";
+
 
 type ImageState = {
   id?: string;
@@ -88,7 +95,9 @@ export function ProductForm({
   });
 
   const [images, setImages] = useState<ImageState[]>([]);
+  const [tierDrafts, setTierDrafts] = useState<PriceTierDraft[]>([]);
   const [initialLoaded, setInitialLoaded] = useState(!productId);
+
 
   const {
     register,
@@ -105,12 +114,19 @@ export function ProductForm({
   useEffect(() => {
     if (!productId) return;
     (async () => {
-      const { data } = await supabase
-        .from("product_images")
-        .select("id, url, sort_order")
-        .eq("product_id", productId)
-        .order("sort_order");
-      const rows = data ?? [];
+      const [imagesRes, tiersRes] = await Promise.all([
+        supabase
+          .from("product_images")
+          .select("id, url, sort_order")
+          .eq("product_id", productId)
+          .order("sort_order"),
+        supabase
+          .from("product_price_tiers")
+          .select("id, min_qty, max_qty, unit_price")
+          .eq("product_id", productId)
+          .order("min_qty"),
+      ]);
+      const rows = imagesRes.data ?? [];
       const withUrls = await Promise.all(
         rows.map(async (r) => ({
           id: r.id,
@@ -120,9 +136,18 @@ export function ProductForm({
         })),
       );
       setImages(withUrls);
+      setTierDrafts(
+        (tiersRes.data ?? []).map((t) => ({
+          key: t.id,
+          min_qty: String(t.min_qty),
+          max_qty: t.max_qty == null ? "" : String(t.max_qty),
+          unit_price: String(t.unit_price),
+        })),
+      );
       setInitialLoaded(true);
     })();
   }, [productId]);
+
 
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
@@ -187,7 +212,20 @@ export function ProductForm({
       return toast.error(first?.message ?? "Dados inválidos");
     }
 
+    // Faixas de preço: valida cada linha isoladamente e depois o conjunto
+    // (ordem, sobreposição e limite), espelhando as regras do banco.
+    const tiers = draftsToTiers(tierDrafts);
+    for (const tier of tiers) {
+      const tierParsed = priceTierSchema.safeParse(tier);
+      if (!tierParsed.success) {
+        return toast.error(tierParsed.error.issues[0]?.message ?? "Faixa de preço inválida.");
+      }
+    }
+    const tiersError = tiers.length > 0 ? validateTiers(tiers) : null;
+    if (tiersError) return toast.error(tiersError);
+
     const payload = { ...parsed.data, company_id: companyId };
+
 
     try {
       let finalProductId = productId;
@@ -214,9 +252,20 @@ export function ProductForm({
         }
       }
 
+      // Substituição atômica do ponto de vista do usuário: apaga as faixas
+      // antigas e reinsere as atuais em uma única ida ao banco.
+      await supabase.from("product_price_tiers").delete().eq("product_id", finalProductId!);
+      if (tiers.length > 0) {
+        const { error: tierErr } = await supabase.from("product_price_tiers").insert(
+          tiers.map((t) => ({ ...t, product_id: finalProductId! })),
+        );
+        if (tierErr) throw tierErr;
+      }
+
       toast.success(productId ? "Produto atualizado!" : "Produto criado!");
       qc.invalidateQueries({ queryKey: ["my-products"] });
       navigate({ to: "/painel/produtos" });
+
     } catch (err: unknown) {
       toast.error(pgErrorMessage(err, "Erro ao salvar produto"));
     }
@@ -344,6 +393,9 @@ export function ProductForm({
           </div>
         </CardContent>
       </Card>
+
+      <PriceTiersEditor drafts={tierDrafts} onChange={setTierDrafts} />
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Especificações</CardTitle></CardHeader>

@@ -52,6 +52,8 @@ type KitItem = {
     is_clearance: boolean | null;
     is_unusual: boolean | null;
     video_url: string | null;
+    price_tiers: { min_qty: number; max_qty: number | null; unit_price: number }[] | null;
+
     is_active: boolean;
     deleted_at: string | null;
     moderation_status: string;
@@ -90,6 +92,7 @@ function KitDetailPage() {
            product:products (
              id, name, slug, short_description, price, price_on_request,
              promo_price, is_clearance, is_unusual, video_url,
+             price_tiers:product_price_tiers(min_qty, max_qty, unit_price),
              is_active, deleted_at, moderation_status,
              company:companies ( id, slug, name, status, plan, featured_until ),
              images:product_images ( url, sort_order )
@@ -237,6 +240,8 @@ function KitDetailPage() {
                     is_clearance: i.product!.is_clearance,
                     is_unusual: i.product!.is_unusual,
                     video_url: i.product!.video_url,
+                    price_tiers: i.product!.price_tiers,
+
                     company: i.product!.company
                       ? {
                           id: i.product!.company.id,
