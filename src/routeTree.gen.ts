@@ -18,6 +18,7 @@ import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as OrcamentoRouteImport } from './routes/orcamento'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as EmpresasAZRouteImport } from './routes/empresas-a-z'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as CompararRouteImport } from './routes/comparar'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
@@ -106,6 +107,11 @@ const FavoritosRoute = FavoritosRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmpresasAZRoute = EmpresasAZRouteImport.update({
+  id: '/empresas-a-z',
+  path: '/empresas-a-z',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContatoRoute = ContatoRouteImport.update({
@@ -352,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/como-funciona': typeof ComoFuncionaRoute
   '/comparar': typeof CompararRoute
   '/contato': typeof ContatoRoute
+  '/empresas-a-z': typeof EmpresasAZRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
@@ -406,6 +413,7 @@ export interface FileRoutesByTo {
   '/como-funciona': typeof ComoFuncionaRoute
   '/comparar': typeof CompararRoute
   '/contato': typeof ContatoRoute
+  '/empresas-a-z': typeof EmpresasAZRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
@@ -461,6 +469,7 @@ export interface FileRoutesById {
   '/como-funciona': typeof ComoFuncionaRoute
   '/comparar': typeof CompararRoute
   '/contato': typeof ContatoRoute
+  '/empresas-a-z': typeof EmpresasAZRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
@@ -517,6 +526,7 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/comparar'
     | '/contato'
+    | '/empresas-a-z'
     | '/faq'
     | '/favoritos'
     | '/orcamento'
@@ -571,6 +581,7 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/comparar'
     | '/contato'
+    | '/empresas-a-z'
     | '/faq'
     | '/favoritos'
     | '/orcamento'
@@ -625,6 +636,7 @@ export interface FileRouteTypes {
     | '/como-funciona'
     | '/comparar'
     | '/contato'
+    | '/empresas-a-z'
     | '/faq'
     | '/favoritos'
     | '/orcamento'
@@ -681,6 +693,7 @@ export interface RootRouteChildren {
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   CompararRoute: typeof CompararRoute
   ContatoRoute: typeof ContatoRoute
+  EmpresasAZRoute: typeof EmpresasAZRoute
   FaqRoute: typeof FaqRoute
   FavoritosRoute: typeof FavoritosRoute
   OrcamentoRoute: typeof OrcamentoRouteWithChildren
@@ -773,6 +786,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empresas-a-z': {
+      id: '/empresas-a-z'
+      path: '/empresas-a-z'
+      fullPath: '/empresas-a-z'
+      preLoaderRoute: typeof EmpresasAZRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contato': {
@@ -1163,6 +1183,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComoFuncionaRoute: ComoFuncionaRoute,
   CompararRoute: CompararRoute,
   ContatoRoute: ContatoRoute,
+  EmpresasAZRoute: EmpresasAZRoute,
   FaqRoute: FaqRoute,
   FavoritosRoute: FavoritosRoute,
   OrcamentoRoute: OrcamentoRouteWithChildren,

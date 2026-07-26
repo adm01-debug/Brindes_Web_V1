@@ -52,7 +52,15 @@ const companiesAZQueryOptions = queryOptions({
     if (error) throw error;
 
     return (data ?? [])
-      .filter((c): c is CompanyIndexItem => Boolean(c.slug))
+      .filter((c) => Boolean(c.slug))
+      .map<CompanyIndexItem>((c) => ({
+        id: c.id,
+        name: c.name,
+        slug: c.slug as string,
+        city: c.city,
+        state: c.state,
+        plan: c.plan ?? null,
+      }))
       .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
   },
 });
