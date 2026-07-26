@@ -68,7 +68,12 @@ function useDebounced(value: string, delay = 600) {
  * Renderiza chips com estado toggle — sem dependência de biblioteca de
  * multi-select, mantendo o bundle enxuto e o teclado navegável.
  */
-export function FacetsPicker({ value, onChange, disabled = false }: FacetsPickerProps) {
+export function FacetsPicker({
+  value,
+  onChange,
+  disabled = false,
+  suggestText,
+}: FacetsPickerProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["facet-options"],
     staleTime: 5 * 60 * 1000,
