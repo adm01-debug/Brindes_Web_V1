@@ -54,10 +54,15 @@ export const Route = createFileRoute("/produto/$id")({
   loader: async ({ params, context }) => {
     const product = await context.queryClient.ensureQueryData(productQueryOptions(params.id));
     if (!product) throw notFound();
+    const tiers = normalizeTiers((product as { tiers?: unknown }).tiers);
+    const tierLow = lowestTierPrice(tiers);
+    const tierHigh = highestTierPrice(tiers);
     const priceLabel =
-      product.price_on_request || product.price == null
-        ? "sob consulta"
-        : `R$ ${Number(product.price).toFixed(2).replace(".", ",")}`;
+      tierLow != null
+        ? `a partir de R$ ${tierLow.toFixed(2).replace(".", ",")}`
+        : product.price_on_request || product.price == null
+          ? "sob consulta"
+          : `R$ ${Number(product.price).toFixed(2).replace(".", ",")}`;
     const desc =
       product.short_description ??
       product.description?.slice(0, 155) ??
@@ -72,7 +77,11 @@ export const Route = createFileRoute("/produto/$id")({
       priceOnRequest: product.price_on_request ?? false,
       videoUrl: product.video_url ?? null,
       uploadDate: product.created_at ?? null,
+      tierLow,
+      tierHigh,
+      tierCount: tiers.length,
     };
+
   },
   head: ({ params, loaderData }) => {
     const url = `https://brinde-gallery.lovable.app/produto/${params.id}`;
