@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Package2, Search, LayoutDashboard, LogOut, User as UserIcon, Heart, ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { QuoteCartDrawer } from "@/components/quote-cart-drawer";
 import { NotificationsBell } from "@/components/notifications-bell";
+import { SearchAutocomplete } from "@/components/search-autocomplete";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,16 @@ export function SiteHeader() {
   const { user, loading } = useAuth();
   const { count, hydrated } = useQuoteCart();
   const [cartOpen, setCartOpen] = useState(false);
+  const [headerTerm, setHeaderTerm] = useState("");
+  const navigate = useNavigate();
+
+  /** Envia o termo digitado no cabeçalho para a página de busca. */
+  const goToSearch = (raw: string) => {
+    const q = raw.trim().slice(0, 80);
+    if (!q) return;
+    setHeaderTerm("");
+    navigate({ to: "/buscar", search: { q, page: 1 } as never });
+  };
 
   useEffect(() => {
     const open = () => setCartOpen(true);
@@ -72,9 +83,26 @@ export function SiteHeader() {
 
         </nav>
 
+        <form
+          className="hidden flex-1 px-6 xl:block xl:max-w-sm"
+          role="search"
+          onSubmit={(e) => {
+            e.preventDefault();
+            goToSearch(headerTerm);
+          }}
+        >
+          <SearchAutocomplete
+            value={headerTerm}
+            onValueChange={setHeaderTerm}
+            onSubmitTerm={goToSearch}
+            placeholder="Buscar brindes, empresas..."
+            inputClassName="h-9"
+          />
+        </form>
+
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="xl:hidden">
             <Link to="/buscar" aria-label="Buscar">
               <Search className="h-4 w-4" />
             </Link>
