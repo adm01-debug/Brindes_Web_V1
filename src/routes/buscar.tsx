@@ -218,6 +218,23 @@ function SearchPage() {
   const total = data?.[0]?.total_count ?? 0;
   const totalPages = Math.max(1, Math.ceil(Number(total) / PAGE_SIZE));
 
+  const isEmptyResult = !isLoading && Array.isArray(data) && data.length === 0;
+
+  /** Sugestões alternativas exibidas apenas quando a busca não retorna nada. */
+  const { data: fallbackSuggestions } = useQuery({
+    queryKey: ["search-empty-suggestions", search.q],
+    enabled: isEmptyResult && search.q.trim().length >= 2,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("suggest_search_terms", {
+        _q: search.q.trim(),
+        _limit: 6,
+      });
+      if (error) return [];
+      return data ?? [];
+    },
+  });
+
   type SearchState = typeof search;
 
   const submitSearch = (e: React.FormEvent) => {
@@ -476,13 +493,76 @@ function SearchPage() {
                   }}
                 />
               ))}
-            {data && data.length === 0 && !isLoading && (
-              <div className="col-span-full rounded-lg border border-dashed py-16 text-center">
-                <Package className="mx-auto h-8 w-8 text-muted-foreground" />
-                <p className="mt-2 text-sm text-muted-foreground">Nenhum produto encontrado.</p>
+            {isEmptyResult && (
+              <div className="col-span-full rounded-lg border border-dashed px-4 py-12 text-center">
+                <Package className="mx-auto h-8 w-8 text-muted-foreground" aria-hidden="true" />
+                <p className="mt-2 text-sm font-medium">Nenhum produto encontrado.</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Tente outros termos ou remova filtros.
+                  Tente outros termos, remova filtros ou explore as sugestões abaixo.
                 </p>
+
+                {activeChips.filter((c) => c.key !== "q").length > 0 && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="mt-4"
+                    onClick={() => {
+                      setPriceMin(""); setPriceMax(""); setMaterial(""); setCor(""); setMoq(""); setPrazo("");
+                      navigate({
+                        search: (prev: SearchState) => ({
+                          ...prev,
+                          categoria: "", min: 0, max: 0, material: "", cor: "",
+                          moq: 0, prazo: 0, uf: "", video: false, page: 1,
+                        }),
+                      });
+                    }}
+                  >
+                    Buscar apenas pelo termo (remover filtros)
+                  </Button>
+                )}
+
+                {fallbackSuggestions && fallbackSuggestions.length > 0 && (
+                  <div className="mt-6">
+                    <p className="text-xs font-medium text-muted-foreground">Você quis dizer:</p>
+                    <div className="mt-2 flex flex-wrap justify-center gap-2">
+                      {fallbackSuggestions.map((sug) => (
+                        <Link
+                          key={`${sug.kind}-${sug.slug}`}
+                          to={
+                            sug.kind === "product"
+                              ? "/produto/$id"
+                              : sug.kind === "company"
+                                ? "/empresa/$slug"
+                                : "/categoria/$slug"
+                          }
+                          params={(sug.kind === "product" ? { id: sug.slug } : { slug: sug.slug }) as never}
+                          className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                          {sug.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {categories && categories.length > 0 && (
+                  <div className="mt-6">
+                    <p className="text-xs font-medium text-muted-foreground">Explore categorias:</p>
+                    <div className="mt-2 flex flex-wrap justify-center gap-2">
+                      {categories.slice(0, 8).map((c) => (
+                        <Link
+                          key={c.id}
+                          to="/categoria/$slug"
+                          params={{ slug: c.slug }}
+                          className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:bg-accent hover:text-accent-foreground"
+                        >
+                          {c.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
