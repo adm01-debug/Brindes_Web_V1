@@ -128,12 +128,10 @@ function HomePage() {
             <h2 className="text-2xl font-bold tracking-tight">Explore por categoria</h2>
             <p className="mt-1 text-muted-foreground">Encontre exatamente o brinde que você procura</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              {(categories ?? []).map((cat) => (
+              {categories.map((cat) => (
                 <CategoryPill key={cat.id} slug={cat.slug} name={cat.name} />
               ))}
-              {!categories && Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-10 w-32 animate-pulse rounded-full bg-muted" />
-              ))}
+
             </div>
           </div>
         </section>
