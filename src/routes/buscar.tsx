@@ -433,6 +433,10 @@ function SearchPage() {
                 Somente com vídeo
               </label>
             </div>
+            <div className="mt-5 border-t pt-4">
+              <p className="mb-3 text-sm font-medium">Vitrines (evento, público, tipo e datas)</p>
+              <SearchFacetFilter selected={selectedFacets} onChange={setFacets} />
+            </div>
             <div className="mt-3 flex gap-2">
               <Button type="button" size="sm" onClick={(e) => submitSearch(e as unknown as React.FormEvent)}>
                 Aplicar filtros
