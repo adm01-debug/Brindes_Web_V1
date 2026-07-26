@@ -323,6 +323,15 @@ export function ProductForm({
               <Input id="price" type="text" placeholder="Ex: 15.90" {...register("price")} />
             </div>
           )}
+          {!priceOnRequest && (
+            <div className="space-y-1.5">
+              <Label htmlFor="promo_price">Preço promocional (R$)</Label>
+              <Input id="promo_price" type="text" placeholder="Ex: 12.90" {...register("promo_price")} />
+              <p className="text-xs text-muted-foreground">
+                Se preenchido, o produto aparece em <strong>/ofertas</strong> com o desconto calculado automaticamente.
+              </p>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="min_order_quantity">Pedido mínimo</Label>
