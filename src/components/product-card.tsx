@@ -106,6 +106,12 @@ export function ProductCard({ product }: { product: Product }) {
                 Inusitado
               </span>
             )}
+            {product.video_url && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground shadow-sm">
+                <PlayCircle className="h-3 w-3" aria-hidden />
+                Vídeo
+              </span>
+            )}
           </div>
         </div>
         <CardContent className="p-4">
