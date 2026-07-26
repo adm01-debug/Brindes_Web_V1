@@ -24,6 +24,10 @@ export type FacetTermPageProps = {
  */
 export function FacetTermPage({ term, hubPath, hubLabel }: FacetTermPageProps) {
   const { data: products } = useSuspenseQuery(facetProductsQO(term.id));
+  // Deriva o eixo a partir do hub para priorizar vitrines irmãs nas sugestões.
+  const currentAxisSlug = (Object.keys(FACET_AXIS_HUB) as FacetAxisSlug[]).find(
+    (a) => FACET_AXIS_HUB[a] === hubPath,
+  );
 
   return (
     <div className="flex min-h-screen flex-col">
