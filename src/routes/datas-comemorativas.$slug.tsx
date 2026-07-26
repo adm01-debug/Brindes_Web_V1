@@ -76,7 +76,14 @@ const dateProductsQO = (date: CommemorativeDate) =>
         _sort: "relevance",
         _page: 1,
         _page_size: 12,
+        // desambigua a sobrecarga da função no Postgres
+        _state: undefined,
+        _material: undefined,
+        _color: undefined,
+        _max_moq: undefined,
+        _max_days: undefined,
       });
+
       if (error) throw error;
       return (
         (data ?? []) as Array<{
