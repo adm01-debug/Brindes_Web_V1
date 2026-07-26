@@ -25,6 +25,8 @@ function baseDirectives(nonce: string): string[] {
     "form-action 'self'",
     "frame-ancestors 'self'",
     "object-src 'none'",
+    // Embeds de vídeo do produto: allowlist explícita (nunca host arbitrário).
+    "frame-src 'self' https://www.youtube-nocookie.com https://player.vimeo.com",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data: https://fonts.gstatic.com",
     // style-src (fallback legado para browsers sem suporte a -elem/-attr).

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Package } from "lucide-react";
+import { Package, PlayCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +20,8 @@ type Product = {
   is_clearance?: boolean | null;
   /** Sinaliza brinde curado como inusitado/diferente. */
   is_unusual?: boolean | null;
+  /** URL de vídeo do produto (apenas para exibir o selo "Vídeo"). */
+  video_url?: string | null;
   company:
     | { id: string; slug: string; name: string; plan?: CompanyPlan | null; featured_until?: string | null }
     | null;
@@ -104,6 +106,12 @@ export function ProductCard({ product }: { product: Product }) {
             {product.is_unusual && (
               <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary-foreground shadow-sm">
                 Inusitado
+              </span>
+            )}
+            {product.video_url && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-foreground shadow-sm">
+                <PlayCircle className="h-3 w-3" aria-hidden />
+                Vídeo
               </span>
             )}
           </div>

@@ -20,6 +20,7 @@ import { RecentlyViewed } from "@/components/recently-viewed";
 import { ImageLightbox } from "@/components/image-lightbox";
 import { ProductQA } from "@/components/product-qa";
 import { MessageSellerButton } from "@/components/message-seller-button";
+import { ProductVideo } from "@/components/product-video";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
@@ -356,6 +357,12 @@ function ProductPage() {
                     </p>
                   </CardContent>
                 </Card>
+              )}
+
+              {product.video_url && (
+                <div className="mt-4">
+                  <ProductVideo url={product.video_url} title={product.name} />
+                </div>
               )}
 
               {product.customization_options && (
