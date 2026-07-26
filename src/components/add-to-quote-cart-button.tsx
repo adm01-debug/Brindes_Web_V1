@@ -3,18 +3,23 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuoteCart, type QuoteCartItem } from "@/hooks/use-quote-cart";
+import { formatBRL } from "@/lib/portal";
+import { normalizeTiers, tierForQuantity } from "@/lib/price-tiers";
 
 type Props = {
   item: Omit<QuoteCartItem, "added_at" | "quantity" | "notes"> & {
     quantity?: number | null;
     notes?: string | null;
   };
+  /** Faixas do produto: com quantidade informada, sugerimos o unitário da faixa. */
+  priceTiers?: { min_qty: number; max_qty: number | null; unit_price: number }[] | null;
   size?: "default" | "sm" | "lg" | "icon";
   variant?: "default" | "secondary" | "outline" | "ghost";
   showLabel?: boolean;
   className?: string;
   onAdded?: () => void;
 };
+
 
 export function AddToQuoteCartButton({
   item,
