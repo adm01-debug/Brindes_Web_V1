@@ -25,6 +25,7 @@ export function SiteFooter() {
               <li><Link to="/categorias" className="hover:text-foreground">Categorias</Link></li>
               <li><Link to="/kits" className="hover:text-foreground">Kits temáticos</Link></li>
               <li><Link to="/datas-comemorativas" className="hover:text-foreground">Datas comemorativas</Link></li>
+              <li><Link to="/tipos-de-brinde" className="hover:text-foreground">Tipos de brinde</Link></li>
               <li><Link to="/brindes-por-evento" className="hover:text-foreground">Brindes por evento</Link></li>
               <li><Link to="/brindes-por-publico-alvo" className="hover:text-foreground">Brindes por público-alvo</Link></li>
               <li><Link to="/brindes-por-data" className="hover:text-foreground">Brindes por data</Link></li>

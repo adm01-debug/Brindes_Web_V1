@@ -20,6 +20,7 @@ const STATIC_ROUTES: Array<{ path: string; changefreq: string; priority: string 
   { path: "/brindes-por-evento", changefreq: "weekly", priority: "0.8" },
   { path: "/brindes-por-publico-alvo", changefreq: "weekly", priority: "0.8" },
   { path: "/brindes-por-data", changefreq: "weekly", priority: "0.8" },
+  { path: "/tipos-de-brinde", changefreq: "weekly", priority: "0.9" },
 
 
 
