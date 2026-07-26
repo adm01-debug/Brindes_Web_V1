@@ -68,6 +68,14 @@ export function FacetTermPage({ term, hubPath, hubLabel }: FacetTermPageProps) {
               ))}
             </div>
           )}
+
+          {currentAxisSlug && (
+            <FacetRelated
+              className="mt-12"
+              currentTermId={term.id}
+              currentAxisSlug={currentAxisSlug}
+            />
+          )}
         </section>
       </main>
       <SiteFooter />
