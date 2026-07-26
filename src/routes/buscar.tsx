@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { z } from "zod";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { supabase } from "@/integrations/supabase/client";
+import { SearchAutocomplete } from "@/components/search-autocomplete";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ProductCard } from "@/components/product-card";
@@ -279,16 +280,14 @@ function SearchPage() {
           <h1 className="text-3xl font-bold tracking-tight">Buscar produtos</h1>
 
           <form onSubmit={submitSearch} className="mt-6 grid gap-3 md:grid-cols-[1fr_auto_auto_auto_auto]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nome, cor, material..."
-                className="pl-9"
-                value={term}
-                onChange={(e) => setTerm(e.target.value)}
-                aria-label="Termo de busca"
-              />
-            </div>
+            <SearchAutocomplete
+              value={term}
+              onValueChange={setTerm}
+              onSubmitTerm={(t) => {
+                pushRecent(t);
+                setFilter("q", t);
+              }}
+            />
             <Input
               type="number"
               inputMode="decimal"
