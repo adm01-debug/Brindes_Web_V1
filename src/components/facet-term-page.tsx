@@ -7,7 +7,8 @@ import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { facetProductsQO } from "@/lib/facet-queries";
-import type { FacetTerm } from "@/lib/facets";
+import { FacetRelated } from "@/components/facet-related";
+import { FACET_AXIS_HUB, type FacetAxisSlug, type FacetTerm } from "@/lib/facets";
 
 export type FacetTermPageProps = {
   term: FacetTerm;
