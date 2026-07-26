@@ -100,16 +100,31 @@ export const Route = createFileRoute("/produto/$id")({
               description,
               url,
               brand: { "@type": "Brand", name: loaderData.companyName },
-              offers: {
-                "@type": "Offer",
-                url,
-                priceCurrency: loaderData.currency,
-                price: loaderData.price ?? undefined,
-                availability: loaderData.priceOnRequest
-                  ? "https://schema.org/PreOrder"
-                  : "https://schema.org/InStock",
-                seller: { "@type": "Organization", name: loaderData.companyName },
-              },
+              // Com faixas de preço, o schema correto é AggregateOffer
+              // (intervalo de preços), não um Offer de valor único.
+              offers:
+                loaderData.tierCount > 0 && loaderData.tierLow != null
+                  ? {
+                      "@type": "AggregateOffer",
+                      url,
+                      priceCurrency: loaderData.currency,
+                      lowPrice: loaderData.tierLow,
+                      highPrice: loaderData.tierHigh ?? loaderData.tierLow,
+                      offerCount: loaderData.tierCount,
+                      availability: "https://schema.org/InStock",
+                      seller: { "@type": "Organization", name: loaderData.companyName },
+                    }
+                  : {
+                      "@type": "Offer",
+                      url,
+                      priceCurrency: loaderData.currency,
+                      price: loaderData.price ?? undefined,
+                      availability: loaderData.priceOnRequest
+                        ? "https://schema.org/PreOrder"
+                        : "https://schema.org/InStock",
+                      seller: { "@type": "Organization", name: loaderData.companyName },
+                    },
+
             }),
           },
           ...(loaderData.videoUrl
