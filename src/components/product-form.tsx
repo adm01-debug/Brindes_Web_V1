@@ -425,7 +425,7 @@ export function ProductForm({
         value={facetIds}
         onChange={setFacetIds}
         disabled={isSubmitting}
-        suggestText={`${form.watch("name") ?? ""} ${form.watch("description") ?? ""}`}
+        suggestText={`${watch("name") ?? ""} ${watch("description") ?? ""}`}
       />
 
 
