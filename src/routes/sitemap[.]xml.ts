@@ -239,14 +239,38 @@ export const Route = createFileRoute("/sitemap.xml")({
 
           parts.push("</urlset>");
 
-          return new Response(parts.join("\n"), {
-            status: 200,
-            headers: {
-              "Content-Type": "application/xml; charset=utf-8",
-              "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
-              "X-Content-Type-Options": "nosniff",
-            },
-          });
+          const body = parts.join("\n");
+          // ETag forte derivado do conteúdo: crawlers reaproveitam o cache
+          // enquanto o catálogo não muda, economizando banda e CPU.
+          const digest = await crypto.subtle.digest(
+            "SHA-256",
+            new TextEncoder().encode(body),
+          );
+          const etag = `"${Array.from(new Uint8Array(digest).slice(0, 16))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("")}"`;
+
+          const headers = {
+            "Content-Type": "application/xml; charset=utf-8",
+            "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+            "X-Content-Type-Options": "nosniff",
+            ETag: etag,
+            Vary: "Accept-Encoding",
+          };
+
+          const inm = request.headers.get("if-none-match");
+          // Aceita listas e a forma fraca (W/"...") conforme RFC 9110.
+          if (
+            inm &&
+            inm
+              .split(",")
+              .map((v) => v.trim().replace(/^W\//, ""))
+              .includes(etag)
+          ) {
+            return new Response(null, { status: 304, headers });
+          }
+
+          return new Response(body, { status: 200, headers });
         } catch {
           const fallback = [
             '<?xml version="1.0" encoding="UTF-8"?>',
