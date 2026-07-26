@@ -22,11 +22,14 @@ type Product = {
   is_unusual?: boolean | null;
   /** URL de vídeo do produto (apenas para exibir o selo "Vídeo"). */
   video_url?: string | null;
+  /** Faixas de preço por quantidade — quando existem, o card mostra "a partir de". */
+  price_tiers?: { min_qty: number; max_qty: number | null; unit_price: number }[] | null;
   company:
     | { id: string; slug: string; name: string; plan?: CompanyPlan | null; featured_until?: string | null }
     | null;
   images: { url: string; sort_order: number }[] | null;
 };
+
 
 export function ProductCard({ product }: { product: Product }) {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
