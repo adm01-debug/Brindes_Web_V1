@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
-import { facetAxisQO } from "@/lib/facet-queries";
+import { facetAxisQO, facetCountsQO } from "@/lib/facet-queries";
 import type { FacetAxisSlug } from "@/lib/facets";
 
 export type FacetHubPageProps = {
@@ -24,6 +24,7 @@ export type FacetHubPageProps = {
 export function FacetHubPage({ axisSlug, heading, intro, termLinkTo }: FacetHubPageProps) {
   const { data } = useSuspenseQuery(facetAxisQO(axisSlug));
   const terms = data?.terms ?? [];
+  const { data: counts } = useQuery(facetCountsQO(axisSlug));
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -57,7 +58,14 @@ export function FacetHubPage({ axisSlug, heading, intro, termLinkTo }: FacetHubP
                 >
                   <Card className="h-full transition-colors group-hover:border-primary">
                     <CardContent className="p-5">
-                      <h2 className="font-semibold group-hover:text-primary">{term.name}</h2>
+                      <div className="flex items-start justify-between gap-2">
+                        <h2 className="font-semibold group-hover:text-primary">{term.name}</h2>
+                        {typeof counts?.[term.slug] === "number" && (
+                          <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                            {counts[term.slug]} {counts[term.slug] === 1 ? "produto" : "produtos"}
+                          </span>
+                        )}
+                      </div>
                       {term.description && (
                         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                           {term.description}
