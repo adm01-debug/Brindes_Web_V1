@@ -22,6 +22,7 @@ import { ProductQA } from "@/components/product-qa";
 import { MessageSellerButton } from "@/components/message-seller-button";
 import { ProductVideo } from "@/components/product-video";
 import { PriceTiersTable } from "@/components/price-tiers-table";
+import { ProductFacetLinks } from "@/components/product-facet-links";
 import { normalizeTiers, lowestTierPrice, highestTierPrice } from "@/lib/price-tiers";
 
 const productQueryOptions = (id: string) =>
