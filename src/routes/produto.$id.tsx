@@ -456,8 +456,11 @@ function ProductPage() {
                     company_id: product.company!.id,
                     company_name: product.company!.name,
                     image_url: product.images?.sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)[0]?.url ?? null,
+                    quantity: product.min_order_quantity ?? null,
                   }}
+                  priceTiers={tiers}
                   variant="default"
+
                   size="lg"
                   className="w-full"
                 />
