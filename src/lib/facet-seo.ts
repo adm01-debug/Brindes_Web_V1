@@ -17,9 +17,15 @@ export function facetTermHead(params: {
   fallbackTitle: string;
   /** Produtos já carregados no loader — vira ItemList para o Google. */
   products?: FacetSeoProduct[];
+  /** Página atual e total, para canonical paginado e rel prev/next. */
+  page?: number;
+  pageCount?: number;
 }) {
+  const base = `${SITE_URL}${params.hubPath}/${params.slug}`;
+  const page = params.page && params.page > 1 ? params.page : 1;
+  const pageCount = params.pageCount ?? 1;
+  const url = page > 1 ? `${base}?page=${page}` : base;
 
-  const url = `${SITE_URL}${params.hubPath}/${params.slug}`;
 
   if (!params.term) {
     return {
