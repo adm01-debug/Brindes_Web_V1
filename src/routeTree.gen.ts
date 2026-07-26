@@ -29,6 +29,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as KitsIndexRouteImport } from './routes/kits.index'
 import { Route as IdeiasIndexRouteImport } from './routes/ideias.index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
+import { Route as DatasComemorativasIndexRouteImport } from './routes/datas-comemorativas.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
@@ -36,6 +37,7 @@ import { Route as KitSlugRouteImport } from './routes/kit.$slug'
 import { Route as IdeiasSlugRouteImport } from './routes/ideias.$slug'
 import { Route as FornecedoresSlugRouteImport } from './routes/fornecedores.$slug'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
+import { Route as DatasComemorativasSlugRouteImport } from './routes/datas-comemorativas.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedPainelRouteImport } from './routes/_authenticated/painel'
@@ -159,6 +161,11 @@ const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
   path: '/empresas/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatasComemorativasIndexRoute = DatasComemorativasIndexRouteImport.update({
+  id: '/datas-comemorativas/',
+  path: '/datas-comemorativas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -192,6 +199,11 @@ const FornecedoresSlugRoute = FornecedoresSlugRouteImport.update({
 const EmpresaSlugRoute = EmpresaSlugRouteImport.update({
   id: '/empresa/$slug',
   path: '/empresa/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatasComemorativasSlugRoute = DatasComemorativasSlugRouteImport.update({
+  id: '/datas-comemorativas/$slug',
+  path: '/datas-comemorativas/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
@@ -345,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/painel': typeof AuthenticatedPainelRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/fornecedores/$slug': typeof FornecedoresSlugRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
@@ -352,6 +365,7 @@ export interface FileRoutesByFullPath {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog/': typeof BlogIndexRoute
+  '/datas-comemorativas/': typeof DatasComemorativasIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
@@ -395,6 +409,7 @@ export interface FileRoutesByTo {
   '/vender': typeof VenderRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/fornecedores/$slug': typeof FornecedoresSlugRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
@@ -402,6 +417,7 @@ export interface FileRoutesByTo {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog': typeof BlogIndexRoute
+  '/datas-comemorativas': typeof DatasComemorativasIndexRoute
   '/empresas': typeof EmpresasIndexRoute
   '/ideias': typeof IdeiasIndexRoute
   '/kits': typeof KitsIndexRoute
@@ -448,6 +464,7 @@ export interface FileRoutesById {
   '/_authenticated/painel': typeof AuthenticatedPainelRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
+  '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/fornecedores/$slug': typeof FornecedoresSlugRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
@@ -455,6 +472,7 @@ export interface FileRoutesById {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog/': typeof BlogIndexRoute
+  '/datas-comemorativas/': typeof DatasComemorativasIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
@@ -501,6 +519,7 @@ export interface FileRouteTypes {
     | '/painel'
     | '/blog/$slug'
     | '/categoria/$slug'
+    | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
     | '/fornecedores/$slug'
     | '/ideias/$slug'
@@ -508,6 +527,7 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog/'
+    | '/datas-comemorativas/'
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
@@ -551,6 +571,7 @@ export interface FileRouteTypes {
     | '/vender'
     | '/blog/$slug'
     | '/categoria/$slug'
+    | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
     | '/fornecedores/$slug'
     | '/ideias/$slug'
@@ -558,6 +579,7 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog'
+    | '/datas-comemorativas'
     | '/empresas'
     | '/ideias'
     | '/kits'
@@ -603,6 +625,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel'
     | '/blog/$slug'
     | '/categoria/$slug'
+    | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
     | '/fornecedores/$slug'
     | '/ideias/$slug'
@@ -610,6 +633,7 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog/'
+    | '/datas-comemorativas/'
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
@@ -655,12 +679,14 @@ export interface RootRouteChildren {
   VenderRoute: typeof VenderRoute
   BlogSlugRoute: typeof BlogSlugRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
+  DatasComemorativasSlugRoute: typeof DatasComemorativasSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   FornecedoresSlugRoute: typeof FornecedoresSlugRoute
   IdeiasSlugRoute: typeof IdeiasSlugRoute
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  DatasComemorativasIndexRoute: typeof DatasComemorativasIndexRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
   IdeiasIndexRoute: typeof IdeiasIndexRoute
   KitsIndexRoute: typeof KitsIndexRoute
@@ -813,6 +839,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmpresasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/datas-comemorativas/': {
+      id: '/datas-comemorativas/'
+      path: '/datas-comemorativas'
+      fullPath: '/datas-comemorativas/'
+      preLoaderRoute: typeof DatasComemorativasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/blog'
@@ -860,6 +893,13 @@ declare module '@tanstack/react-router' {
       path: '/empresa/$slug'
       fullPath: '/empresa/$slug'
       preLoaderRoute: typeof EmpresaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/datas-comemorativas/$slug': {
+      id: '/datas-comemorativas/$slug'
+      path: '/datas-comemorativas/$slug'
+      fullPath: '/datas-comemorativas/$slug'
+      preLoaderRoute: typeof DatasComemorativasSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categoria/$slug': {
@@ -1113,12 +1153,14 @@ const rootRouteChildren: RootRouteChildren = {
   VenderRoute: VenderRoute,
   BlogSlugRoute: BlogSlugRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
+  DatasComemorativasSlugRoute: DatasComemorativasSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
   FornecedoresSlugRoute: FornecedoresSlugRoute,
   IdeiasSlugRoute: IdeiasSlugRoute,
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   BlogIndexRoute: BlogIndexRoute,
+  DatasComemorativasIndexRoute: DatasComemorativasIndexRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
   IdeiasIndexRoute: IdeiasIndexRoute,
   KitsIndexRoute: KitsIndexRoute,
@@ -1131,13 +1173,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

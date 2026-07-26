@@ -12,6 +12,8 @@ const STATIC_ROUTES: Array<{ path: string; changefreq: string; priority: string 
   { path: "/categorias", changefreq: "weekly", priority: "0.8" },
   { path: "/kits", changefreq: "weekly", priority: "0.8" },
   { path: "/ideias", changefreq: "weekly", priority: "0.8" },
+  { path: "/datas-comemorativas", changefreq: "weekly", priority: "0.8" },
+
   { path: "/blog", changefreq: "weekly", priority: "0.7" },
   { path: "/planos", changefreq: "monthly", priority: "0.6" },
   { path: "/vender", changefreq: "monthly", priority: "0.8" },
@@ -57,7 +59,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
           );
 
-          const [companiesRes, productsRes, categoriesRes] = await Promise.all([
+          const [companiesRes, productsRes, categoriesRes, datesRes] = await Promise.all([
             supabase
               .from("companies")
               .select("slug, updated_at")
@@ -77,7 +79,14 @@ export const Route = createFileRoute("/sitemap.xml")({
               .select("slug")
               .order("sort_order", { ascending: true })
               .limit(500),
+            supabase
+              .from("commemorative_dates")
+              .select("slug, updated_at")
+              .eq("is_active", true)
+              .order("sort_order", { ascending: true })
+              .limit(200),
           ]);
+
 
           const parts: string[] = [];
           parts.push('<?xml version="1.0" encoding="UTF-8"?>');
@@ -139,6 +148,17 @@ export const Route = createFileRoute("/sitemap.xml")({
             );
             parts.push(
               urlEntry(`${SITE_URL}/fornecedores/${c.slug}`, undefined, "weekly", "0.6"),
+            );
+          }
+
+          for (const d of datesRes.data ?? []) {
+            parts.push(
+              urlEntry(
+                `${SITE_URL}/datas-comemorativas/${d.slug}`,
+                d.updated_at ? new Date(d.updated_at).toISOString() : undefined,
+                "monthly",
+                "0.7",
+              ),
             );
           }
 
