@@ -14,6 +14,12 @@ type Product = {
   price: number | null;
   price_on_request: boolean;
   short_description: string | null;
+  /** Preço promocional vigente (ponta de estoque / oferta). Deve ser menor que `price`. */
+  promo_price?: number | null;
+  /** Sinaliza item de ponta de estoque / liquidação. */
+  is_clearance?: boolean | null;
+  /** Sinaliza brinde curado como inusitado/diferente. */
+  is_unusual?: boolean | null;
   company:
     | { id: string; slug: string; name: string; plan?: CompanyPlan | null; featured_until?: string | null }
     | null;
