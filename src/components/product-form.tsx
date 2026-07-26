@@ -19,6 +19,8 @@ import {
   draftsToTiers,
   type PriceTierDraft,
 } from "@/components/price-tiers-editor";
+import { FacetsPicker } from "@/components/facets-picker";
+import { dedupeFacetIds, facetSelectionSchema } from "@/lib/facets";
 import { validateTiers } from "@/lib/price-tiers";
 import { Loader2, Upload, X } from "lucide-react";
 
