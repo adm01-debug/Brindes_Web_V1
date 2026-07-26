@@ -112,3 +112,21 @@ export function slugify(input: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
+
+/**
+ * URL estável e SSR-safe para uma imagem de storage.
+ *
+ * Diferente de `getSignedUrlCached`, é síncrona: pode ser usada direto no
+ * `src` de uma <img> durante o SSR. O redirect assinado é resolvido pela rota
+ * `/i/$` no servidor (ver src/routes/i.$.ts) e cacheado na borda.
+ */
+export function mediaUrl(bucket: string, path: string | null | undefined): string | null {
+  if (!path) return null;
+  // Backward compat: registros antigos podem guardar a URL completa.
+  if (path.startsWith("http")) return path;
+  const encoded = path
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+  return `/i/${bucket}/${encoded}`;
+}

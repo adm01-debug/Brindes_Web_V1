@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Package, PlayCircle } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getSignedUrlCached, formatBRL } from "@/lib/portal";
+import { mediaUrl, formatBRL } from "@/lib/portal";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorite-button";
 import { CompareButton } from "@/components/compare-button";
@@ -39,26 +39,15 @@ type Product = {
  * Use em no máximo ~4 cards por página — prioridade em tudo é prioridade em nada.
  */
 export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
   // `toSorted`/cópia: `.sort()` mutaria o array vindo do cache do TanStack
   // Query, reordenando dados compartilhados por outros componentes.
   const rawUrl = product.images
     ? [...product.images].sort((a, b) => a.sort_order - b.sort_order)[0]?.url
     : undefined;
 
-  useEffect(() => {
-    let active = true;
-    if (rawUrl) {
-      getSignedUrlCached("product-images", rawUrl).then((u) => {
-        if (active) setImgUrl(u);
-      });
-    } else {
-      setImgUrl(null);
-    }
-    return () => {
-      active = false;
-    };
-  }, [rawUrl]);
+  // URL estável resolvida no servidor: a <img> já sai no HTML de SSR.
+  const imgUrl = mediaUrl("product-images", rawUrl);
+
 
 
   // Preço promocional só é considerado válido quando existe, é positivo e
