@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ARTICLES } from "@/lib/articles";
+import { countProductChunks } from "@/lib/sitemap-products";
 import { SITE_URL, escapeXml, sitemapSupabase, xmlFallback, xmlResponse } from "@/lib/sitemap-xml";
 
 /**
