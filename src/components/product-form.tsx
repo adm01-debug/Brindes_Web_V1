@@ -39,6 +39,10 @@ type FormValues = {
   production_time_days: string;
   customization_options: string;
   is_active: boolean;
+  promo_price: string;
+  is_clearance: boolean;
+  is_unusual: boolean;
+  video_url: string;
 };
 
 function toFormValues(initial?: Partial<ProductInput>): FormValues {
@@ -56,6 +60,10 @@ function toFormValues(initial?: Partial<ProductInput>): FormValues {
     production_time_days: initial?.production_time_days != null ? String(initial.production_time_days) : "",
     customization_options: initial?.customization_options ?? "",
     is_active: initial?.is_active ?? true,
+    promo_price: initial?.promo_price != null ? String(initial.promo_price) : "",
+    is_clearance: initial?.is_clearance ?? false,
+    is_unusual: initial?.is_unusual ?? false,
+    video_url: initial?.video_url ?? "",
   };
 }
 
@@ -146,6 +154,12 @@ export function ProductForm({
       return toast.error("Preço inválido");
     }
 
+    const promoRaw = values.promo_price.replace(",", ".").trim();
+    const promoNum = values.price_on_request || !promoRaw ? null : Number(promoRaw);
+    if (promoNum !== null && (Number.isNaN(promoNum) || promoNum < 0)) {
+      return toast.error("Preço promocional inválido");
+    }
+
     const parsed = productSchema.safeParse({
       name: values.name,
       category_id: values.category_id || null,
@@ -162,6 +176,10 @@ export function ProductForm({
       production_time_days: values.production_time_days ? Number(values.production_time_days) : null,
       customization_options: values.customization_options.trim() || null,
       is_active: values.is_active,
+      promo_price: promoNum,
+      is_clearance: values.is_clearance,
+      is_unusual: values.is_unusual,
+      video_url: values.video_url.trim() || null,
     });
 
     if (!parsed.success) {
@@ -305,6 +323,15 @@ export function ProductForm({
               <Input id="price" type="text" placeholder="Ex: 15.90" {...register("price")} />
             </div>
           )}
+          {!priceOnRequest && (
+            <div className="space-y-1.5">
+              <Label htmlFor="promo_price">Preço promocional (R$)</Label>
+              <Input id="promo_price" type="text" placeholder="Ex: 12.90" {...register("promo_price")} />
+              <p className="text-xs text-muted-foreground">
+                Se preenchido, o produto aparece em <strong>/ofertas</strong> com o desconto calculado automaticamente.
+              </p>
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="min_order_quantity">Pedido mínimo</Label>
@@ -339,6 +366,42 @@ export function ProductForm({
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader><CardTitle className="text-base">Vitrines e mídia</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Controller
+              control={control}
+              name="is_clearance"
+              render={({ field }) => (
+                <Switch id="is_clearance" checked={field.value} onCheckedChange={field.onChange} />
+              )}
+            />
+            <Label htmlFor="is_clearance" className="cursor-pointer">
+              Ponta de estoque <span className="text-muted-foreground">(exibe em /ofertas)</span>
+            </Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <Controller
+              control={control}
+              name="is_unusual"
+              render={({ field }) => (
+                <Switch id="is_unusual" checked={field.value} onCheckedChange={field.onChange} />
+              )}
+            />
+            <Label htmlFor="is_unusual" className="cursor-pointer">
+              Brinde inusitado <span className="text-muted-foreground">(exibe em /inusitados)</span>
+            </Label>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="video_url">Vídeo do produto (URL)</Label>
+            <Input id="video_url" type="url" placeholder="https://www.youtube.com/watch?v=..." {...register("video_url")} />
+          </div>
+        </CardContent>
+      </Card>
+
+
 
       <Card>
         <CardContent className="flex items-center gap-3 p-5">

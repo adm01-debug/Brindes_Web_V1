@@ -41,7 +41,22 @@ export const productSchema = z.object({
   production_time_days: z.number().int().positive().max(365).nullable(),
   customization_options: z.string().trim().max(2000).nullable(),
   is_active: z.boolean(),
-});
+  promo_price: z.number().min(0, "Preço promocional não pode ser negativo.").nullable(),
+  is_clearance: z.boolean(),
+  is_unusual: z.boolean(),
+  video_url: z
+    .string()
+    .trim()
+    .url("URL de vídeo inválida.")
+    .max(500)
+    .nullable(),
+}).refine(
+  (v) => v.promo_price == null || v.price == null || v.promo_price < v.price,
+  { path: ["promo_price"], message: "O preço promocional deve ser menor que o preço normal." },
+).refine(
+  (v) => v.promo_price == null || !v.price_on_request,
+  { path: ["promo_price"], message: "Não é possível usar preço promocional com preço sob consulta." },
+);
 
 export type ProductInput = z.infer<typeof productSchema>;
 
