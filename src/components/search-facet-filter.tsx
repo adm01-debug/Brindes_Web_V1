@@ -56,7 +56,15 @@ export function SearchFacetFilter({ selected, onChange, className }: SearchFacet
   const groups = useMemo(() => {
     if (!data) return [];
     return data.axes
-      .map((axis) => ({ axis, terms: data.terms.filter((t) => t.axis_id === axis.id) }))
+      .map((axis) => ({
+        axis,
+        terms: data.terms.filter(
+          (t) =>
+            t.axis_id === axis.id &&
+            // Vitrines sem produto não ajudam a filtrar; só aparecem se já selecionadas.
+            (!counts || (counts[t.slug] ?? 0) > 0 || selected.includes(t.slug)),
+        ),
+      }))
       .filter((g) => g.terms.length > 0);
   }, [data]);
 
