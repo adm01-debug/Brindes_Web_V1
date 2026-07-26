@@ -103,6 +103,27 @@ export function FacetsPicker({
   const selected = new Set(value);
   const atLimit = value.length >= MAX_FACETS_PER_PRODUCT;
 
+  // Sugestões automáticas a partir do texto do produto.
+  const debouncedText = useDebounced((suggestText ?? "").trim());
+  const { data: suggestions } = useQuery({
+    queryKey: ["facet-suggestions", debouncedText],
+    enabled: debouncedText.length >= 4,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<FacetSuggestion[]> => {
+      const { data, error } = await supabase.rpc("suggest_product_facets", {
+        _text: debouncedText,
+        _limit: 8,
+      });
+      // Falha de sugestão nunca deve quebrar o formulário: degrada para vazio.
+      if (error) return [];
+      return ((data ?? []) as FacetSuggestion[]).filter(
+        (s) => Number(s.score) >= MIN_SUGGESTION_SCORE,
+      );
+    },
+  });
+
+  const pendingSuggestions = (suggestions ?? []).filter((s) => !selected.has(s.term_id));
+
   const toggle = (termId: string) => {
     if (disabled) return;
     if (selected.has(termId)) {
@@ -113,6 +134,14 @@ export function FacetsPicker({
     if (atLimit) return;
     onChange([...value, termId]);
   };
+
+  const applyAllSuggestions = () => {
+    if (disabled) return;
+    const room = MAX_FACETS_PER_PRODUCT - value.length;
+    if (room <= 0) return;
+    onChange([...value, ...pendingSuggestions.slice(0, room).map((s) => s.term_id)]);
+  };
+
 
   return (
     <Card>
