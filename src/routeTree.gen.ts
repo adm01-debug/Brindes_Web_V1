@@ -13,6 +13,11 @@ import { Route as VenderRouteImport } from './routes/vender'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SitemapVitrinesDotxmlRouteImport } from './routes/sitemap-vitrines[.]xml'
+import { Route as SitemapProdutosDotxmlRouteImport } from './routes/sitemap-produtos[.]xml'
+import { Route as SitemapPaginasDotxmlRouteImport } from './routes/sitemap-paginas[.]xml'
+import { Route as SitemapEmpresasDotxmlRouteImport } from './routes/sitemap-empresas[.]xml'
+import { Route as SitemapConteudoDotxmlRouteImport } from './routes/sitemap-conteudo[.]xml'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as OrcamentoRouteImport } from './routes/orcamento'
@@ -92,6 +97,31 @@ const SobreRoute = SobreRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapVitrinesDotxmlRoute = SitemapVitrinesDotxmlRouteImport.update({
+  id: '/sitemap-vitrines.xml',
+  path: '/sitemap-vitrines.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapProdutosDotxmlRoute = SitemapProdutosDotxmlRouteImport.update({
+  id: '/sitemap-produtos.xml',
+  path: '/sitemap-produtos.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapPaginasDotxmlRoute = SitemapPaginasDotxmlRouteImport.update({
+  id: '/sitemap-paginas.xml',
+  path: '/sitemap-paginas.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapEmpresasDotxmlRoute = SitemapEmpresasDotxmlRouteImport.update({
+  id: '/sitemap-empresas.xml',
+  path: '/sitemap-empresas.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapConteudoDotxmlRoute = SitemapConteudoDotxmlRouteImport.update({
+  id: '/sitemap-conteudo.xml',
+  path: '/sitemap-conteudo.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacidadeRoute = PrivacidadeRouteImport.update({
@@ -428,6 +458,11 @@ export interface FileRoutesByFullPath {
   '/orcamento': typeof OrcamentoRouteWithChildren
   '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap-conteudo.xml': typeof SitemapConteudoDotxmlRoute
+  '/sitemap-empresas.xml': typeof SitemapEmpresasDotxmlRoute
+  '/sitemap-paginas.xml': typeof SitemapPaginasDotxmlRoute
+  '/sitemap-produtos.xml': typeof SitemapProdutosDotxmlRoute
+  '/sitemap-vitrines.xml': typeof SitemapVitrinesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
@@ -493,6 +528,11 @@ export interface FileRoutesByTo {
   '/orcamento': typeof OrcamentoRouteWithChildren
   '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap-conteudo.xml': typeof SitemapConteudoDotxmlRoute
+  '/sitemap-empresas.xml': typeof SitemapEmpresasDotxmlRoute
+  '/sitemap-paginas.xml': typeof SitemapPaginasDotxmlRoute
+  '/sitemap-produtos.xml': typeof SitemapProdutosDotxmlRoute
+  '/sitemap-vitrines.xml': typeof SitemapVitrinesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
@@ -559,6 +599,11 @@ export interface FileRoutesById {
   '/orcamento': typeof OrcamentoRouteWithChildren
   '/planos': typeof PlanosRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap-conteudo.xml': typeof SitemapConteudoDotxmlRoute
+  '/sitemap-empresas.xml': typeof SitemapEmpresasDotxmlRoute
+  '/sitemap-paginas.xml': typeof SitemapPaginasDotxmlRoute
+  '/sitemap-produtos.xml': typeof SitemapProdutosDotxmlRoute
+  '/sitemap-vitrines.xml': typeof SitemapVitrinesDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
@@ -626,6 +671,11 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/planos'
     | '/privacidade'
+    | '/sitemap-conteudo.xml'
+    | '/sitemap-empresas.xml'
+    | '/sitemap-paginas.xml'
+    | '/sitemap-produtos.xml'
+    | '/sitemap-vitrines.xml'
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
@@ -691,6 +741,11 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/planos'
     | '/privacidade'
+    | '/sitemap-conteudo.xml'
+    | '/sitemap-empresas.xml'
+    | '/sitemap-paginas.xml'
+    | '/sitemap-produtos.xml'
+    | '/sitemap-vitrines.xml'
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
@@ -756,6 +811,11 @@ export interface FileRouteTypes {
     | '/orcamento'
     | '/planos'
     | '/privacidade'
+    | '/sitemap-conteudo.xml'
+    | '/sitemap-empresas.xml'
+    | '/sitemap-paginas.xml'
+    | '/sitemap-produtos.xml'
+    | '/sitemap-vitrines.xml'
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
@@ -823,6 +883,11 @@ export interface RootRouteChildren {
   OrcamentoRoute: typeof OrcamentoRouteWithChildren
   PlanosRoute: typeof PlanosRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
+  SitemapConteudoDotxmlRoute: typeof SitemapConteudoDotxmlRoute
+  SitemapEmpresasDotxmlRoute: typeof SitemapEmpresasDotxmlRoute
+  SitemapPaginasDotxmlRoute: typeof SitemapPaginasDotxmlRoute
+  SitemapProdutosDotxmlRoute: typeof SitemapProdutosDotxmlRoute
+  SitemapVitrinesDotxmlRoute: typeof SitemapVitrinesDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
   TermosRoute: typeof TermosRoute
@@ -883,6 +948,41 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-vitrines.xml': {
+      id: '/sitemap-vitrines.xml'
+      path: '/sitemap-vitrines.xml'
+      fullPath: '/sitemap-vitrines.xml'
+      preLoaderRoute: typeof SitemapVitrinesDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-produtos.xml': {
+      id: '/sitemap-produtos.xml'
+      path: '/sitemap-produtos.xml'
+      fullPath: '/sitemap-produtos.xml'
+      preLoaderRoute: typeof SitemapProdutosDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-paginas.xml': {
+      id: '/sitemap-paginas.xml'
+      path: '/sitemap-paginas.xml'
+      fullPath: '/sitemap-paginas.xml'
+      preLoaderRoute: typeof SitemapPaginasDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-empresas.xml': {
+      id: '/sitemap-empresas.xml'
+      path: '/sitemap-empresas.xml'
+      fullPath: '/sitemap-empresas.xml'
+      preLoaderRoute: typeof SitemapEmpresasDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-conteudo.xml': {
+      id: '/sitemap-conteudo.xml'
+      path: '/sitemap-conteudo.xml'
+      fullPath: '/sitemap-conteudo.xml'
+      preLoaderRoute: typeof SitemapConteudoDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacidade': {
@@ -1393,6 +1493,11 @@ const rootRouteChildren: RootRouteChildren = {
   OrcamentoRoute: OrcamentoRouteWithChildren,
   PlanosRoute: PlanosRoute,
   PrivacidadeRoute: PrivacidadeRoute,
+  SitemapConteudoDotxmlRoute: SitemapConteudoDotxmlRoute,
+  SitemapEmpresasDotxmlRoute: SitemapEmpresasDotxmlRoute,
+  SitemapPaginasDotxmlRoute: SitemapPaginasDotxmlRoute,
+  SitemapProdutosDotxmlRoute: SitemapProdutosDotxmlRoute,
+  SitemapVitrinesDotxmlRoute: SitemapVitrinesDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
   TermosRoute: TermosRoute,
