@@ -76,62 +76,11 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { data: categories } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("categories")
-        .select("id, slug, name, icon")
-        .is("parent_id", null)
-        .order("sort_order");
-      return data ?? [];
-    },
-  });
+  // Dados já vêm quentes do loader (SSR): sem skeleton no primeiro paint.
+  const { data: categories } = useSuspenseQuery(homeCategoriesQO());
+  const { data: featuredCompanies } = useSuspenseQuery(homeFeaturedCompaniesQO());
+  const { data: recentProducts } = useSuspenseQuery(homeRecentProductsQO());
 
-  const { data: featuredCompanies } = useQuery({
-    queryKey: ["featured-companies"],
-    queryFn: async () => {
-      const nowIso = new Date().toISOString();
-      const { data } = await supabase
-        .from("companies")
-        .select("id, slug, name, tagline, city, state, logo_url, banner_url, plan, featured_until")
-        .eq("status", "approved")
-        .or(`plan.eq.premium,plan.eq.pro,featured_until.gt.${nowIso}`)
-        .order("plan", { ascending: false })
-        .order("created_at", { ascending: false })
-        .limit(6);
-      if (data && data.length > 0) return data;
-      // Fallback: nenhum destaque cadastrado — mostra recentes
-      const { data: recent } = await supabase
-        .from("companies")
-        .select("id, slug, name, tagline, city, state, logo_url, banner_url, plan, featured_until")
-        .eq("status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(6);
-      return recent ?? [];
-    },
-  });
-
-  const { data: recentProducts } = useQuery({
-    queryKey: ["recent-products"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("products")
-        .select(`
-          id, name, price, price_on_request, short_description,
-          promo_price, is_clearance, is_unusual, video_url,
-          price_tiers:product_price_tiers(min_qty, max_qty, unit_price),
-          company:companies!inner(id, slug, name, status, plan, featured_until),
-          images:product_images(url, sort_order)
-        `)
-        .eq("is_active", true)
-        .is("deleted_at", null)
-        .eq("company.status", "approved")
-        .order("created_at", { ascending: false })
-        .limit(8);
-      return data ?? [];
-    },
-  });
 
   return (
     <div className="flex min-h-screen flex-col">
