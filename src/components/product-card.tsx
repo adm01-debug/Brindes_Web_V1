@@ -60,9 +60,17 @@ export function ProductCard({ product }: { product: Product }) {
     ? Math.round(((product.price! - product.promo_price!) / product.price!) * 100)
     : 0;
 
-  const priceLabel = product.price_on_request || product.price == null
-    ? "Sob consulta"
-    : formatBRL(hasPromo ? product.promo_price! : product.price);
+  // Faixas por quantidade têm precedência de exibição: o comprador precisa
+  // enxergar o menor unitário possível ("a partir de"), não o preço cheio.
+  const tierLow = lowestTierPrice(normalizeTiers(product.price_tiers));
+
+  const priceLabel =
+    tierLow != null
+      ? `A partir de ${formatBRL(tierLow)}`
+      : product.price_on_request || product.price == null
+        ? "Sob consulta"
+        : formatBRL(hasPromo ? product.promo_price! : product.price);
+
 
   return (
     <Card className="group relative h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
