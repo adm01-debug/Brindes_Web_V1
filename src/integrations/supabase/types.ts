@@ -1455,6 +1455,7 @@ export type Database = {
             Args: {
               _category_slug?: string
               _color?: string
+              _has_video?: boolean
               _material?: string
               _max_days?: number
               _max_moq?: number
@@ -1475,13 +1476,17 @@ export type Database = {
               created_at: string
               currency: string
               id: string
+              is_clearance: boolean
+              is_unusual: boolean
               name: string
               price: number
               price_on_request: boolean
               primary_image_url: string
+              promo_price: number
               short_description: string
               slug: string
               total_count: number
+              video_url: string
               views_count: number
             }[]
           }
