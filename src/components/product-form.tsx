@@ -154,6 +154,12 @@ export function ProductForm({
       return toast.error("Preço inválido");
     }
 
+    const promoRaw = values.promo_price.replace(",", ".").trim();
+    const promoNum = values.price_on_request || !promoRaw ? null : Number(promoRaw);
+    if (promoNum !== null && (Number.isNaN(promoNum) || promoNum < 0)) {
+      return toast.error("Preço promocional inválido");
+    }
+
     const parsed = productSchema.safeParse({
       name: values.name,
       category_id: values.category_id || null,
@@ -170,6 +176,10 @@ export function ProductForm({
       production_time_days: values.production_time_days ? Number(values.production_time_days) : null,
       customization_options: values.customization_options.trim() || null,
       is_active: values.is_active,
+      promo_price: promoNum,
+      is_clearance: values.is_clearance,
+      is_unusual: values.is_unusual,
+      video_url: values.video_url.trim() || null,
     });
 
     if (!parsed.success) {
