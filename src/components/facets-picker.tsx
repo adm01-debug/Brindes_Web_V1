@@ -35,7 +35,33 @@ export type FacetsPickerProps = {
   onChange: (next: string[]) => void;
   /** Desabilita interação enquanto o formulário salva. */
   disabled?: boolean;
+  /**
+   * Texto do produto (nome + descrição) usado para sugerir vitrines.
+   * Quando ausente, o bloco de sugestões não é renderizado.
+   */
+  suggestText?: string;
 };
+
+/** Score mínimo para exibir uma sugestão — evita ruído de similaridade fraca. */
+const MIN_SUGGESTION_SCORE = 0.34;
+
+type FacetSuggestion = {
+  term_id: string;
+  term_name: string;
+  axis_name: string;
+  score: number;
+};
+
+/** Debounce simples: evita uma chamada de RPC por tecla digitada. */
+function useDebounced(value: string, delay = 600) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
 
 /**
  * Seleção multi-eixo de facetas (Evento, Público-Alvo, Data Promocional).
