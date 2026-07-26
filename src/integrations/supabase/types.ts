@@ -1421,75 +1421,45 @@ export type Database = {
           total_count: number
         }[]
       }
-      search_products:
-        | {
-            Args: {
-              _category_slug?: string
-              _page?: number
-              _page_size?: number
-              _price_max?: number
-              _price_min?: number
-              _q?: string
-              _sort?: string
-            }
-            Returns: {
-              category_name: string
-              category_slug: string
-              company_id: string
-              company_name: string
-              company_slug: string
-              created_at: string
-              currency: string
-              id: string
-              name: string
-              price: number
-              price_on_request: boolean
-              primary_image_url: string
-              short_description: string
-              slug: string
-              total_count: number
-              views_count: number
-            }[]
-          }
-        | {
-            Args: {
-              _category_slug?: string
-              _color?: string
-              _has_video?: boolean
-              _material?: string
-              _max_days?: number
-              _max_moq?: number
-              _page?: number
-              _page_size?: number
-              _price_max?: number
-              _price_min?: number
-              _q?: string
-              _sort?: string
-              _state?: string
-            }
-            Returns: {
-              category_name: string
-              category_slug: string
-              company_id: string
-              company_name: string
-              company_slug: string
-              created_at: string
-              currency: string
-              id: string
-              is_clearance: boolean
-              is_unusual: boolean
-              name: string
-              price: number
-              price_on_request: boolean
-              primary_image_url: string
-              promo_price: number
-              short_description: string
-              slug: string
-              total_count: number
-              video_url: string
-              views_count: number
-            }[]
-          }
+      search_products: {
+        Args: {
+          _category_slug?: string
+          _color?: string
+          _has_video?: boolean
+          _material?: string
+          _max_days?: number
+          _max_moq?: number
+          _page?: number
+          _page_size?: number
+          _price_max?: number
+          _price_min?: number
+          _q?: string
+          _sort?: string
+          _state?: string
+        }
+        Returns: {
+          category_name: string
+          category_slug: string
+          company_id: string
+          company_name: string
+          company_slug: string
+          created_at: string
+          currency: string
+          id: string
+          is_clearance: boolean
+          is_unusual: boolean
+          name: string
+          price: number
+          price_on_request: boolean
+          primary_image_url: string
+          promo_price: number
+          short_description: string
+          slug: string
+          total_count: number
+          video_url: string
+          views_count: number
+        }[]
+      }
       security_events_purge: {
         Args: { _older_than_days?: number }
         Returns: number

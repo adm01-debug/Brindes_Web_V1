@@ -457,6 +457,9 @@ function SearchPage() {
                   <SelectItem value="popular">Mais vistos</SelectItem>
                   <SelectItem value="price_asc">Menor preço</SelectItem>
                   <SelectItem value="price_desc">Maior preço</SelectItem>
+                  <SelectItem value="discount">Maior desconto</SelectItem>
+                  <SelectItem value="moq_asc">Menor pedido mínimo</SelectItem>
+                  <SelectItem value="delivery_asc">Menor prazo de produção</SelectItem>
                 </SelectContent>
               </Select>
             </div>
