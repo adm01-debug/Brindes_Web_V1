@@ -29,6 +29,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as KitsIndexRouteImport } from './routes/kits.index'
 import { Route as IdeiasIndexRouteImport } from './routes/ideias.index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
+import { Route as DatasComemorativasIndexRouteImport } from './routes/datas-comemorativas.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
@@ -157,6 +158,11 @@ const IdeiasIndexRoute = IdeiasIndexRouteImport.update({
 const EmpresasIndexRoute = EmpresasIndexRouteImport.update({
   id: '/empresas/',
   path: '/empresas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatasComemorativasIndexRoute = DatasComemorativasIndexRouteImport.update({
+  id: '/datas-comemorativas/',
+  path: '/datas-comemorativas/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -352,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog/': typeof BlogIndexRoute
+  '/datas-comemorativas/': typeof DatasComemorativasIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog': typeof BlogIndexRoute
+  '/datas-comemorativas': typeof DatasComemorativasIndexRoute
   '/empresas': typeof EmpresasIndexRoute
   '/ideias': typeof IdeiasIndexRoute
   '/kits': typeof KitsIndexRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/blog/': typeof BlogIndexRoute
+  '/datas-comemorativas/': typeof DatasComemorativasIndexRoute
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
@@ -508,6 +517,7 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog/'
+    | '/datas-comemorativas/'
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
@@ -558,6 +568,7 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog'
+    | '/datas-comemorativas'
     | '/empresas'
     | '/ideias'
     | '/kits'
@@ -610,6 +621,7 @@ export interface FileRouteTypes {
     | '/orcamento/enviado'
     | '/produto/$id'
     | '/blog/'
+    | '/datas-comemorativas/'
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
@@ -661,6 +673,7 @@ export interface RootRouteChildren {
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  DatasComemorativasIndexRoute: typeof DatasComemorativasIndexRoute
   EmpresasIndexRoute: typeof EmpresasIndexRoute
   IdeiasIndexRoute: typeof IdeiasIndexRoute
   KitsIndexRoute: typeof KitsIndexRoute
@@ -811,6 +824,13 @@ declare module '@tanstack/react-router' {
       path: '/empresas'
       fullPath: '/empresas/'
       preLoaderRoute: typeof EmpresasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/datas-comemorativas/': {
+      id: '/datas-comemorativas/'
+      path: '/datas-comemorativas'
+      fullPath: '/datas-comemorativas/'
+      preLoaderRoute: typeof DatasComemorativasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -1119,6 +1139,7 @@ const rootRouteChildren: RootRouteChildren = {
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   BlogIndexRoute: BlogIndexRoute,
+  DatasComemorativasIndexRoute: DatasComemorativasIndexRoute,
   EmpresasIndexRoute: EmpresasIndexRoute,
   IdeiasIndexRoute: IdeiasIndexRoute,
   KitsIndexRoute: KitsIndexRoute,
