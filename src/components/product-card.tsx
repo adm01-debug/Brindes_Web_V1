@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Package, PlayCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { getSignedUrlCached, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorite-button";
 import { CompareButton } from "@/components/compare-button";
