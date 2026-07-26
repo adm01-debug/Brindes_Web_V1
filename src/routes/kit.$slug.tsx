@@ -83,8 +83,9 @@ function KitDetailPage() {
           `id, suggested_quantity, sort_order,
            product:products (
              id, name, slug, short_description, price, price_on_request,
+             promo_price, is_clearance, is_unusual, video_url,
              is_active, deleted_at, moderation_status,
-             company:companies ( id, slug, name, status ),
+             company:companies ( id, slug, name, status, plan, featured_until ),
              images:product_images ( url, sort_order )
            )`,
         )

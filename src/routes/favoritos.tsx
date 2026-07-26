@@ -41,7 +41,7 @@ function FavoritesPage() {
       const { data, error } = await supabase
         .from("products")
         .select(
-          "id, name, price, price_on_request, short_description, company:companies!inner(id, slug, name, status), images:product_images(url, sort_order)",
+          "id, name, price, price_on_request, short_description, promo_price, is_clearance, is_unusual, video_url, company:companies!inner(id, slug, name, status, plan, featured_until), images:product_images(url, sort_order)",
         )
         .in("id", ids)
         .eq("is_active", true)

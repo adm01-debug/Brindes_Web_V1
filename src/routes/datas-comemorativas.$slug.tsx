@@ -46,7 +46,8 @@ const dateProductsQO = (date: CommemorativeDate) =>
         .select(
           `product:products!inner(
             id, name, price, price_on_request, short_description, is_active, deleted_at, moderation_status,
-            company:companies!inner(id, slug, name, status),
+            promo_price, is_clearance, is_unusual, video_url,
+            company:companies!inner(id, slug, name, status, plan, featured_until),
             images:product_images(url, sort_order)
           )`,
         )
