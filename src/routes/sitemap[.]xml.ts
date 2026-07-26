@@ -199,21 +199,42 @@ export const Route = createFileRoute("/sitemap.xml")({
               facetCounts.set(row.term_slug, Number(row.products_count) || 0);
             }
           }
+          // Espelha FACET_PAGE_SIZE de src/lib/facet-queries.ts. Mantido
+          // literal aqui para não arrastar o cliente Supabase do browser
+          // para dentro do bundle do worker via import.
+          const FACET_PAGE_SIZE = 24;
+          // Teto de páginas por termo: evita inflar o sitemap com séries
+          // longas de baixo valor caso um termo acumule milhares de itens.
+          const MAX_FACET_PAGES = 20;
           for (const t of facetsRes.data ?? []) {
             const axis = (t as { axis: { slug: string } | null }).axis;
             const base = axis ? FACET_AXIS_PATH[axis.slug] : undefined;
             if (!base) continue;
             const count = facetCounts.get(t.slug) ?? 0;
             if (count === 0) continue;
-            parts.push(
-              urlEntry(
-                `${SITE_URL}${base}/${t.slug}`,
-                t.updated_at ? new Date(t.updated_at).toISOString() : undefined,
-                "weekly",
-                count >= 20 ? "0.8" : count >= 5 ? "0.7" : "0.6",
-              ),
+            const lastmod = t.updated_at ? new Date(t.updated_at).toISOString() : undefined;
+            const priority = count >= 20 ? "0.8" : count >= 5 ? "0.7" : "0.6";
+            parts.push(urlEntry(`${SITE_URL}${base}/${t.slug}`, lastmod, "weekly", priority));
+
+            // Páginas 2..N existem como canonicals próprios (ver facetTermHead),
+            // então precisam estar no sitemap para serem descobertas.
+            const pageCount = Math.min(
+              MAX_FACET_PAGES,
+              Math.max(1, Math.ceil(count / FACET_PAGE_SIZE)),
             );
+            for (let p = 2; p <= pageCount; p++) {
+              parts.push(
+                urlEntry(
+                  `${SITE_URL}${base}/${t.slug}?page=${p}`,
+                  lastmod,
+                  "weekly",
+                  // Páginas internas valem menos que a primeira.
+                  "0.5",
+                ),
+              );
+            }
           }
+
 
 
 
