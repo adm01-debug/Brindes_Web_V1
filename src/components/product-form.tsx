@@ -39,6 +39,10 @@ type FormValues = {
   production_time_days: string;
   customization_options: string;
   is_active: boolean;
+  promo_price: string;
+  is_clearance: boolean;
+  is_unusual: boolean;
+  video_url: string;
 };
 
 function toFormValues(initial?: Partial<ProductInput>): FormValues {
@@ -56,6 +60,10 @@ function toFormValues(initial?: Partial<ProductInput>): FormValues {
     production_time_days: initial?.production_time_days != null ? String(initial.production_time_days) : "",
     customization_options: initial?.customization_options ?? "",
     is_active: initial?.is_active ?? true,
+    promo_price: initial?.promo_price != null ? String(initial.promo_price) : "",
+    is_clearance: initial?.is_clearance ?? false,
+    is_unusual: initial?.is_unusual ?? false,
+    video_url: initial?.video_url ?? "",
   };
 }
 
