@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Package } from "lucide-react";
+import { Package, PlayCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSignedUrl, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +20,8 @@ type Product = {
   is_clearance?: boolean | null;
   /** Sinaliza brinde curado como inusitado/diferente. */
   is_unusual?: boolean | null;
+  /** URL de vídeo do produto (apenas para exibir o selo "Vídeo"). */
+  video_url?: string | null;
   company:
     | { id: string; slug: string; name: string; plan?: CompanyPlan | null; featured_until?: string | null }
     | null;
