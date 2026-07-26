@@ -50,6 +50,7 @@ import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
 import { Route as KitSlugRouteImport } from './routes/kit.$slug'
 import { Route as IdeiasSlugRouteImport } from './routes/ideias.$slug'
+import { Route as ISplatRouteImport } from './routes/i.$'
 import { Route as FornecedoresSlugRouteImport } from './routes/fornecedores.$slug'
 import { Route as EmpresaSlugRouteImport } from './routes/empresa.$slug'
 import { Route as DatasComemorativasSlugRouteImport } from './routes/datas-comemorativas.$slug'
@@ -287,6 +288,11 @@ const IdeiasSlugRoute = IdeiasSlugRouteImport.update({
   path: '/ideias/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ISplatRoute = ISplatRouteImport.update({
+  id: '/i/$',
+  path: '/i/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FornecedoresSlugRoute = FornecedoresSlugRouteImport.update({
   id: '/fornecedores/$slug',
   path: '/fornecedores/$slug',
@@ -489,6 +495,7 @@ export interface FileRoutesByFullPath {
   '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/fornecedores/$slug': typeof FornecedoresSlugRoute
+  '/i/$': typeof ISplatRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
@@ -560,6 +567,7 @@ export interface FileRoutesByTo {
   '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/fornecedores/$slug': typeof FornecedoresSlugRoute
+  '/i/$': typeof ISplatRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
@@ -634,6 +642,7 @@ export interface FileRoutesById {
   '/datas-comemorativas/$slug': typeof DatasComemorativasSlugRoute
   '/empresa/$slug': typeof EmpresaSlugRoute
   '/fornecedores/$slug': typeof FornecedoresSlugRoute
+  '/i/$': typeof ISplatRoute
   '/ideias/$slug': typeof IdeiasSlugRoute
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
@@ -708,6 +717,7 @@ export interface FileRouteTypes {
     | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
     | '/fornecedores/$slug'
+    | '/i/$'
     | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
@@ -779,6 +789,7 @@ export interface FileRouteTypes {
     | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
     | '/fornecedores/$slug'
+    | '/i/$'
     | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
@@ -852,6 +863,7 @@ export interface FileRouteTypes {
     | '/datas-comemorativas/$slug'
     | '/empresa/$slug'
     | '/fornecedores/$slug'
+    | '/i/$'
     | '/ideias/$slug'
     | '/kit/$slug'
     | '/orcamento/enviado'
@@ -925,6 +937,7 @@ export interface RootRouteChildren {
   DatasComemorativasSlugRoute: typeof DatasComemorativasSlugRoute
   EmpresaSlugRoute: typeof EmpresaSlugRoute
   FornecedoresSlugRoute: typeof FornecedoresSlugRoute
+  ISplatRoute: typeof ISplatRoute
   IdeiasSlugRoute: typeof IdeiasSlugRoute
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
@@ -1234,6 +1247,13 @@ declare module '@tanstack/react-router' {
       path: '/ideias/$slug'
       fullPath: '/ideias/$slug'
       preLoaderRoute: typeof IdeiasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/i/$': {
+      id: '/i/$'
+      path: '/i/$'
+      fullPath: '/i/$'
+      preLoaderRoute: typeof ISplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fornecedores/$slug': {
@@ -1551,6 +1571,7 @@ const rootRouteChildren: RootRouteChildren = {
   DatasComemorativasSlugRoute: DatasComemorativasSlugRoute,
   EmpresaSlugRoute: EmpresaSlugRoute,
   FornecedoresSlugRoute: FornecedoresSlugRoute,
+  ISplatRoute: ISplatRoute,
   IdeiasSlugRoute: IdeiasSlugRoute,
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
