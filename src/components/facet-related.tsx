@@ -80,7 +80,7 @@ export function FacetRelated({
         {items.map((t) => (
           <Link
             key={t.id}
-            to={`${FACET_AXIS_HUB[t.axis!.slug as FacetAxisSlug]}/${t.slug}`}
+            to={`${FACET_AXIS_HUB[t.axis!.slug as FacetAxisSlug]}/${t.slug}` as never}
             className="rounded-full border bg-card px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {t.name}

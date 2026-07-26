@@ -72,7 +72,7 @@ export function ProductFacetLinks({ productId, className }: ProductFacetLinksPro
               {group.terms.map((term) => (
                 <Link
                   key={term.slug}
-                  to={`${group.hub}/${term.slug}`}
+                  to={`${group.hub}/${term.slug}` as never}
                   className="rounded-full border px-3 py-1 text-xs font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {term.name}
