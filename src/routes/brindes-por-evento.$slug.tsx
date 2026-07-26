@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { FacetTermPage } from "@/components/facet-term-page";
+import { z } from "zod";
 import { facetTermQO, facetProductsQO } from "@/lib/facet-queries";
 import { facetTermHead } from "@/lib/facet-seo";
 
@@ -10,11 +11,16 @@ const HUB_PATH = "/brindes-por-evento";
 const HUB_LABEL = "Brindes por evento";
 
 export const Route = createFileRoute("/brindes-por-evento/$slug")({
-  loader: async ({ params, context }) => {
+  // Paginação em search param: SSR-friendly, indexável e compartilhável.
+  validateSearch: z.object({ page: z.coerce.number().int().min(1).optional() }),
+  loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
+  loader: async ({ params, context, deps }) => {
     const found = await context.queryClient.ensureQueryData(facetTermQO("evento", params.slug));
     if (!found) throw notFound();
-    await context.queryClient.ensureQueryData(facetProductsQO(found.term.id));
-    return found;
+    const products = await context.queryClient.ensureQueryData(
+      facetProductsQO(found.term.id, deps.page),
+    );
+    return { ...found, products };
   },
   head: ({ params, loaderData }) =>
     facetTermHead({
@@ -22,6 +28,9 @@ export const Route = createFileRoute("/brindes-por-evento/$slug")({
       slug: params.slug,
       hubPath: HUB_PATH,
       hubLabel: HUB_LABEL,
+      products: loaderData?.products.items,
+      page: loaderData?.products.page,
+      pageCount: loaderData?.products.pageCount,
       fallbackTitle: "Evento não encontrado | BrindesHub",
     }),
   component: EventFacetPage,
@@ -41,8 +50,8 @@ export const Route = createFileRoute("/brindes-por-evento/$slug")({
 });
 
 function EventFacetPage() {
-  const { axis, term } = Route.useLoaderData();
+  const { axis, term, products } = Route.useLoaderData();
   return (
-    <FacetTermPage term={term} axisName={axis.name} hubPath={HUB_PATH} hubLabel={HUB_LABEL} />
+    <FacetTermPage term={term} axisName={axis.name} hubPath={HUB_PATH} hubLabel={HUB_LABEL} page={products.page} />
   );
 }

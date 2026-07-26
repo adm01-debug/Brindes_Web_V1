@@ -2,6 +2,9 @@ import type { FacetTerm } from "@/lib/facets";
 
 export const SITE_URL = "https://brinde-gallery.lovable.app";
 
+/** Item mínimo necessário para montar o ItemList de produtos da vitrine. */
+export type FacetSeoProduct = { id: string; name: string };
+
 /**
  * Monta o bloco `head()` de uma página de termo de faceta.
  * Centralizado para que os três eixos não divirjam em metadados.
@@ -12,8 +15,17 @@ export function facetTermHead(params: {
   hubPath: string;
   hubLabel: string;
   fallbackTitle: string;
+  /** Produtos já carregados no loader — vira ItemList para o Google. */
+  products?: FacetSeoProduct[];
+  /** Página atual e total, para canonical paginado e rel prev/next. */
+  page?: number;
+  pageCount?: number;
 }) {
-  const url = `${SITE_URL}${params.hubPath}/${params.slug}`;
+  const base = `${SITE_URL}${params.hubPath}/${params.slug}`;
+  const page = params.page && params.page > 1 ? params.page : 1;
+  const pageCount = params.pageCount ?? 1;
+  const url = page > 1 ? `${base}?page=${page}` : base;
+
 
   if (!params.term) {
     return {
@@ -22,7 +34,9 @@ export function facetTermHead(params: {
   }
 
   const term = params.term;
-  const title = term.seo_title ?? `${term.name} — Brindes Corporativos | BrindesHub`;
+  const baseTitle = term.seo_title ?? `${term.name} — Brindes Corporativos | BrindesHub`;
+  // Páginas 2+ recebem sufixo para evitar títulos duplicados no index.
+  const title = page > 1 ? `${baseTitle} — Página ${page}` : baseTitle;
   const description =
     term.seo_description ??
     term.description ??
@@ -40,7 +54,15 @@ export function facetTermHead(params: {
       { name: "twitter:title", content: title },
       { name: "twitter:description", content: description },
     ],
-    links: [{ rel: "canonical", href: url }],
+    links: [
+      // Cada página é seu próprio canonical; prev/next descrevem a série.
+      { rel: "canonical", href: url },
+      ...(page > 1
+        ? [{ rel: "prev", href: page === 2 ? base : `${base}?page=${page - 1}` }]
+        : []),
+      ...(page < pageCount ? [{ rel: "next", href: `${base}?page=${page + 1}` }] : []),
+    ],
+
     scripts: [
       {
         type: "application/ld+json",
@@ -59,6 +81,88 @@ export function facetTermHead(params: {
           ],
         }),
       },
+      ...(params.products && params.products.length > 0
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                name: title,
+                numberOfItems: params.products.length,
+                itemListElement: params.products.slice(0, 30).map((p, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: p.name,
+                  url: `${SITE_URL}/produto/${p.id}`,
+                })),
+              }),
+            },
+          ]
+        : []),
     ],
   };
 }
+
+/**
+ * Monta o bloco `head()` de um hub de eixo (lista de vitrines), incluindo
+ * BreadcrumbList e ItemList das vitrines publicadas.
+ */
+export function facetHubHead(params: {
+  hubPath: string;
+  title: string;
+  description: string;
+  heading: string;
+  terms?: { slug: string; name: string }[];
+}) {
+  const url = `${SITE_URL}${params.hubPath}`;
+  const terms = params.terms ?? [];
+
+  return {
+    meta: [
+      { title: params.title },
+      { name: "description", content: params.description },
+      { property: "og:type", content: "website" },
+      { property: "og:title", content: params.title },
+      { property: "og:description", content: params.description },
+      { property: "og:url", content: url },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: params.title },
+      { name: "twitter:description", content: params.description },
+    ],
+    links: [{ rel: "canonical", href: url }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+            { "@type": "ListItem", position: 2, name: params.heading, item: url },
+          ],
+        }),
+      },
+      ...(terms.length > 0
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                name: params.heading,
+                numberOfItems: terms.length,
+                itemListElement: terms.map((t, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: t.name,
+                  url: `${url}/${t.slug}`,
+                })),
+              }),
+            },
+          ]
+        : []),
+    ],
+  };
+}
+
