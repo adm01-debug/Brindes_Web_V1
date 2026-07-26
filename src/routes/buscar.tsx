@@ -193,6 +193,9 @@ function SearchPage() {
     staleTime: 5 * 60_000,
   });
 
+  /** Facetas normalizadas a partir da URL (fonte única para query e UI). */
+  const selectedFacets = useMemo(() => parseFacets(search.facetas), [search.facetas]);
+
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [
       "search-products-rpc",
@@ -207,6 +210,7 @@ function SearchPage() {
       search.prazo,
       search.uf,
       search.video,
+      selectedFacets.join(","),
       search.page,
     ],
     placeholderData: keepPreviousData,
@@ -225,6 +229,7 @@ function SearchPage() {
         _max_days: search.prazo > 0 ? search.prazo : undefined,
         _state: search.uf || undefined,
         _has_video: search.video ? true : undefined,
+        _facets: selectedFacets.length > 0 ? selectedFacets : undefined,
       });
       if (error) throw error;
       return (data ?? []) as RpcRow[];
