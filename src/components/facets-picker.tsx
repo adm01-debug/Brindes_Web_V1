@@ -159,6 +159,47 @@ export function FacetsPicker({
           compradores encontram o item nas buscas por evento, público e datas do calendário.
         </p>
 
+        {pendingSuggestions.length > 0 && !atLimit && (
+          <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                Sugestões para este produto
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={disabled}
+                onClick={applyAllSuggestions}
+              >
+                Aplicar todas
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {pendingSuggestions.map((s) => (
+                <button
+                  key={s.term_id}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => toggle(s.term_id)}
+                  title={`${s.axis_name} — adicionar`}
+                  className={cn(
+                    "rounded-full border border-dashed border-primary/50 bg-background px-3 py-1.5 text-xs font-medium text-primary transition-colors",
+                    "hover:bg-primary hover:text-primary-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    disabled && "cursor-not-allowed opacity-50",
+                  )}
+                >
+                  + {s.term_name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+
+
         {isLoading && (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
