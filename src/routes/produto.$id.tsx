@@ -358,6 +358,12 @@ function ProductPage() {
                 </Card>
               )}
 
+              {product.video_url && (
+                <div className="mt-4">
+                  <ProductVideo url={product.video_url} title={product.name} />
+                </div>
+              )}
+
               {product.customization_options && (
                 <Card className="mt-4">
                   <CardContent className="p-5">
