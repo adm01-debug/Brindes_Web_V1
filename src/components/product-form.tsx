@@ -421,6 +421,10 @@ export function ProductForm({
 
       <PriceTiersEditor drafts={tierDrafts} onChange={setTierDrafts} />
 
+      <FacetsPicker value={facetIds} onChange={setFacetIds} disabled={isSubmitting} />
+
+
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Especificações</CardTitle></CardHeader>
