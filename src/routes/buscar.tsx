@@ -418,7 +418,7 @@ function SearchPage() {
                 value={search.uf || "all"}
                 onValueChange={(v) => setFilter("uf", v === "all" ? "" : v)}
               >
-                <SelectTrigger><SelectValue placeholder="Estado (UF)" /></SelectTrigger>
+                <SelectTrigger aria-label="Filtrar por estado (UF)"><SelectValue placeholder="Estado (UF)" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os estados</SelectItem>
                   {UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
@@ -495,7 +495,7 @@ function SearchPage() {
                 value={search.categoria || "all"}
                 onValueChange={(v) => setFilter("categoria", v === "all" ? "" : v)}
               >
-                <SelectTrigger className="sm:w-64">
+                <SelectTrigger className="sm:w-64" aria-label="Filtrar por categoria">
                   <SelectValue placeholder="Todas as categorias" />
                 </SelectTrigger>
                 <SelectContent>
@@ -509,7 +509,7 @@ function SearchPage() {
               </Select>
 
               <Select value={search.ordenar} onValueChange={(v) => setFilter("ordenar", v)}>
-                <SelectTrigger className="sm:w-56">
+                <SelectTrigger className="sm:w-56" aria-label="Ordenar resultados">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
