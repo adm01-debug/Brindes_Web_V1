@@ -52,6 +52,8 @@ type KitItem = {
     is_clearance: boolean | null;
     is_unusual: boolean | null;
     video_url: string | null;
+    price_tiers: { min_qty: number; max_qty: number | null; unit_price: number }[] | null;
+
     is_active: boolean;
     deleted_at: string | null;
     moderation_status: string;
