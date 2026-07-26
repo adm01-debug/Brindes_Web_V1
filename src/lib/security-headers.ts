@@ -119,16 +119,12 @@ export const applySecurityHeaders = createIsomorphicFn()
       setResponseHeader("Cross-Origin-Opener-Policy", "same-origin");
       setResponseHeader("Cross-Origin-Resource-Policy", "same-site");
 
-      let host: string | undefined;
-      try {
-        host = getRequestHost();
-      } catch {
-        host = undefined;
-      }
-      const enforcedCsp = isPreviewHost(host) ? permissiveCsp(nonce) : hardenedCsp(nonce);
-
-      setResponseHeader("Content-Security-Policy", enforcedCsp);
+      // A mesma política vale para preview, produção e domínio próprio: a
+      // divergência anterior escondia em preview a quebra de hidratação que
+      // acontecia em produção.
+      setResponseHeader("Content-Security-Policy", enforcedCsp(nonce));
       setResponseHeader("Content-Security-Policy-Report-Only", reportOnlyCsp(nonce));
+
 
       // Reporting API v1 (Chrome/Edge) — grupo referenciado por `report-to` no CSP.
       setResponseHeader(
