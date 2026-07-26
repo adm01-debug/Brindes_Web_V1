@@ -114,12 +114,19 @@ export function ProductForm({
   useEffect(() => {
     if (!productId) return;
     (async () => {
-      const { data } = await supabase
-        .from("product_images")
-        .select("id, url, sort_order")
-        .eq("product_id", productId)
-        .order("sort_order");
-      const rows = data ?? [];
+      const [imagesRes, tiersRes] = await Promise.all([
+        supabase
+          .from("product_images")
+          .select("id, url, sort_order")
+          .eq("product_id", productId)
+          .order("sort_order"),
+        supabase
+          .from("product_price_tiers")
+          .select("id, min_qty, max_qty, unit_price")
+          .eq("product_id", productId)
+          .order("min_qty"),
+      ]);
+      const rows = imagesRes.data ?? [];
       const withUrls = await Promise.all(
         rows.map(async (r) => ({
           id: r.id,
@@ -129,9 +136,18 @@ export function ProductForm({
         })),
       );
       setImages(withUrls);
+      setTierDrafts(
+        (tiersRes.data ?? []).map((t) => ({
+          key: t.id,
+          min_qty: String(t.min_qty),
+          max_qty: t.max_qty == null ? "" : String(t.max_qty),
+          unit_price: String(t.unit_price),
+        })),
+      );
       setInitialLoaded(true);
     })();
   }, [productId]);
+
 
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
