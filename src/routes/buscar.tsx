@@ -22,22 +22,74 @@ import { Search, Package, ChevronLeft, ChevronRight, X, History } from "lucide-r
 import { Checkbox } from "@/components/ui/checkbox";
 import { SearchFacetFilter, MAX_SEARCH_FACETS } from "@/components/search-facet-filter";
 
+/**
+ * Todos os filtros são OPCIONAIS na URL. Aplicar `.default()` aqui faria o
+ * router reescrever `/buscar` para `/buscar?q=&categoria=...` via redirect 307,
+ * poluindo o histórico, divergindo do canonical e custando um round-trip extra.
+ * Os padrões são aplicados em memória por `normalizeSearch`.
+ */
 const searchSchema = z.object({
-  q: fallback(z.string(), "").default(""),
-  categoria: fallback(z.string(), "").default(""),
-  ordenar: fallback(z.string(), "relevance").default("relevance"),
-  min: fallback(z.number(), 0).default(0),
-  max: fallback(z.number(), 0).default(0),
-  material: fallback(z.string(), "").default(""),
-  cor: fallback(z.string(), "").default(""),
-  moq: fallback(z.number().int(), 0).default(0),
-  prazo: fallback(z.number().int(), 0).default(0),
-  uf: fallback(z.string(), "").default(""),
-  video: fallback(z.boolean(), false).default(false),
+  q: fallback(z.string(), "").optional(),
+  categoria: fallback(z.string(), "").optional(),
+  ordenar: fallback(z.string(), "relevance").optional(),
+  min: fallback(z.number(), 0).optional(),
+  max: fallback(z.number(), 0).optional(),
+  material: fallback(z.string(), "").optional(),
+  cor: fallback(z.string(), "").optional(),
+  moq: fallback(z.number().int(), 0).optional(),
+  prazo: fallback(z.number().int(), 0).optional(),
+  uf: fallback(z.string(), "").optional(),
+  video: fallback(z.boolean(), false).optional(),
   /** Slugs de vitrines (facetas) separados por vírgula. Ex.: "canecas,formatura". */
-  facetas: fallback(z.string(), "").default(""),
-  page: fallback(z.number().int(), 1).default(1),
+  facetas: fallback(z.string(), "").optional(),
+  page: fallback(z.number().int(), 1).optional(),
 });
+
+type RawSearch = z.infer<typeof searchSchema>;
+
+/** Valores considerados "vazios": nunca são serializados na URL. */
+const SEARCH_DEFAULTS = {
+  q: "",
+  categoria: "",
+  ordenar: "relevance",
+  min: 0,
+  max: 0,
+  material: "",
+  cor: "",
+  moq: 0,
+  prazo: 0,
+  uf: "",
+  video: false,
+  facetas: "",
+  page: 1,
+} as const;
+
+type SearchState = { -readonly [K in keyof typeof SEARCH_DEFAULTS]: (typeof SEARCH_DEFAULTS)[K] extends boolean
+  ? boolean
+  : (typeof SEARCH_DEFAULTS)[K] extends number
+    ? number
+    : string };
+
+/** Preenche os padrões para que o componente trabalhe sempre com valores concretos. */
+function normalizeSearch(raw: RawSearch): SearchState {
+  const out = { ...SEARCH_DEFAULTS } as SearchState;
+  for (const key of Object.keys(SEARCH_DEFAULTS) as (keyof SearchState)[]) {
+    const value = raw[key];
+    if (value !== undefined && value !== null) {
+      (out as Record<string, unknown>)[key] = value;
+    }
+  }
+  return out;
+}
+
+/** Remove da URL tudo que é igual ao padrão, mantendo links curtos e canônicos. */
+function stripDefaults(state: SearchState): RawSearch {
+  const out: Record<string, unknown> = {};
+  for (const key of Object.keys(SEARCH_DEFAULTS) as (keyof SearchState)[]) {
+    if (state[key] !== SEARCH_DEFAULTS[key]) out[key] = state[key];
+  }
+  return out as RawSearch;
+}
 
 /** Converte o parâmetro CSV da URL em lista de slugs limpa e sem duplicatas. */
 function parseFacets(csv: string): string[] {
@@ -50,6 +102,7 @@ function parseFacets(csv: string): string[] {
     ),
   ).slice(0, MAX_SEARCH_FACETS);
 }
+
 
 
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
