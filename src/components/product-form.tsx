@@ -278,6 +278,15 @@ export function ProductForm({
         if (tierErr) throw tierErr;
       }
 
+      // Mesma estratégia para as facetas: estado final substitui o anterior.
+      await supabase.from("product_facets").delete().eq("product_id", finalProductId!);
+      if (facets.length > 0) {
+        const { error: facetErr } = await supabase.from("product_facets").insert(
+          facets.map((term_id) => ({ product_id: finalProductId!, term_id })),
+        );
+        if (facetErr) throw facetErr;
+      }
+
       toast.success(productId ? "Produto atualizado!" : "Produto criado!");
       qc.invalidateQueries({ queryKey: ["my-products"] });
       navigate({ to: "/painel/produtos" });
