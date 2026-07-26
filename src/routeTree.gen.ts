@@ -68,6 +68,7 @@ import { Route as AuthenticatedPainelProdutosIndexRouteImport } from './routes/_
 import { Route as AuthenticatedPainelMensagensIndexRouteImport } from './routes/_authenticated/painel.mensagens.index'
 import { Route as AuthenticatedPainelAdminIndexRouteImport } from './routes/_authenticated/painel.admin.index'
 import { Route as ApiPublicHooksWebVitalsRouteImport } from './routes/api/public/hooks/web-vitals'
+import { Route as ApiPublicHooksIndexnowRouteImport } from './routes/api/public/hooks/indexnow'
 import { Route as ApiPublicHooksCspReportRouteImport } from './routes/api/public/hooks/csp-report'
 import { Route as AuthenticatedPainelProdutosNovoRouteImport } from './routes/_authenticated/painel.produtos.novo'
 import { Route as AuthenticatedPainelMensagensIdRouteImport } from './routes/_authenticated/painel.mensagens.$id'
@@ -384,6 +385,11 @@ const ApiPublicHooksWebVitalsRoute = ApiPublicHooksWebVitalsRouteImport.update({
   path: '/api/public/hooks/web-vitals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksIndexnowRoute = ApiPublicHooksIndexnowRouteImport.update({
+  id: '/api/public/hooks/indexnow',
+  path: '/api/public/hooks/indexnow',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksCspReportRoute = ApiPublicHooksCspReportRouteImport.update({
   id: '/api/public/hooks/csp-report',
   path: '/api/public/hooks/csp-report',
@@ -511,6 +517,7 @@ export interface FileRoutesByFullPath {
   '/painel/mensagens/$id': typeof AuthenticatedPainelMensagensIdRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/api/public/hooks/csp-report': typeof ApiPublicHooksCspReportRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/mensagens/': typeof AuthenticatedPainelMensagensIndexRoute
@@ -581,6 +588,7 @@ export interface FileRoutesByTo {
   '/painel/mensagens/$id': typeof AuthenticatedPainelMensagensIdRoute
   '/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/api/public/hooks/csp-report': typeof ApiPublicHooksCspReportRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/painel/admin': typeof AuthenticatedPainelAdminIndexRoute
   '/painel/mensagens': typeof AuthenticatedPainelMensagensIndexRoute
@@ -654,6 +662,7 @@ export interface FileRoutesById {
   '/_authenticated/painel/mensagens/$id': typeof AuthenticatedPainelMensagensIdRoute
   '/_authenticated/painel/produtos/novo': typeof AuthenticatedPainelProdutosNovoRoute
   '/api/public/hooks/csp-report': typeof ApiPublicHooksCspReportRoute
+  '/api/public/hooks/indexnow': typeof ApiPublicHooksIndexnowRoute
   '/api/public/hooks/web-vitals': typeof ApiPublicHooksWebVitalsRoute
   '/_authenticated/painel/admin/': typeof AuthenticatedPainelAdminIndexRoute
   '/_authenticated/painel/mensagens/': typeof AuthenticatedPainelMensagensIndexRoute
@@ -727,6 +736,7 @@ export interface FileRouteTypes {
     | '/painel/mensagens/$id'
     | '/painel/produtos/novo'
     | '/api/public/hooks/csp-report'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/web-vitals'
     | '/painel/admin/'
     | '/painel/mensagens/'
@@ -797,6 +807,7 @@ export interface FileRouteTypes {
     | '/painel/mensagens/$id'
     | '/painel/produtos/novo'
     | '/api/public/hooks/csp-report'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/web-vitals'
     | '/painel/admin'
     | '/painel/mensagens'
@@ -869,6 +880,7 @@ export interface FileRouteTypes {
     | '/_authenticated/painel/mensagens/$id'
     | '/_authenticated/painel/produtos/novo'
     | '/api/public/hooks/csp-report'
+    | '/api/public/hooks/indexnow'
     | '/api/public/hooks/web-vitals'
     | '/_authenticated/painel/admin/'
     | '/_authenticated/painel/mensagens/'
@@ -929,6 +941,7 @@ export interface RootRouteChildren {
   TiposDeBrindeIndexRoute: typeof TiposDeBrindeIndexRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicHooksCspReportRoute: typeof ApiPublicHooksCspReportRoute
+  ApiPublicHooksIndexnowRoute: typeof ApiPublicHooksIndexnowRoute
   ApiPublicHooksWebVitalsRoute: typeof ApiPublicHooksWebVitalsRoute
   ApiPublicOgEmpresaSlugRoute: typeof ApiPublicOgEmpresaSlugRoute
   ApiPublicOgProdutoIdRoute: typeof ApiPublicOgProdutoIdRoute
@@ -1349,6 +1362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksWebVitalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/indexnow': {
+      id: '/api/public/hooks/indexnow'
+      path: '/api/public/hooks/indexnow'
+      fullPath: '/api/public/hooks/indexnow'
+      preLoaderRoute: typeof ApiPublicHooksIndexnowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/csp-report': {
       id: '/api/public/hooks/csp-report'
       path: '/api/public/hooks/csp-report'
@@ -1547,6 +1567,7 @@ const rootRouteChildren: RootRouteChildren = {
   TiposDeBrindeIndexRoute: TiposDeBrindeIndexRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicHooksCspReportRoute: ApiPublicHooksCspReportRoute,
+  ApiPublicHooksIndexnowRoute: ApiPublicHooksIndexnowRoute,
   ApiPublicHooksWebVitalsRoute: ApiPublicHooksWebVitalsRoute,
   ApiPublicOgEmpresaSlugRoute: ApiPublicOgEmpresaSlugRoute,
   ApiPublicOgProdutoIdRoute: ApiPublicOgProdutoIdRoute,
