@@ -42,9 +42,22 @@ export function ProductCard({ product }: { product: Product }) {
     };
   }, [rawUrl]);
 
+  // Preço promocional só é considerado válido quando existe, é positivo e
+  // realmente menor que o preço base — evita "descontos" negativos por dado sujo.
+  const hasPromo =
+    !product.price_on_request &&
+    product.promo_price != null &&
+    product.promo_price > 0 &&
+    product.price != null &&
+    product.promo_price < product.price;
+
+  const discountPct = hasPromo
+    ? Math.round(((product.price! - product.promo_price!) / product.price!) * 100)
+    : 0;
+
   const priceLabel = product.price_on_request || product.price == null
     ? "Sob consulta"
-    : formatBRL(product.price);
+    : formatBRL(hasPromo ? product.promo_price! : product.price);
 
   return (
     <Card className="group relative h-full overflow-hidden transition-all hover:border-primary/50 hover:shadow-md">
