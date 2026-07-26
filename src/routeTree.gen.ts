@@ -13,6 +13,7 @@ import { Route as VenderRouteImport } from './routes/vender'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SitemapProdutosDotxmlRouteImport } from './routes/sitemap-produtos[.]xml'
 import { Route as SitemapPaginasDotxmlRouteImport } from './routes/sitemap-paginas[.]xml'
 import { Route as SitemapEmpresasDotxmlRouteImport } from './routes/sitemap-empresas[.]xml'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
@@ -94,6 +95,11 @@ const SobreRoute = SobreRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapProdutosDotxmlRoute = SitemapProdutosDotxmlRouteImport.update({
+  id: '/sitemap-produtos.xml',
+  path: '/sitemap-produtos.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapPaginasDotxmlRoute = SitemapPaginasDotxmlRouteImport.update({
@@ -442,6 +448,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap-empresas.xml': typeof SitemapEmpresasDotxmlRoute
   '/sitemap-paginas.xml': typeof SitemapPaginasDotxmlRoute
+  '/sitemap-produtos.xml': typeof SitemapProdutosDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
@@ -509,6 +516,7 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap-empresas.xml': typeof SitemapEmpresasDotxmlRoute
   '/sitemap-paginas.xml': typeof SitemapPaginasDotxmlRoute
+  '/sitemap-produtos.xml': typeof SitemapProdutosDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
@@ -577,6 +585,7 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/sitemap-empresas.xml': typeof SitemapEmpresasDotxmlRoute
   '/sitemap-paginas.xml': typeof SitemapPaginasDotxmlRoute
+  '/sitemap-produtos.xml': typeof SitemapProdutosDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sobre': typeof SobreRoute
   '/termos': typeof TermosRoute
@@ -646,6 +655,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/sitemap-empresas.xml'
     | '/sitemap-paginas.xml'
+    | '/sitemap-produtos.xml'
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
@@ -713,6 +723,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/sitemap-empresas.xml'
     | '/sitemap-paginas.xml'
+    | '/sitemap-produtos.xml'
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
@@ -780,6 +791,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/sitemap-empresas.xml'
     | '/sitemap-paginas.xml'
+    | '/sitemap-produtos.xml'
     | '/sitemap.xml'
     | '/sobre'
     | '/termos'
@@ -849,6 +861,7 @@ export interface RootRouteChildren {
   PrivacidadeRoute: typeof PrivacidadeRoute
   SitemapEmpresasDotxmlRoute: typeof SitemapEmpresasDotxmlRoute
   SitemapPaginasDotxmlRoute: typeof SitemapPaginasDotxmlRoute
+  SitemapProdutosDotxmlRoute: typeof SitemapProdutosDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SobreRoute: typeof SobreRoute
   TermosRoute: typeof TermosRoute
@@ -909,6 +922,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap-produtos.xml': {
+      id: '/sitemap-produtos.xml'
+      path: '/sitemap-produtos.xml'
+      fullPath: '/sitemap-produtos.xml'
+      preLoaderRoute: typeof SitemapProdutosDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap-paginas.xml': {
@@ -1435,6 +1455,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacidadeRoute: PrivacidadeRoute,
   SitemapEmpresasDotxmlRoute: SitemapEmpresasDotxmlRoute,
   SitemapPaginasDotxmlRoute: SitemapPaginasDotxmlRoute,
+  SitemapProdutosDotxmlRoute: SitemapProdutosDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SobreRoute: SobreRoute,
   TermosRoute: TermosRoute,
