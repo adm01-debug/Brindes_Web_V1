@@ -13,8 +13,10 @@ export const Route = createFileRoute("/brindes-por-publico-alvo/$slug")({
   loader: async ({ params, context }) => {
     const found = await context.queryClient.ensureQueryData(facetTermQO("publico", params.slug));
     if (!found) throw notFound();
-    await context.queryClient.ensureQueryData(facetProductsQO(found.term.id));
-    return found;
+    const products = await context.queryClient.ensureQueryData(
+      facetProductsQO(found.term.id),
+    );
+    return { ...found, products };
   },
   head: ({ params, loaderData }) =>
     facetTermHead({
@@ -22,6 +24,7 @@ export const Route = createFileRoute("/brindes-por-publico-alvo/$slug")({
       slug: params.slug,
       hubPath: HUB_PATH,
       hubLabel: HUB_LABEL,
+      products: loaderData?.products,
       fallbackTitle: "Público-alvo não encontrado | BrindesHub",
     }),
   component: AudienceFacetPage,
