@@ -353,6 +353,110 @@ export type Database = {
           },
         ]
       }
+      facet_axes: {
+        Row: {
+          created_at: string
+          hub_path: string | null
+          id: string
+          is_active: boolean
+          name: string
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          hub_path?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          hub_path?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      facet_terms: {
+        Row: {
+          axis_id: string
+          cover_url: string | null
+          created_at: string
+          day: number | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          keywords: string[] | null
+          month: number | null
+          name: string
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          axis_id: string
+          cover_url?: string | null
+          created_at?: string
+          day?: number | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: string[] | null
+          month?: number | null
+          name: string
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          axis_id?: string
+          cover_url?: string | null
+          created_at?: string
+          day?: number | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: string[] | null
+          month?: number | null
+          name?: string
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facet_terms_axis_id_fkey"
+            columns: ["axis_id"]
+            isOneToOne: false
+            referencedRelation: "facet_axes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           company_id: string | null
@@ -796,6 +900,39 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_facets: {
+        Row: {
+          created_at: string
+          product_id: string
+          term_id: string
+        }
+        Insert: {
+          created_at?: string
+          product_id: string
+          term_id: string
+        }
+        Update: {
+          created_at?: string
+          product_id?: string
+          term_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_facets_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_facets_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "facet_terms"
             referencedColumns: ["id"]
           },
         ]
