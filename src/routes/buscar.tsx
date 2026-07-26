@@ -320,53 +320,38 @@ function SearchPage() {
     },
   });
 
-  type SearchState = typeof search;
-
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
     pushRecent(term);
-    navigate({
-      search: (prev: SearchState) => ({
-        ...prev,
-        q: term,
-        min: priceMin ? Number(priceMin) : 0,
-        max: priceMax ? Number(priceMax) : 0,
-        material,
-        cor,
-        moq: moq ? Number(moq) : 0,
-        prazo: prazo ? Number(prazo) : 0,
-        page: 1,
-      }),
+    applySearch({
+      q: term,
+      min: priceMin ? Number(priceMin) : 0,
+      max: priceMax ? Number(priceMax) : 0,
+      material,
+      cor,
+      moq: moq ? Number(moq) : 0,
+      prazo: prazo ? Number(prazo) : 0,
+      page: 1,
     });
   };
 
   const clearAll = () => {
     setTerm(""); setPriceMin(""); setPriceMax(""); setMaterial(""); setCor(""); setMoq(""); setPrazo("");
-    navigate({
-      search: () => ({
-        q: "", categoria: "", ordenar: "relevance", min: 0, max: 0,
-        material: "", cor: "", moq: 0, prazo: 0, uf: "", video: false, facetas: "", page: 1,
-      }),
-    });
+    navigate({ search: () => ({}) });
   };
 
   const setFilter = <K extends keyof SearchState>(key: K, value: SearchState[K]) => {
-    navigate({ search: (prev: SearchState) => ({ ...prev, [key]: value, page: 1 }) });
+    applySearch({ [key]: value, page: 1 } as Partial<SearchState>);
   };
 
   /** Aplica a nova seleção de vitrines na URL (fonte de verdade do filtro). */
   const setFacets = useCallback(
     (next: string[]) => {
-      navigate({
-        search: (prev: SearchState) => ({
-          ...prev,
-          facetas: parseFacets(next.join(",")).join(","),
-          page: 1,
-        }),
-      });
+      applySearch({ facetas: parseFacets(next.join(",")).join(","), page: 1 });
     },
-    [navigate],
+    [applySearch],
   );
+
 
   /** Rótulos legíveis das vitrines selecionadas (para os chips de filtros ativos). */
   const { data: facetLabels } = useQuery({
