@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Search, Package, ChevronLeft, ChevronRight, X, History } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SearchFacetFilter, MAX_SEARCH_FACETS } from "@/components/search-facet-filter";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
