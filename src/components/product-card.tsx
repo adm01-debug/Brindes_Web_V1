@@ -7,6 +7,8 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { CompareButton } from "@/components/compare-button";
 import { AddToQuoteCartButton } from "@/components/add-to-quote-cart-button";
 import { PlanBadge, type CompanyPlan } from "@/components/plan-badge";
+import { lowestTierPrice, normalizeTiers } from "@/lib/price-tiers";
+
 
 type Product = {
   id: string;
