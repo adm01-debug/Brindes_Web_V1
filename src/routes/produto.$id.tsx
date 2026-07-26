@@ -20,6 +20,7 @@ import { RecentlyViewed } from "@/components/recently-viewed";
 import { ImageLightbox } from "@/components/image-lightbox";
 import { ProductQA } from "@/components/product-qa";
 import { MessageSellerButton } from "@/components/message-seller-button";
+import { ProductVideo } from "@/components/product-video";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
