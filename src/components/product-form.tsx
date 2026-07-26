@@ -12,9 +12,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { getSignedUrl, uploadFile, deleteFile } from "@/lib/portal";
-import { productSchema, type ProductInput } from "@/lib/schemas";
+import { productSchema, priceTierSchema, type ProductInput } from "@/lib/schemas";
 import { pgErrorMessage } from "@/lib/pg-errors";
+import {
+  PriceTiersEditor,
+  draftsToTiers,
+  type PriceTierDraft,
+} from "@/components/price-tiers-editor";
+import { validateTiers } from "@/lib/price-tiers";
 import { Loader2, Upload, X } from "lucide-react";
+
 
 type ImageState = {
   id?: string;
