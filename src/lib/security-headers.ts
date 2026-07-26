@@ -1,5 +1,5 @@
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getRequestHost, setResponseHeader } from "@tanstack/react-start/server";
+import { setResponseHeader } from "@tanstack/react-start/server";
 import { generateNonce, setServerNonce } from "./csp-nonce";
 
 // Hashes SHA-256 (base64) dos scripts inline conhecidos do __root.tsx.
