@@ -49,34 +49,47 @@ function baseDirectives(nonce: string): string[] {
   ];
 }
 
-// Política endurecida (produção): 'strict-dynamic' + hashes + nonce.
-function hardenedCsp(nonce: string): string {
-  return [
-    ...baseDirectives(nonce),
-    `script-src 'self' 'strict-dynamic' 'nonce-${nonce}' ${INLINE_SCRIPT_HASHES} 'unsafe-inline' https:`,
-  ].join("; ");
-}
-
-// Política permissiva (preview do editor Lovable): mantém 'unsafe-inline'
-// clássico em style-src-elem para não quebrar estilos injetados pelo iframe do editor.
-function permissiveCsp(nonce: string): string {
+// ---------------------------------------------------------------------------
+// Política ENFORCED (aplicada de fato pelo browser).
+//
+// Contexto crítico: o TanStack Start injeta scripts inline de bootstrap
+// (`window.$_TSR`, dados serializados do SSR) cujo conteúdo varia por request
+// e para os quais o framework ainda NÃO expõe um ponto de extensão de nonce.
+// Pela especificação de CSP, a presença de qualquer nonce ou hash em
+// `script-src` faz o browser IGNORAR `'unsafe-inline'` — e `'strict-dynamic'`
+// invalida ainda `'self'` e as allowlists de host. O resultado prático de uma
+// política nonce/strict-dynamic aqui é: bootstrap bloqueado -> hidratação
+// falha -> o React remove o <head> renderizado no servidor (título e meta
+// somem) e a página vira HTML estático sem interatividade.
+//
+// Portanto a política aplicada não carrega nonce nem hash em `script-src`.
+// Ela continua bloqueando o que mais importa: origens de script de terceiros
+// (`'self' https:` sem hosts arbitrários de dados), `eval` (ausência de
+// 'unsafe-eval'), `object-src 'none'`, `base-uri`/`form-action` travados e
+// frames restritos. A política nonce completa permanece em Report-Only, de
+// onde colhemos telemetria e para onde migramos assim que o framework
+// suportar nonce nos scripts de bootstrap.
+// ---------------------------------------------------------------------------
+function enforcedCsp(nonce: string): string {
   const base = baseDirectives(nonce).map((d) =>
     d.startsWith("style-src-elem")
-      ? `style-src-elem 'self' 'unsafe-inline' 'nonce-${nonce}' https://fonts.googleapis.com`
+      ? "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com"
       : d.startsWith("style-src ")
-      ? `style-src 'self' 'unsafe-inline' 'nonce-${nonce}' https://fonts.googleapis.com`
+      ? "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
       : d,
   );
-  return [...base, `script-src 'self' 'unsafe-inline' 'nonce-${nonce}'`].join("; ");
+  return [...base, "script-src 'self' 'unsafe-inline'"].join("; ");
 }
 
-// Report-Only mais estrito, para telemetria da próxima remoção de fallback.
+// Report-Only: alvo de migração (nonce + strict-dynamic + hashes conhecidos).
+// Não bloqueia nada; alimenta /api/public/hooks/csp-report.
 function reportOnlyCsp(nonce: string): string {
   return [
     ...baseDirectives(nonce),
     `script-src 'self' 'strict-dynamic' 'nonce-${nonce}' ${INLINE_SCRIPT_HASHES}`,
   ].join("; ");
 }
+
 
 function isPreviewHost(host: string | undefined): boolean {
   if (!host) return false;
