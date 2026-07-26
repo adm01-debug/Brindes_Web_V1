@@ -484,6 +484,8 @@ function ProductPage() {
             companyId={product.company!.id}
           />
 
+          <ProductFacetLinks productId={product.id} />
+
           <ProductQA
             productId={product.id}
             companyId={product.company!.id}
