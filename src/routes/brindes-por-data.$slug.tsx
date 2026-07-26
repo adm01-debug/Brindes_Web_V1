@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { FacetTermPage } from "@/components/facet-term-page";
+import { z } from "zod";
 import { facetTermQO, facetProductsQO } from "@/lib/facet-queries";
 import { facetTermHead } from "@/lib/facet-seo";
 
@@ -10,11 +11,14 @@ const HUB_PATH = "/brindes-por-data";
 const HUB_LABEL = "Brindes por data";
 
 export const Route = createFileRoute("/brindes-por-data/$slug")({
-  loader: async ({ params, context }) => {
+  // Paginação em search param: SSR-friendly, indexável e compartilhável.
+  validateSearch: z.object({ page: z.coerce.number().int().min(1).optional() }),
+  loaderDeps: ({ search }) => ({ page: search.page ?? 1 }),
+  loader: async ({ params, context, deps }) => {
     const found = await context.queryClient.ensureQueryData(facetTermQO("data", params.slug));
     if (!found) throw notFound();
     const products = await context.queryClient.ensureQueryData(
-      facetProductsQO(found.term.id),
+      facetProductsQO(found.term.id, deps.page),
     );
     return { ...found, products };
   },
@@ -24,7 +28,9 @@ export const Route = createFileRoute("/brindes-por-data/$slug")({
       slug: params.slug,
       hubPath: HUB_PATH,
       hubLabel: HUB_LABEL,
-      products: loaderData?.products,
+      products: loaderData?.products.items,
+      page: loaderData?.products.page,
+      pageCount: loaderData?.products.pageCount,
       fallbackTitle: "Data não encontrada | BrindesHub",
     }),
   component: DateFacetPage,
@@ -44,8 +50,8 @@ export const Route = createFileRoute("/brindes-por-data/$slug")({
 });
 
 function DateFacetPage() {
-  const { axis, term } = Route.useLoaderData();
+  const { axis, term, products } = Route.useLoaderData();
   return (
-    <FacetTermPage term={term} axisName={axis.name} hubPath={HUB_PATH} hubLabel={HUB_LABEL} />
+    <FacetTermPage term={term} axisName={axis.name} hubPath={HUB_PATH} hubLabel={HUB_LABEL} page={products.page} />
   );
 }
