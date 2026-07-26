@@ -47,7 +47,16 @@ const HOME_JSONLD = {
 };
 
 export const Route = createFileRoute("/")({
+  // Pré-carrega no servidor: HTML já sai com categorias, destaques e produtos.
+  loader: async ({ context }) => {
+    await Promise.all([
+      context.queryClient.ensureQueryData(homeCategoriesQO()),
+      context.queryClient.ensureQueryData(homeFeaturedCompaniesQO()),
+      context.queryClient.ensureQueryData(homeRecentProductsQO()),
+    ]);
+  },
   component: HomePage,
+
   head: () => ({
     meta: [
       { title: "BrindesHub — Portal de Empresas de Brindes Corporativos no Brasil" },
