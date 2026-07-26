@@ -387,6 +387,10 @@ function ProductPage() {
 
               </div>
 
+              <PriceTiersTable tiers={tiers} minOrderQuantity={product.min_order_quantity} />
+
+
+
               {/* Attributes grid */}
               <dl className="mt-6 grid grid-cols-2 gap-3">
                 {product.material && (
