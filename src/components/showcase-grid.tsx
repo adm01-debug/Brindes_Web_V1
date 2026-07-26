@@ -33,7 +33,7 @@ export function ShowcaseGrid({ products, emptyMessage }: ShowcaseGridProps) {
       <div className="rounded-lg border border-dashed p-10 text-center">
         <p className="text-sm text-muted-foreground">{emptyMessage}</p>
         <Button asChild variant="outline" size="sm" className="mt-4">
-          <Link to="/busca">Explorar todos os brindes</Link>
+          <Link to="/buscar">Explorar todos os brindes</Link>
         </Button>
       </div>
     );
