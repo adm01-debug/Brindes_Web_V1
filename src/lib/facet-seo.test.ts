@@ -12,7 +12,9 @@ const term = {
 } as unknown as FacetTerm;
 
 const meta = (h: ReturnType<typeof facetTermHead>, key: string) =>
-  (h.meta as Array<Record<string, string>>).find((m) => m.name === key || m.property === key);
+  (h.meta as unknown as Array<Record<string, string | undefined>>).find(
+    (m) => m.name === key || m.property === key,
+  );
 
 const links = (h: ReturnType<typeof facetTermHead>) =>
   (h.links ?? []) as Array<{ rel: string; href: string }>;
