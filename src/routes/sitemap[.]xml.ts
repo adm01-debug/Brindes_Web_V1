@@ -61,7 +61,7 @@ function urlEntry(loc: string, lastmod?: string, changefreq?: string, priority?:
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
           const supabase = createClient<Database>(
             process.env.SUPABASE_URL!,
