@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { MAX_FACETS_PER_PRODUCT } from "@/lib/facets";
 
@@ -9,7 +12,7 @@ import { MAX_FACETS_PER_PRODUCT } from "@/lib/facets";
  * Eixos exibidos no painel. `categoria` fica de fora porque o produto já tem
  * `category_id` — duplicar o mesmo eixo confundiria o vendedor.
  */
-const PANEL_AXES = ["evento", "publico", "data"] as const;
+const PANEL_AXES = ["tipo", "evento", "publico", "data"] as const;
 
 type FacetTermOption = {
   id: string;
@@ -32,14 +35,45 @@ export type FacetsPickerProps = {
   onChange: (next: string[]) => void;
   /** Desabilita interação enquanto o formulário salva. */
   disabled?: boolean;
+  /**
+   * Texto do produto (nome + descrição) usado para sugerir vitrines.
+   * Quando ausente, o bloco de sugestões não é renderizado.
+   */
+  suggestText?: string;
 };
+
+/** Score mínimo para exibir uma sugestão — evita ruído de similaridade fraca. */
+const MIN_SUGGESTION_SCORE = 0.34;
+
+type FacetSuggestion = {
+  term_id: string;
+  term_name: string;
+  axis_name: string;
+  score: number;
+};
+
+/** Debounce simples: evita uma chamada de RPC por tecla digitada. */
+function useDebounced(value: string, delay = 600) {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+
 
 /**
  * Seleção multi-eixo de facetas (Evento, Público-Alvo, Data Promocional).
  * Renderiza chips com estado toggle — sem dependência de biblioteca de
  * multi-select, mantendo o bundle enxuto e o teclado navegável.
  */
-export function FacetsPicker({ value, onChange, disabled = false }: FacetsPickerProps) {
+export function FacetsPicker({
+  value,
+  onChange,
+  disabled = false,
+  suggestText,
+}: FacetsPickerProps) {
   const { data, isLoading } = useQuery({
     queryKey: ["facet-options"],
     staleTime: 5 * 60 * 1000,
@@ -69,6 +103,27 @@ export function FacetsPicker({ value, onChange, disabled = false }: FacetsPicker
   const selected = new Set(value);
   const atLimit = value.length >= MAX_FACETS_PER_PRODUCT;
 
+  // Sugestões automáticas a partir do texto do produto.
+  const debouncedText = useDebounced((suggestText ?? "").trim());
+  const { data: suggestions } = useQuery({
+    queryKey: ["facet-suggestions", debouncedText],
+    enabled: debouncedText.length >= 4,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<FacetSuggestion[]> => {
+      const { data, error } = await supabase.rpc("suggest_product_facets", {
+        _text: debouncedText,
+        _limit: 8,
+      });
+      // Falha de sugestão nunca deve quebrar o formulário: degrada para vazio.
+      if (error) return [];
+      return ((data ?? []) as FacetSuggestion[]).filter(
+        (s) => Number(s.score) >= MIN_SUGGESTION_SCORE,
+      );
+    },
+  });
+
+  const pendingSuggestions = (suggestions ?? []).filter((s) => !selected.has(s.term_id));
+
   const toggle = (termId: string) => {
     if (disabled) return;
     if (selected.has(termId)) {
@@ -79,6 +134,14 @@ export function FacetsPicker({ value, onChange, disabled = false }: FacetsPicker
     if (atLimit) return;
     onChange([...value, termId]);
   };
+
+  const applyAllSuggestions = () => {
+    if (disabled) return;
+    const room = MAX_FACETS_PER_PRODUCT - value.length;
+    if (room <= 0) return;
+    onChange([...value, ...pendingSuggestions.slice(0, room).map((s) => s.term_id)]);
+  };
+
 
   return (
     <Card>
@@ -95,6 +158,47 @@ export function FacetsPicker({ value, onChange, disabled = false }: FacetsPicker
           Marque em quais vitrines este produto deve aparecer. Quanto mais preciso, mais
           compradores encontram o item nas buscas por evento, público e datas do calendário.
         </p>
+
+        {pendingSuggestions.length > 0 && !atLimit && (
+          <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                Sugestões para este produto
+              </span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={disabled}
+                onClick={applyAllSuggestions}
+              >
+                Aplicar todas
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {pendingSuggestions.map((s) => (
+                <button
+                  key={s.term_id}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => toggle(s.term_id)}
+                  title={`${s.axis_name} — adicionar`}
+                  className={cn(
+                    "rounded-full border border-dashed border-primary/50 bg-background px-3 py-1.5 text-xs font-medium text-primary transition-colors",
+                    "hover:bg-primary hover:text-primary-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    disabled && "cursor-not-allowed opacity-50",
+                  )}
+                >
+                  + {s.term_name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+
 
         {isLoading && (
           <div className="space-y-3">

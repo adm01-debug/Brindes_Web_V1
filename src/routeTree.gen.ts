@@ -30,6 +30,7 @@ import { Route as BrindesAZRouteImport } from './routes/brindes-a-z'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TiposDeBrindeIndexRouteImport } from './routes/tipos-de-brinde.index'
 import { Route as KitsIndexRouteImport } from './routes/kits.index'
 import { Route as IdeiasIndexRouteImport } from './routes/ideias.index'
 import { Route as EmpresasIndexRouteImport } from './routes/empresas.index'
@@ -38,6 +39,7 @@ import { Route as BrindesPorPublicoAlvoIndexRouteImport } from './routes/brindes
 import { Route as BrindesPorEventoIndexRouteImport } from './routes/brindes-por-evento.index'
 import { Route as BrindesPorDataIndexRouteImport } from './routes/brindes-por-data.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as TiposDeBrindeSlugRouteImport } from './routes/tipos-de-brinde.$slug'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as OrcamentoEnviadoRouteImport } from './routes/orcamento.enviado'
 import { Route as KitSlugRouteImport } from './routes/kit.$slug'
@@ -176,6 +178,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TiposDeBrindeIndexRoute = TiposDeBrindeIndexRouteImport.update({
+  id: '/tipos-de-brinde/',
+  path: '/tipos-de-brinde/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KitsIndexRoute = KitsIndexRouteImport.update({
   id: '/kits/',
   path: '/kits/',
@@ -215,6 +222,11 @@ const BrindesPorDataIndexRoute = BrindesPorDataIndexRouteImport.update({
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TiposDeBrindeSlugRoute = TiposDeBrindeSlugRouteImport.update({
+  id: '/tipos-de-brinde/$slug',
+  path: '/tipos-de-brinde/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutoIdRoute = ProdutoIdRouteImport.update({
@@ -433,6 +445,7 @@ export interface FileRoutesByFullPath {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/tipos-de-brinde/$slug': typeof TiposDeBrindeSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/brindes-por-data/': typeof BrindesPorDataIndexRoute
   '/brindes-por-evento/': typeof BrindesPorEventoIndexRoute
@@ -441,6 +454,7 @@ export interface FileRoutesByFullPath {
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
+  '/tipos-de-brinde/': typeof TiposDeBrindeIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel/perguntas': typeof AuthenticatedPainelPerguntasRoute
@@ -495,6 +509,7 @@ export interface FileRoutesByTo {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/tipos-de-brinde/$slug': typeof TiposDeBrindeSlugRoute
   '/blog': typeof BlogIndexRoute
   '/brindes-por-data': typeof BrindesPorDataIndexRoute
   '/brindes-por-evento': typeof BrindesPorEventoIndexRoute
@@ -503,6 +518,7 @@ export interface FileRoutesByTo {
   '/empresas': typeof EmpresasIndexRoute
   '/ideias': typeof IdeiasIndexRoute
   '/kits': typeof KitsIndexRoute
+  '/tipos-de-brinde': typeof TiposDeBrindeIndexRoute
   '/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/painel/perguntas': typeof AuthenticatedPainelPerguntasRoute
@@ -560,6 +576,7 @@ export interface FileRoutesById {
   '/kit/$slug': typeof KitSlugRoute
   '/orcamento/enviado': typeof OrcamentoEnviadoRoute
   '/produto/$id': typeof ProdutoIdRoute
+  '/tipos-de-brinde/$slug': typeof TiposDeBrindeSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/brindes-por-data/': typeof BrindesPorDataIndexRoute
   '/brindes-por-evento/': typeof BrindesPorEventoIndexRoute
@@ -568,6 +585,7 @@ export interface FileRoutesById {
   '/empresas/': typeof EmpresasIndexRoute
   '/ideias/': typeof IdeiasIndexRoute
   '/kits/': typeof KitsIndexRoute
+  '/tipos-de-brinde/': typeof TiposDeBrindeIndexRoute
   '/_authenticated/painel/leads': typeof AuthenticatedPainelLeadsRoute
   '/_authenticated/painel/perfil': typeof AuthenticatedPainelPerfilRoute
   '/_authenticated/painel/perguntas': typeof AuthenticatedPainelPerguntasRoute
@@ -625,6 +643,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/tipos-de-brinde/$slug'
     | '/blog/'
     | '/brindes-por-data/'
     | '/brindes-por-evento/'
@@ -633,6 +652,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
+    | '/tipos-de-brinde/'
     | '/painel/leads'
     | '/painel/perfil'
     | '/painel/perguntas'
@@ -687,6 +707,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/tipos-de-brinde/$slug'
     | '/blog'
     | '/brindes-por-data'
     | '/brindes-por-evento'
@@ -695,6 +716,7 @@ export interface FileRouteTypes {
     | '/empresas'
     | '/ideias'
     | '/kits'
+    | '/tipos-de-brinde'
     | '/painel/leads'
     | '/painel/perfil'
     | '/painel/perguntas'
@@ -751,6 +773,7 @@ export interface FileRouteTypes {
     | '/kit/$slug'
     | '/orcamento/enviado'
     | '/produto/$id'
+    | '/tipos-de-brinde/$slug'
     | '/blog/'
     | '/brindes-por-data/'
     | '/brindes-por-evento/'
@@ -759,6 +782,7 @@ export interface FileRouteTypes {
     | '/empresas/'
     | '/ideias/'
     | '/kits/'
+    | '/tipos-de-brinde/'
     | '/_authenticated/painel/leads'
     | '/_authenticated/painel/perfil'
     | '/_authenticated/painel/perguntas'
@@ -814,6 +838,7 @@ export interface RootRouteChildren {
   IdeiasSlugRoute: typeof IdeiasSlugRoute
   KitSlugRoute: typeof KitSlugRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
+  TiposDeBrindeSlugRoute: typeof TiposDeBrindeSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   BrindesPorDataIndexRoute: typeof BrindesPorDataIndexRoute
   BrindesPorEventoIndexRoute: typeof BrindesPorEventoIndexRoute
@@ -822,6 +847,7 @@ export interface RootRouteChildren {
   EmpresasIndexRoute: typeof EmpresasIndexRoute
   IdeiasIndexRoute: typeof IdeiasIndexRoute
   KitsIndexRoute: typeof KitsIndexRoute
+  TiposDeBrindeIndexRoute: typeof TiposDeBrindeIndexRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicHooksCspReportRoute: typeof ApiPublicHooksCspReportRoute
   ApiPublicHooksWebVitalsRoute: typeof ApiPublicHooksWebVitalsRoute
@@ -978,6 +1004,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tipos-de-brinde/': {
+      id: '/tipos-de-brinde/'
+      path: '/tipos-de-brinde'
+      fullPath: '/tipos-de-brinde/'
+      preLoaderRoute: typeof TiposDeBrindeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kits/': {
       id: '/kits/'
       path: '/kits'
@@ -1032,6 +1065,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog/'
       preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tipos-de-brinde/$slug': {
+      id: '/tipos-de-brinde/$slug'
+      path: '/tipos-de-brinde/$slug'
+      fullPath: '/tipos-de-brinde/$slug'
+      preLoaderRoute: typeof TiposDeBrindeSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produto/$id': {
@@ -1368,6 +1408,7 @@ const rootRouteChildren: RootRouteChildren = {
   IdeiasSlugRoute: IdeiasSlugRoute,
   KitSlugRoute: KitSlugRoute,
   ProdutoIdRoute: ProdutoIdRoute,
+  TiposDeBrindeSlugRoute: TiposDeBrindeSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   BrindesPorDataIndexRoute: BrindesPorDataIndexRoute,
   BrindesPorEventoIndexRoute: BrindesPorEventoIndexRoute,
@@ -1376,6 +1417,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresasIndexRoute: EmpresasIndexRoute,
   IdeiasIndexRoute: IdeiasIndexRoute,
   KitsIndexRoute: KitsIndexRoute,
+  TiposDeBrindeIndexRoute: TiposDeBrindeIndexRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicHooksCspReportRoute: ApiPublicHooksCspReportRoute,
   ApiPublicHooksWebVitalsRoute: ApiPublicHooksWebVitalsRoute,

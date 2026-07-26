@@ -17,6 +17,10 @@ const STATIC_ROUTES: Array<{ path: string; changefreq: string; priority: string 
   { path: "/empresas-a-z", changefreq: "weekly", priority: "0.8" },
   { path: "/ofertas", changefreq: "daily", priority: "0.8" },
   { path: "/inusitados", changefreq: "weekly", priority: "0.7" },
+  { path: "/brindes-por-evento", changefreq: "weekly", priority: "0.8" },
+  { path: "/brindes-por-publico-alvo", changefreq: "weekly", priority: "0.8" },
+  { path: "/brindes-por-data", changefreq: "weekly", priority: "0.8" },
+  { path: "/tipos-de-brinde", changefreq: "weekly", priority: "0.9" },
 
 
 
@@ -65,7 +69,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
           );
 
-          const [companiesRes, productsRes, categoriesRes, datesRes] = await Promise.all([
+          const [companiesRes, productsRes, categoriesRes, datesRes, facetsRes] = await Promise.all([
             supabase
               .from("companies")
               .select("slug, updated_at")
@@ -91,7 +95,14 @@ export const Route = createFileRoute("/sitemap.xml")({
               .eq("is_active", true)
               .order("sort_order", { ascending: true })
               .limit(200),
+            // Termos de faceta + eixo, para gerar as vitrines multi-eixo.
+            supabase
+              .from("facet_terms")
+              .select("slug, updated_at, axis:facet_axes!inner(slug, is_active)")
+              .eq("is_active", true)
+              .limit(1000),
           ]);
+
 
 
           const parts: string[] = [];
@@ -167,6 +178,30 @@ export const Route = createFileRoute("/sitemap.xml")({
               ),
             );
           }
+
+          // Vitrines multi-eixo. O mapa evita hardcodar caminhos em dois lugares:
+          // um eixo novo só entra no sitemap depois de ganhar rota pública.
+          const FACET_AXIS_PATH: Record<string, string> = {
+            evento: "/brindes-por-evento",
+            publico: "/brindes-por-publico-alvo",
+            data: "/brindes-por-data",
+            tipo: "/tipos-de-brinde",
+          };
+          for (const t of facetsRes.data ?? []) {
+            const axis = (t as { axis: { slug: string } | null }).axis;
+            const base = axis ? FACET_AXIS_PATH[axis.slug] : undefined;
+            if (!base) continue;
+            parts.push(
+              urlEntry(
+                `${SITE_URL}${base}/${t.slug}`,
+                t.updated_at ? new Date(t.updated_at).toISOString() : undefined,
+                "weekly",
+                "0.7",
+              ),
+            );
+          }
+
+
 
 
           for (const i of INTENTS) {

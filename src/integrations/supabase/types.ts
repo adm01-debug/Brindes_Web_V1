@@ -403,6 +403,7 @@ export type Database = {
           id: string
           is_active: boolean
           keywords: string[] | null
+          match_keywords: string[]
           month: number | null
           name: string
           seo_description: string | null
@@ -421,6 +422,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           keywords?: string[] | null
+          match_keywords?: string[]
           month?: number | null
           name: string
           seo_description?: string | null
@@ -439,6 +441,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           keywords?: string[] | null
+          match_keywords?: string[]
           month?: number | null
           name?: string
           seo_description?: string | null
@@ -1663,6 +1666,17 @@ export type Database = {
       submit_quote_cart: {
         Args: { _customer: Json; _items: Json }
         Returns: Json
+      }
+      suggest_product_facets: {
+        Args: { _limit?: number; _text: string }
+        Returns: {
+          axis_name: string
+          axis_slug: string
+          score: number
+          term_id: string
+          term_name: string
+          term_slug: string
+        }[]
       }
       suggest_search_terms: {
         Args: { _limit?: number; _q: string }

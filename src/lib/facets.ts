@@ -7,7 +7,7 @@ import { z } from "zod";
 export const MAX_FACETS_PER_PRODUCT = 24;
 
 /** Eixos canônicos da taxonomia multi-eixo. */
-export const FACET_AXES = ["categoria", "evento", "publico", "data"] as const;
+export const FACET_AXES = ["categoria", "evento", "publico", "data", "tipo"] as const;
 export type FacetAxisSlug = (typeof FACET_AXES)[number];
 
 /** Mapa eixo -> rota de hub pública. */
@@ -16,6 +16,7 @@ export const FACET_AXIS_HUB: Record<FacetAxisSlug, string> = {
   evento: "/brindes-por-evento",
   publico: "/brindes-por-publico-alvo",
   data: "/brindes-por-data",
+  tipo: "/tipos-de-brinde",
 };
 
 export type FacetTerm = {

@@ -421,7 +421,13 @@ export function ProductForm({
 
       <PriceTiersEditor drafts={tierDrafts} onChange={setTierDrafts} />
 
-      <FacetsPicker value={facetIds} onChange={setFacetIds} disabled={isSubmitting} />
+      <FacetsPicker
+        value={facetIds}
+        onChange={setFacetIds}
+        disabled={isSubmitting}
+        suggestText={`${watch("name") ?? ""} ${watch("description") ?? ""}`}
+      />
+
 
 
 
