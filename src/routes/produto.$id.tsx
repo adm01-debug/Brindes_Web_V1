@@ -21,6 +21,8 @@ import { ImageLightbox } from "@/components/image-lightbox";
 import { ProductQA } from "@/components/product-qa";
 import { MessageSellerButton } from "@/components/message-seller-button";
 import { ProductVideo } from "@/components/product-video";
+import { PriceTiersTable } from "@/components/price-tiers-table";
+import { normalizeTiers, lowestTierPrice, highestTierPrice } from "@/lib/price-tiers";
 
 const productQueryOptions = (id: string) =>
   queryOptions({
@@ -32,8 +34,10 @@ const productQueryOptions = (id: string) =>
           *,
           company:companies!inner(id, slug, name, status, whatsapp, phone, email, logo_url),
           images:product_images(id, url, sort_order),
-          variants:product_variants(id, name, attributes)
+          variants:product_variants(id, name, attributes),
+          tiers:product_price_tiers(id, min_qty, max_qty, unit_price)
         `)
+
         .eq("id", id)
         .eq("is_active", true)
         .eq("moderation_status", "approved")
