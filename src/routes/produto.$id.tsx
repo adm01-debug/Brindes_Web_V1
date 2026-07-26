@@ -66,6 +66,8 @@ export const Route = createFileRoute("/produto/$id")({
       price: product.price_on_request ? null : product.price,
       currency: product.currency ?? "BRL",
       priceOnRequest: product.price_on_request ?? false,
+      videoUrl: product.video_url ?? null,
+      uploadDate: product.created_at ?? null,
     };
   },
   head: ({ params, loaderData }) => {
@@ -97,6 +99,24 @@ export const Route = createFileRoute("/produto/$id")({
               },
             }),
           },
+          ...(loaderData.videoUrl
+            ? [
+                {
+                  type: "application/ld+json",
+                  children: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "VideoObject",
+                    name: `Vídeo — ${loaderData.title}`,
+                    description,
+                    contentUrl: loaderData.videoUrl,
+                    thumbnailUrl: [
+                      `https://brinde-gallery.lovable.app/api/public/og/produto/${params.id}`,
+                    ],
+                    uploadDate: loaderData.uploadDate ?? undefined,
+                  }),
+                },
+              ]
+            : []),
           {
             type: "application/ld+json",
             children: JSON.stringify({
