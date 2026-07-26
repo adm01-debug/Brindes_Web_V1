@@ -186,8 +186,19 @@ type RpcRow = {
 };
 
 function SearchPage() {
-  const search = Route.useSearch();
+  const rawSearch = Route.useSearch();
+  const search = useMemo(() => normalizeSearch(rawSearch), [rawSearch]);
   const navigate = Route.useNavigate();
+  /** Navega mantendo a URL enxuta: aplica o patch e remove valores padrão. */
+  const applySearch = useCallback(
+    (patch: Partial<SearchState>) => {
+      navigate({
+        search: (prev: RawSearch) => stripDefaults({ ...normalizeSearch(prev), ...patch }),
+      });
+    },
+    [navigate],
+  );
+
   const [term, setTerm] = useState(search.q);
   const [priceMin, setPriceMin] = useState(search.min ? String(search.min) : "");
   const [priceMax, setPriceMax] = useState(search.max ? String(search.max) : "");
