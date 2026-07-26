@@ -17,6 +17,9 @@ const STATIC_ROUTES: Array<{ path: string; changefreq: string; priority: string 
   { path: "/empresas-a-z", changefreq: "weekly", priority: "0.8" },
   { path: "/ofertas", changefreq: "daily", priority: "0.8" },
   { path: "/inusitados", changefreq: "weekly", priority: "0.7" },
+  { path: "/brindes-por-evento", changefreq: "weekly", priority: "0.8" },
+  { path: "/brindes-por-publico-alvo", changefreq: "weekly", priority: "0.8" },
+  { path: "/brindes-por-data", changefreq: "weekly", priority: "0.8" },
 
 
 
