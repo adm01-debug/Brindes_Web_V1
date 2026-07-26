@@ -122,11 +122,11 @@ export const facetProductsQO = (termId: string, page = 1) =>
         .eq("term_id", termId)
         // Filtros aplicados no servidor para que `count` e `range` reflitam
         // exatamente o conjunto publicado (paginação correta).
-        .eq("products.is_active", true)
-        .is("products.deleted_at", null)
-        .eq("products.moderation_status", "approved")
-        .eq("products.companies.status", "approved")
-        .order("name", { referencedTable: "products", ascending: true })
+        .eq("product.is_active", true)
+        .is("product.deleted_at", null)
+        .eq("product.moderation_status", "approved")
+        .eq("product.company.status", "approved")
+        .order("name", { referencedTable: "product", ascending: true })
         .range(from, to);
       if (error) throw error;
 
