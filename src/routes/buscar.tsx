@@ -622,13 +622,11 @@ function SearchPage() {
                     className="mt-4"
                     onClick={() => {
                       setPriceMin(""); setPriceMax(""); setMaterial(""); setCor(""); setMoq(""); setPrazo("");
-                      navigate({
-                        search: (prev: SearchState) => ({
-                          ...prev,
-                          categoria: "", min: 0, max: 0, material: "", cor: "",
-                          moq: 0, prazo: 0, uf: "", video: false, page: 1,
-                        }),
+                      applySearch({
+                        categoria: "", min: 0, max: 0, material: "", cor: "",
+                        moq: 0, prazo: 0, uf: "", video: false, page: 1,
                       });
+
                     }}
                   >
                     Buscar apenas pelo termo (remover filtros)
