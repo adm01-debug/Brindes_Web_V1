@@ -7,7 +7,9 @@ export const Route = createFileRoute("/sitemap-produtos/$page.xml")({
   server: {
     handlers: {
       GET: async ({ request, params }) => {
-        const page = Number.parseInt(String(params.page), 10);
+        // O gerador nomeia o param com o sufixo literal do arquivo (`page.xml`).
+        const raw = (params as Record<string, string>)["page.xml"] ?? "";
+        const page = Number.parseInt(raw, 10);
         try {
           return await xmlResponse(request, await buildProductsSitemap(page));
         } catch {
