@@ -14,7 +14,7 @@ const DESCRIPTION =
 
 const SELECT = `
   id, name, price, price_on_request, short_description,
-  promo_price, is_clearance, is_unusual,
+  promo_price, is_clearance, is_unusual, video_url,
   company:companies!inner(id, slug, name, plan, featured_until, status),
   images:product_images(url, sort_order)
 `;
