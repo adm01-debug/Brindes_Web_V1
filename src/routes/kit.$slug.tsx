@@ -90,6 +90,7 @@ function KitDetailPage() {
            product:products (
              id, name, slug, short_description, price, price_on_request,
              promo_price, is_clearance, is_unusual, video_url,
+             price_tiers:product_price_tiers(min_qty, max_qty, unit_price),
              is_active, deleted_at, moderation_status,
              company:companies ( id, slug, name, status, plan, featured_until ),
              images:product_images ( url, sort_order )
