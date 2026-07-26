@@ -23,6 +23,7 @@ import { Route as CompararRouteImport } from './routes/comparar'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as BuscarRouteImport } from './routes/buscar'
+import { Route as BrindesAZRouteImport } from './routes/brindes-a-z'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -130,6 +131,11 @@ const CategoriasRoute = CategoriasRouteImport.update({
 const BuscarRoute = BuscarRouteImport.update({
   id: '/buscar',
   path: '/buscar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrindesAZRoute = BrindesAZRouteImport.update({
+  id: '/brindes-a-z',
+  path: '/brindes-a-z',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -340,6 +346,7 @@ const AuthenticatedPainelProdutosIdEditarRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/brindes-a-z': typeof BrindesAZRoute
   '/buscar': typeof BuscarRoute
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
@@ -393,6 +400,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/brindes-a-z': typeof BrindesAZRoute
   '/buscar': typeof BuscarRoute
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
@@ -447,6 +455,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/brindes-a-z': typeof BrindesAZRoute
   '/buscar': typeof BuscarRoute
   '/categorias': typeof CategoriasRoute
   '/como-funciona': typeof ComoFuncionaRoute
@@ -502,6 +511,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/brindes-a-z'
     | '/buscar'
     | '/categorias'
     | '/como-funciona'
@@ -555,6 +565,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/brindes-a-z'
     | '/buscar'
     | '/categorias'
     | '/como-funciona'
@@ -608,6 +619,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/brindes-a-z'
     | '/buscar'
     | '/categorias'
     | '/como-funciona'
@@ -663,6 +675,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BrindesAZRoute: typeof BrindesAZRoute
   BuscarRoute: typeof BuscarRoute
   CategoriasRoute: typeof CategoriasRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
@@ -795,6 +808,13 @@ declare module '@tanstack/react-router' {
       path: '/buscar'
       fullPath: '/buscar'
       preLoaderRoute: typeof BuscarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brindes-a-z': {
+      id: '/brindes-a-z'
+      path: '/brindes-a-z'
+      fullPath: '/brindes-a-z'
+      preLoaderRoute: typeof BrindesAZRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1137,6 +1157,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  BrindesAZRoute: BrindesAZRoute,
   BuscarRoute: BuscarRoute,
   CategoriasRoute: CategoriasRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
