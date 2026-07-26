@@ -89,9 +89,10 @@ export function FacetTermPage({ term, hubPath, hubLabel, page = 1 }: FacetTermPa
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p as never} />
+              {products.map((p, i) => (
+                <ProductCard key={p.id} product={p as never} priority={i < 4} />
               ))}
+
             </div>
           )}
 
