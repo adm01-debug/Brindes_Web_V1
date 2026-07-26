@@ -17,6 +17,7 @@ import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as OrcamentoRouteImport } from './routes/orcamento'
 import { Route as OfertasRouteImport } from './routes/ofertas'
+import { Route as InusitadosRouteImport } from './routes/inusitados'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EmpresasAZRouteImport } from './routes/empresas-a-z'
@@ -103,6 +104,11 @@ const OrcamentoRoute = OrcamentoRouteImport.update({
 const OfertasRoute = OfertasRouteImport.update({
   id: '/ofertas',
   path: '/ofertas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InusitadosRoute = InusitadosRouteImport.update({
+  id: '/inusitados',
+  path: '/inusitados',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritosRoute = FavoritosRouteImport.update({
@@ -367,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/empresas-a-z': typeof EmpresasAZRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
+  '/inusitados': typeof InusitadosRoute
   '/ofertas': typeof OfertasRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
   '/planos': typeof PlanosRoute
@@ -423,6 +430,7 @@ export interface FileRoutesByTo {
   '/empresas-a-z': typeof EmpresasAZRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
+  '/inusitados': typeof InusitadosRoute
   '/ofertas': typeof OfertasRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
   '/planos': typeof PlanosRoute
@@ -480,6 +488,7 @@ export interface FileRoutesById {
   '/empresas-a-z': typeof EmpresasAZRoute
   '/faq': typeof FaqRoute
   '/favoritos': typeof FavoritosRoute
+  '/inusitados': typeof InusitadosRoute
   '/ofertas': typeof OfertasRoute
   '/orcamento': typeof OrcamentoRouteWithChildren
   '/planos': typeof PlanosRoute
@@ -538,6 +547,7 @@ export interface FileRouteTypes {
     | '/empresas-a-z'
     | '/faq'
     | '/favoritos'
+    | '/inusitados'
     | '/ofertas'
     | '/orcamento'
     | '/planos'
@@ -594,6 +604,7 @@ export interface FileRouteTypes {
     | '/empresas-a-z'
     | '/faq'
     | '/favoritos'
+    | '/inusitados'
     | '/ofertas'
     | '/orcamento'
     | '/planos'
@@ -650,6 +661,7 @@ export interface FileRouteTypes {
     | '/empresas-a-z'
     | '/faq'
     | '/favoritos'
+    | '/inusitados'
     | '/ofertas'
     | '/orcamento'
     | '/planos'
@@ -708,6 +720,7 @@ export interface RootRouteChildren {
   EmpresasAZRoute: typeof EmpresasAZRoute
   FaqRoute: typeof FaqRoute
   FavoritosRoute: typeof FavoritosRoute
+  InusitadosRoute: typeof InusitadosRoute
   OfertasRoute: typeof OfertasRoute
   OrcamentoRoute: typeof OrcamentoRouteWithChildren
   PlanosRoute: typeof PlanosRoute
@@ -792,6 +805,13 @@ declare module '@tanstack/react-router' {
       path: '/ofertas'
       fullPath: '/ofertas'
       preLoaderRoute: typeof OfertasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inusitados': {
+      id: '/inusitados'
+      path: '/inusitados'
+      fullPath: '/inusitados'
+      preLoaderRoute: typeof InusitadosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favoritos': {
@@ -1206,6 +1226,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpresasAZRoute: EmpresasAZRoute,
   FaqRoute: FaqRoute,
   FavoritosRoute: FavoritosRoute,
+  InusitadosRoute: InusitadosRoute,
   OfertasRoute: OfertasRoute,
   OrcamentoRoute: OrcamentoRouteWithChildren,
   PlanosRoute: PlanosRoute,
