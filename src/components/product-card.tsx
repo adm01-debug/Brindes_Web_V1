@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Package, PlayCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { getSignedUrlCached, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorite-button";
 import { CompareButton } from "@/components/compare-button";
@@ -33,21 +33,33 @@ type Product = {
 };
 
 
-export function ProductCard({ product }: { product: Product }) {
+/**
+ * @param priority Marca o card como candidato a LCP (primeiras posições da
+ * grade, acima da dobra): carrega a imagem com prioridade alta em vez de lazy.
+ * Use em no máximo ~4 cards por página — prioridade em tudo é prioridade em nada.
+ */
+export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const rawUrl = product.images?.sort((a, b) => a.sort_order - b.sort_order)[0]?.url;
+  // `toSorted`/cópia: `.sort()` mutaria o array vindo do cache do TanStack
+  // Query, reordenando dados compartilhados por outros componentes.
+  const rawUrl = product.images
+    ? [...product.images].sort((a, b) => a.sort_order - b.sort_order)[0]?.url
+    : undefined;
 
   useEffect(() => {
     let active = true;
     if (rawUrl) {
-      getSignedUrl("product-images", rawUrl).then((u) => {
+      getSignedUrlCached("product-images", rawUrl).then((u) => {
         if (active) setImgUrl(u);
       });
+    } else {
+      setImgUrl(null);
     }
     return () => {
       active = false;
     };
   }, [rawUrl]);
+
 
   // Preço promocional só é considerado válido quando existe, é positivo e
   // realmente menor que o preço base — evita "descontos" negativos por dado sujo.
@@ -82,9 +94,14 @@ export function ProductCard({ product }: { product: Product }) {
             <img
               src={imgUrl}
               alt={product.name}
-              loading="lazy"
+              width={400}
+              height={400}
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
+              decoding="async"
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
             />
+
           ) : (
             <div className="flex h-full w-full items-center justify-center text-muted-foreground">
               <Package className="h-10 w-10" />

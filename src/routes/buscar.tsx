@@ -582,9 +582,11 @@ function SearchPage() {
           <div className="mt-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {isLoading && <ProductCardSkeleton count={8} />}
             {!isLoading &&
-              data?.map((p) => (
+              data?.map((p, i) => (
                 <ProductCard
                   key={p.id}
+                  priority={i < 4}
+
                   product={{
                     id: p.id,
                     name: p.name,

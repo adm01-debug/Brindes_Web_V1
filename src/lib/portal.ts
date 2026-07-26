@@ -13,6 +13,55 @@ export async function getSignedUrl(bucket: string, path: string, expiresIn = 60 
   return data.signedUrl;
 }
 
+/**
+ * Cache de URLs assinadas em memória (por aba).
+ *
+ * Sem ele, uma grade de 24 produtos dispara 24 chamadas `createSignedUrl` a
+ * cada montagem — e repete tudo ao voltar para a listagem. O cache deduplica
+ * requisições em voo (mesma Promise para o mesmo path) e reaproveita a URL
+ * até uma margem de segurança antes do vencimento.
+ */
+const signedUrlCache = new Map<string, { url: string | null; expiresAt: number; inflight?: Promise<string | null> }>();
+
+/** Margem antes do vencimento real para evitar servir URL prestes a expirar. */
+const SIGNED_URL_SAFETY_MS = 60 * 60 * 1000; // 1h
+
+export function getSignedUrlCached(
+  bucket: string,
+  path: string,
+  expiresIn = 60 * 60 * 24 * 7,
+): Promise<string | null> {
+  if (!path) return Promise.resolve(null);
+  if (path.startsWith("http")) return Promise.resolve(path);
+
+  const key = `${bucket}:${path}:${expiresIn}`;
+  const now = Date.now();
+  const hit = signedUrlCache.get(key);
+  if (hit) {
+    if (hit.inflight) return hit.inflight;
+    if (hit.expiresAt > now) return Promise.resolve(hit.url);
+  }
+
+  const inflight = getSignedUrl(bucket, path, expiresIn)
+    .then((url) => {
+      signedUrlCache.set(key, {
+        url,
+        // Falha (null) tem TTL curto para permitir nova tentativa logo.
+        expiresAt: url ? now + expiresIn * 1000 - SIGNED_URL_SAFETY_MS : now + 30_000,
+      });
+      return url;
+    })
+    .catch(() => {
+      signedUrlCache.delete(key);
+      return null;
+    });
+
+  signedUrlCache.set(key, { url: null, expiresAt: 0, inflight });
+  return inflight;
+}
+
+
+
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
 export const ALLOWED_IMAGE_MIME = [
   "image/jpeg",
