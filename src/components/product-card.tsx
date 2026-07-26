@@ -33,21 +33,33 @@ type Product = {
 };
 
 
-export function ProductCard({ product }: { product: Product }) {
+/**
+ * @param priority Marca o card como candidato a LCP (primeiras posições da
+ * grade, acima da dobra): carrega a imagem com prioridade alta em vez de lazy.
+ * Use em no máximo ~4 cards por página — prioridade em tudo é prioridade em nada.
+ */
+export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
   const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const rawUrl = product.images?.sort((a, b) => a.sort_order - b.sort_order)[0]?.url;
+  // `toSorted`/cópia: `.sort()` mutaria o array vindo do cache do TanStack
+  // Query, reordenando dados compartilhados por outros componentes.
+  const rawUrl = product.images
+    ? [...product.images].sort((a, b) => a.sort_order - b.sort_order)[0]?.url
+    : undefined;
 
   useEffect(() => {
     let active = true;
     if (rawUrl) {
-      getSignedUrl("product-images", rawUrl).then((u) => {
+      getSignedUrlCached("product-images", rawUrl).then((u) => {
         if (active) setImgUrl(u);
       });
+    } else {
+      setImgUrl(null);
     }
     return () => {
       active = false;
     };
   }, [rawUrl]);
+
 
   // Preço promocional só é considerado válido quando existe, é positivo e
   // realmente menor que o preço base — evita "descontos" negativos por dado sujo.
