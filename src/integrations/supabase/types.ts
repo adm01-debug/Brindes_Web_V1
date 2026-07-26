@@ -392,6 +392,27 @@ export type Database = {
         }
         Relationships: []
       }
+      facet_counts_state: {
+        Row: {
+          dirty: boolean
+          id: boolean
+          last_refreshed_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          dirty?: boolean
+          id?: boolean
+          last_refreshed_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          dirty?: boolean
+          id?: boolean
+          last_refreshed_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       facet_terms: {
         Row: {
           axis_id: string
@@ -1600,7 +1621,10 @@ export type Database = {
         Returns: number
       }
       refresh_company_stats: { Args: never; Returns: undefined }
-      refresh_facet_term_counts: { Args: never; Returns: undefined }
+      refresh_facet_term_counts: {
+        Args: { _force?: boolean }
+        Returns: boolean
+      }
       reset_query_stats: { Args: never; Returns: undefined }
       search_companies: {
         Args: {
