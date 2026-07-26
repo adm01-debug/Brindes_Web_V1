@@ -65,6 +65,88 @@ export function facetTermHead(params: {
           ],
         }),
       },
+      ...(params.products && params.products.length > 0
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                name: title,
+                numberOfItems: params.products.length,
+                itemListElement: params.products.slice(0, 30).map((p, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: p.name,
+                  url: `${SITE_URL}/produto/${p.id}`,
+                })),
+              }),
+            },
+          ]
+        : []),
     ],
   };
 }
+
+/**
+ * Monta o bloco `head()` de um hub de eixo (lista de vitrines), incluindo
+ * BreadcrumbList e ItemList das vitrines publicadas.
+ */
+export function facetHubHead(params: {
+  hubPath: string;
+  title: string;
+  description: string;
+  heading: string;
+  terms?: { slug: string; name: string }[];
+}) {
+  const url = `${SITE_URL}${params.hubPath}`;
+  const terms = params.terms ?? [];
+
+  return {
+    meta: [
+      { title: params.title },
+      { name: "description", content: params.description },
+      { property: "og:type", content: "website" },
+      { property: "og:title", content: params.title },
+      { property: "og:description", content: params.description },
+      { property: "og:url", content: url },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: params.title },
+      { name: "twitter:description", content: params.description },
+    ],
+    links: [{ rel: "canonical", href: url }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Início", item: `${SITE_URL}/` },
+            { "@type": "ListItem", position: 2, name: params.heading, item: url },
+          ],
+        }),
+      },
+      ...(terms.length > 0
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                name: params.heading,
+                numberOfItems: terms.length,
+                itemListElement: terms.map((t, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: t.name,
+                  url: `${url}/${t.slug}`,
+                })),
+              }),
+            },
+          ]
+        : []),
+    ],
+  };
+}
+
