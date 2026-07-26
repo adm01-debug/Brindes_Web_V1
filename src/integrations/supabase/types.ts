@@ -938,6 +938,13 @@ export type Database = {
             referencedRelation: "facet_terms"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "product_facets_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "mv_facet_term_counts"
+            referencedColumns: ["term_id"]
+          },
         ]
       }
       product_images: {
@@ -1430,6 +1437,15 @@ export type Database = {
         }
         Relationships: []
       }
+      mv_facet_term_counts: {
+        Row: {
+          axis_slug: string | null
+          products_count: number | null
+          term_id: string | null
+          term_slug: string | null
+        }
+        Relationships: []
+      }
       v_slow_queries: {
         Row: {
           calls: number | null
@@ -1584,6 +1600,7 @@ export type Database = {
         Returns: number
       }
       refresh_company_stats: { Args: never; Returns: undefined }
+      refresh_facet_term_counts: { Args: never; Returns: undefined }
       reset_query_stats: { Args: never; Returns: undefined }
       search_companies: {
         Args: {
