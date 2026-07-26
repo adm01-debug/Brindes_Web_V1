@@ -151,6 +151,17 @@ export const Route = createFileRoute("/sitemap.xml")({
             );
           }
 
+          for (const d of datesRes.data ?? []) {
+            parts.push(
+              urlEntry(
+                `${SITE_URL}/datas-comemorativas/${d.slug}`,
+                d.updated_at ? new Date(d.updated_at).toISOString() : undefined,
+                "monthly",
+                "0.7",
+              ),
+            );
+          }
+
 
           for (const i of INTENTS) {
             parts.push(
