@@ -117,7 +117,7 @@ export function ProductForm({
   useEffect(() => {
     if (!productId) return;
     (async () => {
-      const [imagesRes, tiersRes] = await Promise.all([
+      const [imagesRes, tiersRes, facetsRes] = await Promise.all([
         supabase
           .from("product_images")
           .select("id, url, sort_order")
@@ -128,6 +128,10 @@ export function ProductForm({
           .select("id, min_qty, max_qty, unit_price")
           .eq("product_id", productId)
           .order("min_qty"),
+        supabase
+          .from("product_facets")
+          .select("term_id")
+          .eq("product_id", productId),
       ]);
       const rows = imagesRes.data ?? [];
       const withUrls = await Promise.all(
@@ -147,6 +151,7 @@ export function ProductForm({
           unit_price: String(t.unit_price),
         })),
       );
+      setFacetIds((facetsRes.data ?? []).map((f) => f.term_id));
       setInitialLoaded(true);
     })();
   }, [productId]);
