@@ -97,6 +97,51 @@ export type Database = {
           },
         ]
       }
+      commemorative_dates: {
+        Row: {
+          created_at: string
+          day: number | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          keywords: string[]
+          month: number | null
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day?: number | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: string[]
+          month?: number | null
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day?: number | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: string[]
+          month?: number | null
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           banner_url: string | null
@@ -477,6 +522,7 @@ export type Database = {
         Row: {
           company_id: string
           created_at: string
+          department: string | null
           email: string
           id: string
           kind: string
@@ -494,6 +540,7 @@ export type Database = {
         Insert: {
           company_id: string
           created_at?: string
+          department?: string | null
           email: string
           id?: string
           kind?: string
@@ -511,6 +558,7 @@ export type Database = {
         Update: {
           company_id?: string
           created_at?: string
+          department?: string | null
           email?: string
           id?: string
           kind?: string
@@ -716,6 +764,42 @@ export type Database = {
         }
         Relationships: []
       }
+      product_commemorative_dates: {
+        Row: {
+          created_at: string
+          date_id: string
+          id: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_id: string
+          id?: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string
+          date_id?: string
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_commemorative_dates_date_id_fkey"
+            columns: ["date_id"]
+            isOneToOne: false
+            referencedRelation: "commemorative_dates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_commemorative_dates_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_images: {
         Row: {
           alt_text: string | null
@@ -904,6 +988,8 @@ export type Database = {
           dimensions: string | null
           id: string
           is_active: boolean
+          is_clearance: boolean
+          is_unusual: boolean
           material: string | null
           min_order_quantity: number | null
           moderated_at: string | null
@@ -914,11 +1000,13 @@ export type Database = {
           price: number | null
           price_on_request: boolean
           production_time_days: number | null
+          promo_price: number | null
           search_vector: unknown
           short_description: string | null
           sku: string | null
           slug: string | null
           updated_at: string
+          video_url: string | null
           views_count: number
           weight_grams: number | null
         }
@@ -934,6 +1022,8 @@ export type Database = {
           dimensions?: string | null
           id?: string
           is_active?: boolean
+          is_clearance?: boolean
+          is_unusual?: boolean
           material?: string | null
           min_order_quantity?: number | null
           moderated_at?: string | null
@@ -944,11 +1034,13 @@ export type Database = {
           price?: number | null
           price_on_request?: boolean
           production_time_days?: number | null
+          promo_price?: number | null
           search_vector?: unknown
           short_description?: string | null
           sku?: string | null
           slug?: string | null
           updated_at?: string
+          video_url?: string | null
           views_count?: number
           weight_grams?: number | null
         }
@@ -964,6 +1056,8 @@ export type Database = {
           dimensions?: string | null
           id?: string
           is_active?: boolean
+          is_clearance?: boolean
+          is_unusual?: boolean
           material?: string | null
           min_order_quantity?: number | null
           moderated_at?: string | null
@@ -974,11 +1068,13 @@ export type Database = {
           price?: number | null
           price_on_request?: boolean
           production_time_days?: number | null
+          promo_price?: number | null
           search_vector?: unknown
           short_description?: string | null
           sku?: string | null
           slug?: string | null
           updated_at?: string
+          video_url?: string | null
           views_count?: number
           weight_grams?: number | null
         }
