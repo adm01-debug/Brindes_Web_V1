@@ -90,6 +90,23 @@ export function ProductCard({ product }: { product: Product }) {
               <PlanBadge plan={product.company.plan} featuredUntil={product.company.featured_until} />
             </div>
           )}
+          <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
+            {hasPromo && (
+              <span className="rounded-full bg-destructive px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-destructive-foreground shadow-sm">
+                -{discountPct}%
+              </span>
+            )}
+            {product.is_clearance && (
+              <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground shadow-sm">
+                Ponta de estoque
+              </span>
+            )}
+            {product.is_unusual && (
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary-foreground shadow-sm">
+                Inusitado
+              </span>
+            )}
+          </div>
         </div>
         <CardContent className="p-4">
           <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold group-hover:text-primary">
@@ -98,7 +115,14 @@ export function ProductCard({ product }: { product: Product }) {
           {product.company && (
             <p className="mt-1 truncate text-xs text-muted-foreground">{product.company.name}</p>
           )}
-          <p className="mt-2 text-sm font-semibold text-primary">{priceLabel}</p>
+          <p className="mt-2 flex items-baseline gap-2 text-sm font-semibold text-primary">
+            {priceLabel}
+            {hasPromo && (
+              <span className="text-xs font-normal text-muted-foreground line-through">
+                {formatBRL(product.price!)}
+              </span>
+            )}
+          </p>
         </CardContent>
       </Link>
       {product.company && (
