@@ -257,9 +257,11 @@ function HomePage() {
               </Button>
             </div>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {(recentProducts ?? []).map((p) => (
-                <ProductCard key={p.id} product={p as never} />
+              {(recentProducts ?? []).map((p, i) => (
+                // Só os 4 primeiros disputam LCP: acima da dobra na maioria dos viewports.
+                <ProductCard key={p.id} product={p as never} priority={i < 4} />
               ))}
+
               {recentProducts && recentProducts.length === 0 && (
                 <div className="col-span-full">
                   <EmptyBox
