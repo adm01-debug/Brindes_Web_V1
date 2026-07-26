@@ -2,6 +2,9 @@ import type { FacetTerm } from "@/lib/facets";
 
 export const SITE_URL = "https://brinde-gallery.lovable.app";
 
+/** Item mínimo necessário para montar o ItemList de produtos da vitrine. */
+export type FacetSeoProduct = { id: string; name: string };
+
 /**
  * Monta o bloco `head()` de uma página de termo de faceta.
  * Centralizado para que os três eixos não divirjam em metadados.
@@ -12,7 +15,10 @@ export function facetTermHead(params: {
   hubPath: string;
   hubLabel: string;
   fallbackTitle: string;
+  /** Produtos já carregados no loader — vira ItemList para o Google. */
+  products?: FacetSeoProduct[];
 }) {
+
   const url = `${SITE_URL}${params.hubPath}/${params.slug}`;
 
   if (!params.term) {
