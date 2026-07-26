@@ -88,11 +88,25 @@ export const facetTermQO = (axisSlug: string, termSlug: string) =>
  * ligações de produtos não publicados, mas os filtros são repetidos aqui para
  * que a query também funcione quando o leitor for o dono da empresa.
  */
-export const facetProductsQO = (termId: string) =>
+export const FACET_PAGE_SIZE = 24;
+
+export type FacetProductsPage = {
+  items: FacetListedProduct[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+};
+
+export const facetProductsQO = (termId: string, page = 1) =>
   queryOptions({
-    queryKey: ["facet-products", termId],
-    queryFn: async (): Promise<FacetListedProduct[]> => {
-      const { data, error } = await supabase
+    queryKey: ["facet-products", termId, page],
+    queryFn: async (): Promise<FacetProductsPage> => {
+      const safePage = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+      const from = (safePage - 1) * FACET_PAGE_SIZE;
+      const to = from + FACET_PAGE_SIZE - 1;
+
+      const { data, error, count } = await supabase
         .from("product_facets")
         .select(
           `product:products!inner(
@@ -103,18 +117,28 @@ export const facetProductsQO = (termId: string) =>
             company:companies!inner(id, slug, name, status, plan, featured_until),
             images:product_images(url, sort_order)
           )`,
+          { count: "exact" },
         )
         .eq("term_id", termId)
-        .limit(48);
+        // Filtros aplicados no servidor para que `count` e `range` reflitam
+        // exatamente o conjunto publicado (paginação correta).
+        .eq("products.is_active", true)
+        .is("products.deleted_at", null)
+        .eq("products.moderation_status", "approved")
+        .eq("products.companies.status", "approved")
+        .order("name", { referencedTable: "products", ascending: true })
+        .range(from, to);
       if (error) throw error;
 
-      return (data ?? [])
+      const items = (data ?? [])
         .map((row) => (row as { product: unknown }).product as (FacetListedProduct & {
           is_active: boolean;
           deleted_at: string | null;
           moderation_status: string;
           company: (FacetListedProduct["company"] & { status: string }) | null;
         }) | null)
+        // Rede de segurança: se o PostgREST ignorar algum filtro embutido,
+        // o produto ainda assim não vaza para a vitrine.
         .filter(
           (p): p is NonNullable<typeof p> =>
             !!p &&
@@ -123,8 +147,18 @@ export const facetProductsQO = (termId: string) =>
             p.moderation_status === "approved" &&
             p.company?.status === "approved",
         ) as FacetListedProduct[];
+
+      const total = count ?? items.length;
+      return {
+        items,
+        total,
+        page: safePage,
+        pageSize: FACET_PAGE_SIZE,
+        pageCount: Math.max(1, Math.ceil(total / FACET_PAGE_SIZE)),
+      };
     },
   });
+
 
 export type FacetTermCount = {
   term_id: string;
