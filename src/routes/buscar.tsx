@@ -33,8 +33,23 @@ const searchSchema = z.object({
   prazo: fallback(z.number().int(), 0).default(0),
   uf: fallback(z.string(), "").default(""),
   video: fallback(z.boolean(), false).default(false),
+  /** Slugs de vitrines (facetas) separados por vírgula. Ex.: "canecas,formatura". */
+  facetas: fallback(z.string(), "").default(""),
   page: fallback(z.number().int(), 1).default(1),
 });
+
+/** Converte o parâmetro CSV da URL em lista de slugs limpa e sem duplicatas. */
+function parseFacets(csv: string): string[] {
+  return Array.from(
+    new Set(
+      csv
+        .split(",")
+        .map((s) => s.trim().toLowerCase())
+        .filter((s) => s.length > 0),
+    ),
+  ).slice(0, MAX_SEARCH_FACETS);
+}
+
 
 const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
