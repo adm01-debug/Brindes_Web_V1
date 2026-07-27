@@ -169,6 +169,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "manifest", href: "/manifest.json" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // Toda imagem do catálogo passa por /i/$ e termina em um redirect 302
+      // para o storage. Sem preconnect, o handshake (DNS + TCP + TLS) só
+      // começa DEPOIS do redirect — custo direto no LCP. `preconnect` abre a
+      // conexão durante o parse do <head>; o `dns-prefetch` fica como fallback
+      // para navegadores que descartam preconnects excedentes.
+      { rel: "preconnect", href: "https://atphsqbixdfqwobhiaoz.supabase.co" },
       { rel: "dns-prefetch", href: "https://atphsqbixdfqwobhiaoz.supabase.co" },
       { rel: "alternate", hrefLang: "pt-BR", href: "https://brinde-gallery.lovable.app/" },
       { rel: "alternate", hrefLang: "x-default", href: "https://brinde-gallery.lovable.app/" },
