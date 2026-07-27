@@ -211,7 +211,7 @@ export const Route = createFileRoute("/produto/$id")({
               {
                 rel: "preload",
                 as: "image",
-                href: loaderData.images[0].replace("https://brinde-gallery.lovable.app", ""),
+                href: `${loaderData.images[0].replace("https://brinde-gallery.lovable.app", "")}?w=1200`,
                 fetchpriority: "high",
               },
             ]
@@ -267,11 +267,20 @@ function ProductPage() {
 
   // URLs estáveis (rota /i/...): a galeria já sai no HTML de SSR, sem
   // round-trip de assinatura após a hidratação.
-  const imageUrls = ((product?.images ?? []) as { url: string; sort_order: number }[])
+  const imagePaths = ((product?.images ?? []) as { url: string; sort_order: number }[])
     .slice()
     .sort((a, b) => a.sort_order - b.sort_order)
-    .map((i) => mediaUrl("product-images", i.url))
+    .map((i) => i.url)
     .filter((u): u is string => !!u);
+
+  // Lightbox usa o original (zoom); a galeria usa variantes dimensionadas.
+  const imageUrls = imagePaths
+    .map((p) => mediaUrl("product-images", p))
+    .filter((u): u is string => !!u);
+  // 1200px casa exatamente com o `rel=preload` do head — sem download duplo.
+  const galleryUrls = imagePaths.map((p) => mediaUrl("product-images", p, 1200)!);
+  const thumbUrls = imagePaths.map((p) => mediaUrl("product-images", p, 160)!);
+
 
   if (isLoading) {
     return (
