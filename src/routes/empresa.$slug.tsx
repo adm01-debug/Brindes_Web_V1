@@ -366,8 +366,14 @@ function RelatedCompanies({
             className="group flex items-start gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-primary"
           >
             <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
-              {logos[c.id] ? (
-                <img loading="lazy" decoding="async" src={logos[c.id]} alt="" className="h-full w-full object-cover" />
+              {mediaUrl("company-assets", c.logo_url) ? (
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={mediaUrl("company-assets", c.logo_url)!}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 <Building2 className="h-5 w-5 text-muted-foreground" />
               )}
