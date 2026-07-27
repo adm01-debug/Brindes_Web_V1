@@ -68,6 +68,16 @@ export const Route = createFileRoute("/produto/$id")({
       product.short_description ??
       product.description?.slice(0, 155) ??
       `${product.name} por ${product.company?.name ?? "empresa parceira"} no BrindesHub.`;
+    // Imagens absolutas para o JSON-LD: rich results de Product exigem
+    // `image`. Usamos o proxy de mídia (/i/...) porque o bucket é privado e
+    // uma signed URL expiraria — o crawler precisa de URL estável.
+    const images = ((product as { images?: { url: string; sort_order: number }[] }).images ?? [])
+      .slice()
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((i) => mediaUrl("product-images", i.url))
+      .filter((u): u is string => !!u)
+      .slice(0, 5)
+      .map((u) => `https://brinde-gallery.lovable.app${u}`);
     return {
       title: product.name,
       companyName: product.company?.name ?? "BrindesHub",
@@ -78,6 +88,8 @@ export const Route = createFileRoute("/produto/$id")({
       priceOnRequest: product.price_on_request ?? false,
       videoUrl: product.video_url ?? null,
       uploadDate: product.created_at ?? null,
+      sku: (product as { sku?: string | null }).sku ?? null,
+      images,
       tierLow,
       tierHigh,
       tierCount: tiers.length,
