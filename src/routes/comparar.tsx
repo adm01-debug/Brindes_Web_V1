@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { GitCompare, X, Trash2, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { mediaUrl, formatBRL } from "@/lib/portal";
+import { mediaUrl, mediaSrcSet, formatBRL } from "@/lib/portal";
 import { useCompare } from "@/hooks/use-compare";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
