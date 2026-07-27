@@ -202,7 +202,21 @@ export const Route = createFileRoute("/produto/$id")({
         { name: "twitter:image", content: ogImage },
         ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        // Preload do candidato a LCP: a primeira imagem da galeria. Caminho
+        // relativo (mesmo origin) para reaproveitar a conexão já aberta.
+        ...(loaderData?.images?.[0]
+          ? [
+              {
+                rel: "preload",
+                as: "image",
+                href: loaderData.images[0].replace("https://brinde-gallery.lovable.app", ""),
+                fetchpriority: "high",
+              },
+            ]
+          : []),
+      ],
       scripts,
     };
   },

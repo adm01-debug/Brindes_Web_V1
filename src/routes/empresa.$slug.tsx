@@ -123,7 +123,21 @@ export const Route = createFileRoute("/empresa/$slug")({
         { name: "twitter:image", content: ogImage },
         ...(loaderData ? [] : [{ name: "robots", content: "noindex" }]),
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        // Preload do candidato a LCP da página de empresa: o banner (ou o
+        // logotipo, quando não há banner). Relativo para evitar novo handshake.
+        ...((bannerAbs ?? logoAbs)
+          ? [
+              {
+                rel: "preload",
+                as: "image",
+                href: (bannerAbs ?? logoAbs)!.replace(SITE, ""),
+                fetchpriority: "high",
+              },
+            ]
+          : []),
+      ],
       scripts,
     };
   },
