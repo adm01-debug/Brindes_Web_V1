@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
 import { CompanyReviews, CompanyRatingSummary } from "@/components/company-reviews";
-import { getSignedUrl } from "@/lib/portal";
+import { mediaUrl } from "@/lib/portal";
 import {
   Building2, MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook, Linkedin, Package,
 } from "lucide-react";
@@ -152,13 +152,9 @@ function CompanyPage() {
     },
   });
 
-  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (company?.banner_url) getSignedUrl("company-assets", company.banner_url).then(setBannerUrl);
-    if (company?.logo_url) getSignedUrl("company-assets", company.logo_url).then(setLogoUrl);
-  }, [company?.banner_url, company?.logo_url]);
+  // URLs estáveis resolvidas no servidor: banner/logo já saem no HTML de SSR.
+  const bannerUrl = mediaUrl("company-assets", company?.banner_url);
+  const logoUrl = mediaUrl("company-assets", company?.logo_url);
 
   if (isLoading) {
     return (
