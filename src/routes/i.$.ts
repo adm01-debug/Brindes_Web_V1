@@ -117,11 +117,23 @@ export const Route = createFileRoute("/i/$")({
           status: 302,
           headers: {
             location: signedUrl,
-            "cache-control": `public, max-age=${EDGE_CACHE_SECONDS}, s-maxage=${EDGE_CACHE_SECONDS}`,
+            // `stale-while-revalidate` mantém o LCP rápido na virada do TTL: a
+            // borda entrega o redirect vencido imediatamente e renova em
+            // background. `stale-if-error` protege contra indisponibilidade da
+            // origem. Não usamos `immutable` porque a URL assinada muda a cada
+            // renovação — o recurso final no storage é que é imutável.
+            "cache-control": [
+              "public",
+              `max-age=${EDGE_CACHE_SECONDS}`,
+              `s-maxage=${EDGE_CACHE_SECONDS}`,
+              `stale-while-revalidate=${STALE_WHILE_REVALIDATE_SECONDS}`,
+              `stale-if-error=${STALE_IF_ERROR_SECONDS}`,
+            ].join(", "),
             // A resposta varia conforme o formato aceito pelo cliente.
             vary: "Accept",
           },
         });
+
       },
 
     },
