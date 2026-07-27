@@ -45,6 +45,9 @@ export const Route = createFileRoute("/empresa/$slug")({
       website: company.website ?? null,
       phone: company.phone ?? null,
       email: company.email ?? null,
+      // Caminhos crus do storage: viram URLs absolutas estáveis no head().
+      logoPath: company.logo_url ?? null,
+      bannerPath: company.banner_url ?? null,
     };
   },
   head: ({ params, loaderData }) => {
