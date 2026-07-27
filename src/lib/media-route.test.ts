@@ -48,5 +48,11 @@ describe("rota de mídia /i/$", () => {
     const res = await head("/i/bucket-inventado/arquivo.jpg?w=400");
     expect(res.status).toBe(403);
   });
+
+  it("não cacheia respostas de erro na borda", async () => {
+    const res = await head("/i/bucket-inventado/arquivo.jpg");
+    expect(res.headers.get("cache-control")).toContain("no-store");
+  });
 });
+
 
