@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Package, PlayCircle } from "lucide-react";
-import { mediaUrl, formatBRL } from "@/lib/portal";
+import { mediaUrl, mediaSrcSet, formatBRL } from "@/lib/portal";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -46,7 +46,9 @@ export function ProductCard({ product, priority = false }: { product: Product; p
     : undefined;
 
   // URL estável resolvida no servidor: a <img> já sai no HTML de SSR.
-  const imgUrl = mediaUrl("product-images", rawUrl);
+  const imgUrl = mediaUrl("product-images", rawUrl, 400);
+  // Variantes responsivas: o navegador baixa só o tamanho que vai exibir.
+  const imgSrcSet = mediaSrcSet("product-images", rawUrl);
 
 
 
@@ -82,6 +84,12 @@ export function ProductCard({ product, priority = false }: { product: Product; p
           {imgUrl ? (
             <img
               src={imgUrl}
+              {...(imgSrcSet
+                ? {
+                    srcSet: imgSrcSet,
+                    sizes: "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw",
+                  }
+                : {})}
               alt={product.name}
               width={400}
               height={400}

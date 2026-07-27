@@ -35,4 +35,18 @@ describe("rota de mídia /i/$", () => {
     // Erro nunca deve ser cacheado na borda.
     expect(res.headers.get("cache-control")).toContain("no-store");
   });
+
+  it("aceita largura fora da allow-list sem quebrar (serve o original)", async () => {
+    // Largura inválida não pode virar erro: uma imagem quebrada é pior que
+    // uma imagem grande. Aqui só garantimos que o objeto inexistente continua
+    // 404 — ou seja, o parâmetro não altera o fluxo de validação.
+    const res = await head("/i/product-images/inexistente-para-teste.jpg?w=9999");
+    expect(res.status).toBe(404);
+  });
+
+  it("mantém a allow-list de buckets mesmo com parâmetro de largura", async () => {
+    const res = await head("/i/bucket-inventado/arquivo.jpg?w=400");
+    expect(res.status).toBe(403);
+  });
 });
+
