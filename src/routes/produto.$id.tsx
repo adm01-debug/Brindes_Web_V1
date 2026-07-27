@@ -579,7 +579,7 @@ function RelatedProducts({
     const imgs = (p.product_images ?? []) as Array<{ url: string; is_primary: boolean; sort_order: number }>;
     const primary =
       imgs.find((i) => i.is_primary) ?? [...imgs].sort((a, b) => a.sort_order - b.sort_order)[0];
-    const u = primary ? mediaUrl("product-images", primary.url) : null;
+    const u = primary ? mediaUrl("product-images", primary.url, 400) : null;
     if (u) urls[p.id] = u;
   }
 

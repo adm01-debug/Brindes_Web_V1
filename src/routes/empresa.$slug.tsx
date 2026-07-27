@@ -396,13 +396,13 @@ function RelatedCompanies({
             className="group flex items-start gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-primary"
           >
             <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
-              {mediaUrl("company-assets", c.logo_url) ? (
+              {mediaUrl("company-assets", c.logo_url, 160) ? (
                 <img
                   loading="lazy"
                   decoding="async"
                   width={48}
                   height={48}
-                  src={mediaUrl("company-assets", c.logo_url)!}
+                  src={mediaUrl("company-assets", c.logo_url, 160)!}
                   alt=""
                   className="h-full w-full object-cover"
                 />
