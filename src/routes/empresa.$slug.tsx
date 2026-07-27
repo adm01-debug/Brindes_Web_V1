@@ -347,22 +347,8 @@ function RelatedCompanies({
     staleTime: 60_000,
   });
 
-  const [logos, setLogos] = useState<Record<string, string>>({});
-  useEffect(() => {
-    if (!data?.length) return;
-    (async () => {
-      const map: Record<string, string> = {};
-      await Promise.all(
-        data.map(async (c) => {
-          if (c.logo_url) {
-            const signed = await getSignedUrl("company-assets", c.logo_url);
-            if (signed) map[c.id] = signed;
-          }
-        }),
-      );
-      setLogos(map);
-    })();
-  }, [data]);
+  // Logos resolvidos de forma síncrona (SSR-safe) via rota de mídia.
+
 
   if (!data || data.length === 0) return null;
 
