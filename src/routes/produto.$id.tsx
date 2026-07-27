@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { mediaUrl, formatBRL } from "@/lib/portal";
 import { MessageCircle, Building2, Package, ChevronLeft, Ruler, Palette, Boxes, Clock, Expand } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
 import { SampleRequestForm } from "@/components/sample-request-form";
@@ -229,16 +229,16 @@ function ProductPage() {
     track(product.id);
   }, [product?.id, track]);
 
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  useEffect(() => {
-    const images = product?.images?.sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order) ?? [];
-    Promise.all(images.map((i: { url: string }) => getSignedUrl("product-images", i.url))).then((urls) => {
-      setImageUrls(urls.filter((u): u is string => !!u));
-    });
-  }, [product?.images]);
+  // URLs estáveis (rota /i/...): a galeria já sai no HTML de SSR, sem
+  // round-trip de assinatura após a hidratação.
+  const imageUrls = ((product?.images ?? []) as { url: string; sort_order: number }[])
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((i) => mediaUrl("product-images", i.url))
+    .filter((u): u is string => !!u);
 
   if (isLoading) {
     return (
