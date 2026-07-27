@@ -42,7 +42,7 @@ function badRequest(message: string, status = 400) {
 export const Route = createFileRoute("/i/$")({
   server: {
     handlers: {
-      GET: async ({ params }) => {
+      GET: async ({ params, request }) => {
         const splat = (params as { _splat?: string })._splat ?? "";
         const slashIndex = splat.indexOf("/");
         if (slashIndex <= 0) return badRequest("Caminho de mídia inválido");
@@ -53,6 +53,13 @@ export const Route = createFileRoute("/i/$")({
         if (!ALLOWED_BUCKETS.has(bucket)) return badRequest("Bucket não permitido", 403);
         // Path traversal e caminhos vazios não chegam ao storage.
         if (!objectPath || objectPath.includes("..")) return badRequest("Caminho de mídia inválido");
+
+        // Redimensionamento opcional: `?w=400`. Fora da allow-list, ignoramos
+        // silenciosamente (serve o original) em vez de responder erro — uma
+        // imagem quebrada é pior que uma imagem grande.
+        const requestUrl = new URL(request.url);
+        const widthParam = Number(requestUrl.searchParams.get("w"));
+        const width = ALLOWED_WIDTHS.has(widthParam) ? widthParam : undefined;
 
         const url = process.env.SUPABASE_URL;
         const key = process.env.SUPABASE_PUBLISHABLE_KEY;
@@ -73,22 +80,42 @@ export const Route = createFileRoute("/i/$")({
           },
         });
 
-        const { data, error } = await supabase.storage
-          .from(bucket)
-          .createSignedUrl(decodeURIComponent(objectPath), SIGNED_TTL_SECONDS);
+        const decodedPath = decodeURIComponent(objectPath);
 
-        if (error || !data?.signedUrl) {
-          return badRequest("Imagem não encontrada", 404);
+        // Tentativa 1: URL assinada com transformação (o render do storage
+        // devolve WebP/AVIF automaticamente conforme o Accept do cliente).
+        let signedUrl: string | null = null;
+        if (width) {
+          const { data } = await supabase.storage
+            .from(bucket)
+            .createSignedUrl(decodedPath, SIGNED_TTL_SECONDS, {
+              transform: { width, resize: "contain", quality: DEFAULT_QUALITY },
+            });
+          signedUrl = data?.signedUrl ?? null;
         }
+
+        // Tentativa 2 (fallback): original. Cobre o caso de transformação de
+        // imagem indisponível no projeto — nunca degradamos para 404.
+        if (!signedUrl) {
+          const { data } = await supabase.storage
+            .from(bucket)
+            .createSignedUrl(decodedPath, SIGNED_TTL_SECONDS);
+          signedUrl = data?.signedUrl ?? null;
+        }
+
+        if (!signedUrl) return badRequest("Imagem não encontrada", 404);
 
         return new Response(null, {
           status: 302,
           headers: {
-            location: data.signedUrl,
+            location: signedUrl,
             "cache-control": `public, max-age=${EDGE_CACHE_SECONDS}, s-maxage=${EDGE_CACHE_SECONDS}`,
+            // A resposta varia conforme o formato aceito pelo cliente.
+            vary: "Accept",
           },
         });
       },
+
     },
   },
 });
