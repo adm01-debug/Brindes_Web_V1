@@ -30,6 +30,14 @@ const DEFAULT_QUALITY = 72;
 const SIGNED_TTL_SECONDS = 60 * 60 * 24; // 24h
 // Cache do redirect abaixo do TTL da assinatura, com folga para revalidação.
 const EDGE_CACHE_SECONDS = 60 * 60 * 6; // 6h
+// Janela em que a borda pode servir a resposta vencida enquanto revalida em
+// background. Mantida dentro do TTL restante da assinatura (24h - 6h = 18h)
+// para nunca entregar um redirect já expirado.
+const STALE_WHILE_REVALIDATE_SECONDS = 60 * 60 * 6; // 6h
+// Se a origem cair, a borda continua servindo o último redirect válido em vez
+// de propagar erro — imagem antiga é infinitamente melhor que imagem quebrada.
+const STALE_IF_ERROR_SECONDS = 60 * 60 * 6; // 6h
+
 
 function badRequest(message: string, status = 400) {
   return new Response(message, {
