@@ -530,24 +530,16 @@ function RelatedProducts({
     staleTime: 60_000,
   });
 
-  const [urls, setUrls] = useState<Record<string, string>>({});
-  useEffect(() => {
-    if (!data?.length) return;
-    (async () => {
-      const map: Record<string, string> = {};
-      await Promise.all(
-        data.map(async (p) => {
-          const imgs = (p.product_images ?? []) as Array<{ url: string; is_primary: boolean; sort_order: number }>;
-          const primary = imgs.find((i) => i.is_primary) ?? imgs.sort((a, b) => a.sort_order - b.sort_order)[0];
-          if (primary) {
-            const signed = await getSignedUrl("product-images", primary.url);
-            if (signed) map[p.id] = signed;
-          }
-        }),
-      );
-      setUrls(map);
-    })();
-  }, [data]);
+  // Miniatura por produto resolvida de forma síncrona (SSR-safe).
+  const urls: Record<string, string> = {};
+  for (const p of data ?? []) {
+    const imgs = (p.product_images ?? []) as Array<{ url: string; is_primary: boolean; sort_order: number }>;
+    const primary =
+      imgs.find((i) => i.is_primary) ?? [...imgs].sort((a, b) => a.sort_order - b.sort_order)[0];
+    const u = primary ? mediaUrl("product-images", primary.url) : null;
+    if (u) urls[p.id] = u;
+  }
+
 
   if (!data || data.length === 0) return null;
 
