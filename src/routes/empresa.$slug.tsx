@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
 import { CompanyReviews, CompanyRatingSummary } from "@/components/company-reviews";
-import { getSignedUrl } from "@/lib/portal";
+import { mediaUrl } from "@/lib/portal";
 import {
   Building2, MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook, Linkedin, Package,
 } from "lucide-react";
@@ -152,13 +152,9 @@ function CompanyPage() {
     },
   });
 
-  const [bannerUrl, setBannerUrl] = useState<string | null>(null);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (company?.banner_url) getSignedUrl("company-assets", company.banner_url).then(setBannerUrl);
-    if (company?.logo_url) getSignedUrl("company-assets", company.logo_url).then(setLogoUrl);
-  }, [company?.banner_url, company?.logo_url]);
+  // URLs estáveis resolvidas no servidor: banner/logo já saem no HTML de SSR.
+  const bannerUrl = mediaUrl("company-assets", company?.banner_url);
+  const logoUrl = mediaUrl("company-assets", company?.logo_url);
 
   if (isLoading) {
     return (
@@ -351,22 +347,8 @@ function RelatedCompanies({
     staleTime: 60_000,
   });
 
-  const [logos, setLogos] = useState<Record<string, string>>({});
-  useEffect(() => {
-    if (!data?.length) return;
-    (async () => {
-      const map: Record<string, string> = {};
-      await Promise.all(
-        data.map(async (c) => {
-          if (c.logo_url) {
-            const signed = await getSignedUrl("company-assets", c.logo_url);
-            if (signed) map[c.id] = signed;
-          }
-        }),
-      );
-      setLogos(map);
-    })();
-  }, [data]);
+  // Logos resolvidos de forma síncrona (SSR-safe) via rota de mídia.
+
 
   if (!data || data.length === 0) return null;
 
@@ -384,8 +366,14 @@ function RelatedCompanies({
             className="group flex items-start gap-3 rounded-lg border bg-card p-4 transition-colors hover:border-primary"
           >
             <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-muted">
-              {logos[c.id] ? (
-                <img loading="lazy" decoding="async" src={logos[c.id]} alt="" className="h-full w-full object-cover" />
+              {mediaUrl("company-assets", c.logo_url) ? (
+                <img
+                  loading="lazy"
+                  decoding="async"
+                  src={mediaUrl("company-assets", c.logo_url)!}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 <Building2 className="h-5 w-5 text-muted-foreground" />
               )}
