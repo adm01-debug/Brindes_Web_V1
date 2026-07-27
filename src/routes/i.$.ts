@@ -17,7 +17,7 @@ import { createClient } from "@supabase/supabase-js";
  */
 
 // Allow-list rígida: impede que a rota vire um oráculo genérico de storage.
-const ALLOWED_BUCKETS = new Set(["product-images", "company-logos", "company-banners"]);
+const ALLOWED_BUCKETS = new Set(["product-images", "company-assets"]);
 
 const SIGNED_TTL_SECONDS = 60 * 60 * 24; // 24h
 // Cache do redirect abaixo do TTL da assinatura, com folga para revalidação.
