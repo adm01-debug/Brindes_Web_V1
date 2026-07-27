@@ -112,6 +112,13 @@ export const Route = createFileRoute("/produto/$id")({
               name: loaderData.title,
               description,
               url,
+              // `image` é obrigatório para rich results; cai no OG gerado
+              // quando o produto ainda não tem foto cadastrada.
+              image:
+                loaderData.images.length > 0
+                  ? loaderData.images
+                  : [`https://brinde-gallery.lovable.app/api/public/og/produto/${params.id}`],
+              ...(loaderData.sku ? { sku: loaderData.sku } : {}),
               brand: { "@type": "Brand", name: loaderData.companyName },
               // Com faixas de preço, o schema correto é AggregateOffer
               // (intervalo de preços), não um Offer de valor único.
