@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { GitCompare, X, Trash2, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { mediaUrl, formatBRL } from "@/lib/portal";
 import { useCompare } from "@/hooks/use-compare";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -191,21 +191,9 @@ function CompareTable({ products, onRemove }: { products: CompareProduct[]; onRe
 }
 
 function ProductHeader({ product, onRemove }: { product: CompareProduct; onRemove: () => void }) {
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
   const primary =
     product.images?.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
-
-  useEffect(() => {
-    let active = true;
-    if (primary?.url) {
-      getSignedUrl("product-images", primary.url).then((u) => {
-        if (active) setImgUrl(u);
-      });
-    }
-    return () => {
-      active = false;
-    };
-  }, [primary?.url]);
+  const imgUrl = mediaUrl("product-images", primary?.url);
 
   return (
     <Card className="relative overflow-hidden">

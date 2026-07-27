@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getSignedUrl } from "@/lib/portal";
+import { mediaUrl } from "@/lib/portal";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -131,20 +131,7 @@ export function QuoteCartDrawer({ open, onOpenChange }: Props) {
 }
 
 function CartImage({ path, alt }: { path: string | null; alt: string }) {
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    let active = true;
-    if (path) {
-      getSignedUrl("product-images", path).then((u) => {
-        if (active) setUrl(u);
-      });
-    } else {
-      setUrl(null);
-    }
-    return () => {
-      active = false;
-    };
-  }, [path]);
+  const url = mediaUrl("product-images", path);
   return (
     <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
       {url ? (

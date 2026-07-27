@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { getSignedUrl, formatBRL } from "@/lib/portal";
+import { mediaUrl, formatBRL } from "@/lib/portal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Package } from "lucide-react";
@@ -38,28 +38,15 @@ export function RecentlyViewed({ excludeId, title = "Vistos recentemente", class
     },
   });
 
-  const [urls, setUrls] = useState<Record<string, string>>({});
-  useEffect(() => {
-    if (!data?.length) return;
-    let cancelled = false;
-    Promise.all(
-      data.map(async (p) => {
-        const imgs = (p.images ?? []).slice().sort(
-          (a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order,
-        );
-        const first = imgs[0]?.url;
-        if (!first) return [p.id, ""] as const;
-        const u = await getSignedUrl("product-images", first);
-        return [p.id, u ?? ""] as const;
-      }),
-    ).then((pairs) => {
-      if (cancelled) return;
-      setUrls(Object.fromEntries(pairs));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [data]);
+  // URLs estáveis (rota /i/...): sem round-trip de assinatura no cliente.
+  const urls: Record<string, string> = Object.fromEntries(
+    (data ?? []).map((p) => {
+      const imgs = (p.images ?? [])
+        .slice()
+        .sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order);
+      return [p.id, mediaUrl("product-images", imgs[0]?.url) ?? ""] as const;
+    }),
+  );
 
   if (!data || data.length === 0) return null;
 
