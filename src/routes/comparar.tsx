@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { GitCompare, X, Trash2, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { mediaUrl, formatBRL } from "@/lib/portal";
+import { mediaUrl, mediaSrcSet, formatBRL } from "@/lib/portal";
 import { useCompare } from "@/hooks/use-compare";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -193,7 +193,8 @@ function CompareTable({ products, onRemove }: { products: CompareProduct[]; onRe
 function ProductHeader({ product, onRemove }: { product: CompareProduct; onRemove: () => void }) {
   const primary =
     product.images?.slice().sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
-  const imgUrl = mediaUrl("product-images", primary?.url);
+  const imgUrl = mediaUrl("product-images", primary?.url, 400);
+  const imgSrcSet = mediaSrcSet("product-images", primary?.url, [240, 400, 640]);
 
   return (
     <Card className="relative overflow-hidden">
@@ -209,7 +210,16 @@ function ProductHeader({ product, onRemove }: { product: CompareProduct; onRemov
       <Link to="/produto/$id" params={{ id: product.id }} className="block">
         <div className="aspect-square bg-muted">
           {imgUrl ? (
-            <img src={imgUrl} alt={product.name} width={400} height={400} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+            <img
+              src={imgUrl}
+              {...(imgSrcSet ? { srcSet: imgSrcSet, sizes: "(min-width: 768px) 25vw, 80vw" } : {})}
+              alt={product.name}
+              width={400}
+              height={400}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-muted-foreground">
               <Package className="h-10 w-10" aria-hidden />

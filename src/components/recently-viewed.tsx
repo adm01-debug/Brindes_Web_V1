@@ -44,7 +44,8 @@ export function RecentlyViewed({ excludeId, title = "Vistos recentemente", class
       const imgs = (p.images ?? [])
         .slice()
         .sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order);
-      return [p.id, mediaUrl("product-images", imgs[0]?.url) ?? ""] as const;
+      // Carrossel exibe ~180px: a variante de 400px cobre densidade 2x.
+      return [p.id, mediaUrl("product-images", imgs[0]?.url, 400) ?? ""] as const;
     }),
   );
 

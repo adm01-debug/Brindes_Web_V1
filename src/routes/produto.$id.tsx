@@ -211,7 +211,7 @@ export const Route = createFileRoute("/produto/$id")({
               {
                 rel: "preload",
                 as: "image",
-                href: loaderData.images[0].replace("https://brinde-gallery.lovable.app", ""),
+                href: `${loaderData.images[0].replace("https://brinde-gallery.lovable.app", "")}?w=1200`,
                 fetchpriority: "high",
               },
             ]
@@ -267,11 +267,20 @@ function ProductPage() {
 
   // URLs estáveis (rota /i/...): a galeria já sai no HTML de SSR, sem
   // round-trip de assinatura após a hidratação.
-  const imageUrls = ((product?.images ?? []) as { url: string; sort_order: number }[])
+  const imagePaths = ((product?.images ?? []) as { url: string; sort_order: number }[])
     .slice()
     .sort((a, b) => a.sort_order - b.sort_order)
-    .map((i) => mediaUrl("product-images", i.url))
+    .map((i) => i.url)
     .filter((u): u is string => !!u);
+
+  // Lightbox usa o original (zoom); a galeria usa variantes dimensionadas.
+  const imageUrls = imagePaths
+    .map((p) => mediaUrl("product-images", p))
+    .filter((u): u is string => !!u);
+  // 1200px casa exatamente com o `rel=preload` do head — sem download duplo.
+  const galleryUrls = imagePaths.map((p) => mediaUrl("product-images", p, 1200)!);
+  const thumbUrls = imagePaths.map((p) => mediaUrl("product-images", p, 160)!);
+
 
   if (isLoading) {
     return (
@@ -332,7 +341,7 @@ function ProductPage() {
                       aria-label="Ampliar imagem"
                       className="block h-full w-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <img loading="eager" decoding="async" fetchPriority="high" width={800} height={800} src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <img loading="eager" decoding="async" fetchPriority="high" width={800} height={800} src={galleryUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     </button>
                     <span
                       aria-hidden="true"
@@ -349,10 +358,11 @@ function ProductPage() {
               </div>
               {imageUrls.length > 1 && (
                 <div className="mt-3 flex gap-2 overflow-x-auto">
-                  {imageUrls.map((url, i) => (
+                  {thumbUrls.map((url, i) => (
                     <button
                       key={i}
                       onClick={() => setSelectedIdx(i)}
+                      aria-label={`Ver imagem ${i + 1} de ${thumbUrls.length}`}
                       className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                         i === selectedIdx ? "border-primary" : "border-transparent"
                       }`}
@@ -569,7 +579,7 @@ function RelatedProducts({
     const imgs = (p.product_images ?? []) as Array<{ url: string; is_primary: boolean; sort_order: number }>;
     const primary =
       imgs.find((i) => i.is_primary) ?? [...imgs].sort((a, b) => a.sort_order - b.sort_order)[0];
-    const u = primary ? mediaUrl("product-images", primary.url) : null;
+    const u = primary ? mediaUrl("product-images", primary.url, 400) : null;
     if (u) urls[p.id] = u;
   }
 

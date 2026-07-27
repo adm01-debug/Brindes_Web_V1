@@ -131,11 +131,13 @@ export function QuoteCartDrawer({ open, onOpenChange }: Props) {
 }
 
 function CartImage({ path, alt }: { path: string | null; alt: string }) {
-  const url = mediaUrl("product-images", path);
+  // Thumb de 64px: pedir a variante de 160px cobre telas 2x sem baixar o full.
+  const url = mediaUrl("product-images", path, 160);
   return (
     <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
       {url ? (
-        <img src={url} alt={alt} loading="lazy" className="h-full w-full object-cover" />
+        <img src={url} alt={alt} width={64} height={64} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+
       ) : (
         <div className="flex h-full w-full items-center justify-center text-muted-foreground">
           <Package className="h-5 w-5" aria-hidden />
