@@ -19,6 +19,14 @@ import { createClient } from "@supabase/supabase-js";
 // Allow-list rígida: impede que a rota vire um oráculo genérico de storage.
 const ALLOWED_BUCKETS = new Set(["product-images", "company-assets"]);
 
+/**
+ * Larguras permitidas para redimensionamento (`?w=`). Uma allow-list evita
+ * que crawlers/atacantes gerem infinitas variantes e destruam o cache de borda
+ * (cache poisoning por cardinalidade).
+ */
+const ALLOWED_WIDTHS = new Set([160, 240, 320, 400, 640, 800, 1200, 1600]);
+const DEFAULT_QUALITY = 72;
+
 const SIGNED_TTL_SECONDS = 60 * 60 * 24; // 24h
 // Cache do redirect abaixo do TTL da assinatura, com folga para revalidação.
 const EDGE_CACHE_SECONDS = 60 * 60 * 6; // 6h
@@ -29,6 +37,7 @@ function badRequest(message: string, status = 400) {
     headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
   });
 }
+
 
 export const Route = createFileRoute("/i/$")({
   server: {
