@@ -119,8 +119,16 @@ export function slugify(input: string) {
  * Diferente de `getSignedUrlCached`, é síncrona: pode ser usada direto no
  * `src` de uma <img> durante o SSR. O redirect assinado é resolvido pela rota
  * `/i/$` no servidor (ver src/routes/i.$.ts) e cacheado na borda.
+ *
+ * @param width Largura desejada em px. Precisa estar na allow-list da rota
+ * (160, 240, 320, 400, 640, 800, 1200, 1600); valores fora dela são ignorados
+ * pelo servidor e o original é servido.
  */
-export function mediaUrl(bucket: string, path: string | null | undefined): string | null {
+export function mediaUrl(
+  bucket: string,
+  path: string | null | undefined,
+  width?: number,
+): string | null {
   if (!path) return null;
   // Backward compat: registros antigos podem guardar a URL completa.
   if (path.startsWith("http")) return path;
@@ -128,5 +136,25 @@ export function mediaUrl(bucket: string, path: string | null | undefined): strin
     .split("/")
     .map((segment) => encodeURIComponent(segment))
     .join("/");
-  return `/i/${bucket}/${encoded}`;
+  const query = width ? `?w=${width}` : "";
+  return `/i/${bucket}/${encoded}${query}`;
 }
+
+/** Larguras padrão para grades de catálogo (2 col mobile → 4 col desktop). */
+export const CARD_IMAGE_WIDTHS = [240, 400, 640, 800] as const;
+
+/**
+ * `srcset` responsivo apontando para o proxy de mídia. Retorna `null` quando
+ * o path é externo (URL completa), caso em que não há variantes a oferecer.
+ */
+export function mediaSrcSet(
+  bucket: string,
+  path: string | null | undefined,
+  widths: readonly number[] = CARD_IMAGE_WIDTHS,
+): string | null {
+  if (!path || path.startsWith("http")) return null;
+  return widths
+    .map((w) => `${mediaUrl(bucket, path, w)} ${w}w`)
+    .join(", ");
+}
+
