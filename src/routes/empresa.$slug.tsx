@@ -45,12 +45,22 @@ export const Route = createFileRoute("/empresa/$slug")({
       website: company.website ?? null,
       phone: company.phone ?? null,
       email: company.email ?? null,
+      // Caminhos crus do storage: viram URLs absolutas estáveis no head().
+      logoPath: company.logo_url ?? null,
+      bannerPath: company.banner_url ?? null,
     };
   },
   head: ({ params, loaderData }) => {
     const url = `https://brinde-gallery.lovable.app/empresa/${params.slug}`;
     const title = loaderData ? `${loaderData.title} — BrindesHub` : "Empresa — BrindesHub";
     const description = loaderData?.description ?? "Empresa não encontrada no BrindesHub.";
+    const SITE = "https://brinde-gallery.lovable.app";
+    const abs = (p: string | null | undefined) => {
+      const rel = mediaUrl("company-assets", p);
+      return rel ? `${SITE}${rel}` : null;
+    };
+    const logoAbs = abs(loaderData?.logoPath);
+    const bannerAbs = abs(loaderData?.bannerPath);
     const scripts = loaderData
       ? [
           {
@@ -61,6 +71,11 @@ export const Route = createFileRoute("/empresa/$slug")({
               name: loaderData.title,
               description,
               url,
+              // Rich results de LocalBusiness exigem imagem; logo é sinal de marca.
+              ...(logoAbs ? { logo: logoAbs } : {}),
+              ...(bannerAbs || logoAbs
+                ? { image: [bannerAbs, logoAbs].filter(Boolean) as string[] }
+                : {}),
               ...(loaderData.website ? { sameAs: [loaderData.website] } : {}),
               ...(loaderData.phone ? { telephone: loaderData.phone } : {}),
               ...(loaderData.email ? { email: loaderData.email } : {}),
