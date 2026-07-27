@@ -132,7 +132,7 @@ export const Route = createFileRoute("/empresa/$slug")({
               {
                 rel: "preload",
                 as: "image",
-                href: (bannerAbs ?? logoAbs)!.replace(SITE, ""),
+                href: `${(bannerAbs ?? logoAbs)!.replace(SITE, "")}?w=${bannerAbs ? 1600 : 240}`,
                 fetchpriority: "high",
               },
             ]
@@ -182,8 +182,9 @@ function CompanyPage() {
   });
 
   // URLs estáveis resolvidas no servidor: banner/logo já saem no HTML de SSR.
-  const bannerUrl = mediaUrl("company-assets", company?.banner_url);
-  const logoUrl = mediaUrl("company-assets", company?.logo_url);
+  // As larguras casam com os `rel=preload` do head — sem download duplicado.
+  const bannerUrl = mediaUrl("company-assets", company?.banner_url, 1600);
+  const logoUrl = mediaUrl("company-assets", company?.logo_url, 240);
 
   if (isLoading) {
     return (

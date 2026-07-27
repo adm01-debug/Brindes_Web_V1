@@ -341,7 +341,7 @@ function ProductPage() {
                       aria-label="Ampliar imagem"
                       className="block h-full w-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <img loading="eager" decoding="async" fetchPriority="high" width={800} height={800} src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <img loading="eager" decoding="async" fetchPriority="high" width={800} height={800} src={galleryUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     </button>
                     <span
                       aria-hidden="true"
@@ -358,10 +358,11 @@ function ProductPage() {
               </div>
               {imageUrls.length > 1 && (
                 <div className="mt-3 flex gap-2 overflow-x-auto">
-                  {imageUrls.map((url, i) => (
+                  {thumbUrls.map((url, i) => (
                     <button
                       key={i}
                       onClick={() => setSelectedIdx(i)}
+                      aria-label={`Ver imagem ${i + 1} de ${thumbUrls.length}`}
                       className={`h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                         i === selectedIdx ? "border-primary" : "border-transparent"
                       }`}
