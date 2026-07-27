@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 
 const BASE = process.env.TEST_BASE_URL ?? "http://localhost:8080";
 
-const ROUTES = ["/", "/empresas", "/produtos", "/kits", "/comparar"];
+const ROUTES = ["/", "/empresas", "/buscar", "/kits", "/comparar"];
 
 const IMG_TAG = /<img\b[^>]*>/gi;
 
