@@ -86,7 +86,10 @@ function KitsListPage() {
                         <img
                           src={k.cover_url}
                           alt={k.name}
+                          width={640}
+                          height={360}
                           loading="lazy"
+                          decoding="async"
                           className="h-full w-full object-cover transition-transform group-hover:scale-105"
                         />
                       )}
