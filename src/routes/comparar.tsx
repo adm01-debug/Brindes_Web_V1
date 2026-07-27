@@ -209,7 +209,7 @@ function ProductHeader({ product, onRemove }: { product: CompareProduct; onRemov
       <Link to="/produto/$id" params={{ id: product.id }} className="block">
         <div className="aspect-square bg-muted">
           {imgUrl ? (
-            <img src={imgUrl} alt={product.name} loading="lazy" className="h-full w-full object-cover" />
+            <img src={imgUrl} alt={product.name} width={400} height={400} loading="lazy" decoding="async" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-muted-foreground">
               <Package className="h-10 w-10" aria-hidden />

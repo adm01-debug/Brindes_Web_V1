@@ -63,6 +63,8 @@ export function RecentlyViewed({ excludeId, title = "Vistos recentemente", class
               <div className="aspect-square bg-muted">
                 {urls[p.id] ? (
                   <img
+                    width={240}
+                    height={240}
                     src={urls[p.id]}
                     alt={p.name}
                     loading="lazy"

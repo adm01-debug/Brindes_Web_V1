@@ -318,7 +318,7 @@ function ProductPage() {
                       aria-label="Ampliar imagem"
                       className="block h-full w-full cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                      <img loading="eager" decoding="async" fetchPriority="high" src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <img loading="eager" decoding="async" fetchPriority="high" width={800} height={800} src={imageUrls[selectedIdx]} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                     </button>
                     <span
                       aria-hidden="true"
@@ -343,7 +343,7 @@ function ProductPage() {
                         i === selectedIdx ? "border-primary" : "border-transparent"
                       }`}
                     >
-                      <img loading="lazy" decoding="async" src={url} alt="" className="h-full w-full object-cover" />
+                      <img loading="lazy" decoding="async" width={80} height={80} src={url} alt="" className="h-full w-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -580,6 +580,8 @@ function RelatedProducts({
                 <img
                   loading="lazy"
                   decoding="async"
+                  width={300}
+                  height={300}
                   src={urls[p.id]}
                   alt={p.name}
                   className="h-full w-full object-cover transition-transform group-hover:scale-105"
