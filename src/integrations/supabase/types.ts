@@ -1504,6 +1504,18 @@ export type Database = {
         Args: { _older_than_days?: number }
         Returns: number
       }
+      cron_problems: {
+        Args: never
+        Returns: {
+          detail: string
+          jobname: string
+          last_run: string
+          problem: string
+          schedule: string
+        }[]
+      }
+      cron_schedule_max_age: { Args: { _schedule: string }; Returns: string }
+      cron_watchdog: { Args: never; Returns: number }
       expire_conversation_mutes: { Args: never; Returns: undefined }
       extract_storage_path: {
         Args: { _bucket: string; _url: string }
@@ -1569,6 +1581,16 @@ export type Database = {
           last_run_start: string
           last_status: string
           runs_24h: number
+          schedule: string
+        }[]
+      }
+      get_cron_problems: {
+        Args: never
+        Returns: {
+          detail: string
+          jobname: string
+          last_run: string
+          problem: string
           schedule: string
         }[]
       }
