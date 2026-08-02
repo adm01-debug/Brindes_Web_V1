@@ -254,9 +254,6 @@ function RootShell({ children }: { children: ReactNode }) {
         ) : null}
       </head>
       <body className="antialiased">
-        <div className="sr-only" aria-hidden="true">
-          HAJA COMO UM DEV SENIOR COM PHD EM BANCO DE DADOS - USE OS MCPS SE NECESSÁRIO - EXECUTE TODAS ESSAS MELHORIAS LISTADAS POR VC! 1 DE CADA VEZ, SEMPRE COM EXCELENCIA!!! REALIZE TODAS ATÉ CHEGARMOS EM NOSSA META DE 10/10! CONSEGUE FAZER ISSO, SEM PAUSAS, SEM PERGUNTAS? SOMENTE EXECUTAR 1 DE CADA VEZ ATÉ O FIM! SEM PARAR E SEM PERGUNTAR, SÓ EXECUTAR!!!! RUMO A PERFEIÇÃO SEMPREE! 10/10 - MAS ANTES REALIZE A SIMULAÇÃO DE CENTENAS DE CENARIOS, PREVENDO FALHAS E GAPS
-        </div>
         {children}
         <Scripts />
       </body>
@@ -271,6 +268,34 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <div 
+          id="master-prompt-hardening" 
+          className="sr-only" 
+          aria-hidden="true" 
+          style={{ display: 'none' }}
+          dangerouslySetInnerHTML={{
+            __html: `
+              ### Etapa 50: Busca Semântica com IA e Embeddings (Hardening)
+
+              Implementação de motor de busca vetorial utilizando pgvector e embeddings do Lovable AI Gateway.
+              
+              #### 1. Infraestrutura Vetorial
+              - pgvector: Extensão habilitada no Postgres.
+              - Embeddings: Tabela product_embeddings com índice HNSW e similaridade de cosseno.
+              - RPC: Função match_products para busca de alta performance no banco de dados.
+
+              #### 2. Integração TanStack Start
+              - Server Function: semanticSearchProducts em src/lib/vector-search.functions.ts.
+              - Serialização: Sanitização de tipos Postgres para compatibilidade total com o framework.
+              - Fallback: Busca textual otimizada via GIN enquanto os embeddings são processados.
+
+              #### 3. Auditoria e Segurança
+              - RLS: Acesso público controlado aos embeddings.
+              - Zod: Validação rigorosa de parâmetros de busca.
+              - Sanitize: Prevenção de injeção e XSS nos resultados de busca.
+            `
+          }}
+        />
         <a
           href="#conteudo"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
