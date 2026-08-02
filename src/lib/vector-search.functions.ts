@@ -35,7 +35,7 @@ export const semanticSearchProducts = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<SemanticSearchResult[]> => {
     const { data: rows, error } = await supabase.rpc("search_products", {
       _q: data.query,
-      _sort: "relevancia",
+      _sort: "relevance",
       _page: 1,
       _page_size: data.limit,
     });
