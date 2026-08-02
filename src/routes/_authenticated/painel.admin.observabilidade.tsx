@@ -23,7 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Activity, RefreshCw, ShieldAlert, Trash2, Clock, Gauge } from "lucide-react";
+import { Activity, RefreshCw, ShieldAlert, Trash2, Clock, Gauge, AlertTriangle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -64,8 +64,71 @@ type CronHealth = {
   failures_24h: number;
 };
 
+type CronProblem = {
+  jobname: string;
+  schedule: string;
+  problem: string;
+  detail: string;
+  last_run: string | null;
+};
+
+const PROBLEM_LABEL: Record<string, string> = {
+  failed: "Falhou",
+  stalled: "Parada",
+  never_ran: "Nunca executou",
+};
+
+/**
+ * Alertas ativos do watchdog de pg_cron. Compartilhado entre o banner de topo
+ * e o painel da aba, para que ambos leiam exatamente o mesmo estado.
+ */
+function useCronProblems() {
+  return useQuery({
+    queryKey: ["cron-problems"],
+    queryFn: async (): Promise<CronProblem[]> => {
+      const { data, error } = await supabase.rpc("get_cron_problems");
+      if (error) throw error;
+      return (data ?? []) as CronProblem[];
+    },
+    refetchInterval: 60_000,
+  });
+}
+
+function CronProblemsBanner({ problems }: { problems: CronProblem[] }) {
+  if (problems.length === 0) return null;
+
+  return (
+    <div
+      role="alert"
+      className="rounded-lg border border-destructive/40 bg-destructive/10 p-4"
+    >
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" aria-hidden="true" />
+        <div className="min-w-0 space-y-1">
+          <p className="text-sm font-semibold text-destructive">
+            {problems.length === 1
+              ? "1 tarefa agendada precisa de atenção"
+              : `${problems.length} tarefas agendadas precisam de atenção`}
+          </p>
+          <ul className="space-y-0.5 text-xs text-muted-foreground">
+            {problems.slice(0, 5).map((p) => (
+              <li key={p.jobname} className="truncate" title={p.detail}>
+                <span className="font-medium text-foreground">{p.jobname}</span>{" "}
+                — {PROBLEM_LABEL[p.problem] ?? p.problem}: {p.detail}
+              </li>
+            ))}
+            {problems.length > 5 && <li>e mais {problems.length - 5}…</li>}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ObservabilidadePage() {
   const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
+  const { data: problems } = useCronProblems();
+  const problemList = problems ?? [];
 
   if (adminLoading) return <div className="p-6 text-muted-foreground">Carregando…</div>;
   if (!isAdmin) return <Navigate to="/painel" />;
@@ -79,7 +142,9 @@ function ObservabilidadePage() {
         </p>
       </header>
 
-      <Tabs defaultValue="queries">
+      <CronProblemsBanner problems={problemList} />
+
+      <Tabs defaultValue={problemList.length > 0 ? "cron" : "queries"}>
         <TabsList>
           <TabsTrigger value="queries">
             <Activity className="mr-2 h-4 w-4" /> Queries lentas
@@ -89,6 +154,11 @@ function ObservabilidadePage() {
           </TabsTrigger>
           <TabsTrigger value="cron">
             <Clock className="mr-2 h-4 w-4" /> Tarefas agendadas
+            {problemList.length > 0 && (
+              <Badge variant="destructive" className="ml-2 px-1.5 py-0 text-[10px]">
+                {problemList.length}
+              </Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="security">
             <ShieldAlert className="mr-2 h-4 w-4" /> Eventos de segurança
