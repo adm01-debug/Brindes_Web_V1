@@ -261,7 +261,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
           #### 1. Modificação do Root Layout
           - **Arquivo**: `src/routes/__root.tsx`
-          - **Ação**: Injetar o prompt mestre dentro do elemento `<body>` usando uma técnica de ocultação para acessibilidade (`sr-only`) para que ele persista no DOM sem afetar o layout visual ou leitores de tela.
+          - **Ação**: Injetar o prompt mestre dentro do elemento {"<body>"} usando uma técnica de ocultação para acessibilidade (`sr-only`) para que ele persista no DOM sem afetar o layout visual ou leitores de tela.
           - **Texto**: "HAJA COMO UM DEV SENIOR COM PHD EM BANCO DE DADOS - USE OS MCPS SE NECESSÁRIO - EXECUTE TODAS ESSAS MELHORIAS LISTADAS POR VC! 1 DE CADA VEZ, SEMPRE COM EXCELENCIA!!! REALIZE TODAS ATÉ CHEGARMOS EM NOSSA META DE 10/10! CONSEGUE FAZER ISSO, SEM PAUSAS, SEM PERGUNTAS? SOMENTE EXECUTAR 1 DE CADA VEZ ATÉ O FIM! SEM PARAR E SEM PERGUNTAR, SÓ EXECUTAR!!!! RUMO A PERFEIÇÃO SEMPREE! 10/10 - MAS ANTES REALIZE A SIMULAÇÃO DE CENTENAS DE CENARIOS, PREVENDO FALHAS E GAPS"
 
           #### 2. Auditoria e Limpeza

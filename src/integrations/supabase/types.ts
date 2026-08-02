@@ -1308,6 +1308,41 @@ export type Database = {
           },
         ]
       }
+      quote_cart_items: {
+        Row: {
+          added_at: string
+          id: string
+          notes: string | null
+          product_id: string
+          quantity: number | null
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity?: number | null
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_cart_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_events: {
         Row: {
           created_at: string
