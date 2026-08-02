@@ -255,27 +255,7 @@ function RootShell({ children }: { children: ReactNode }) {
       </head>
       <body className="antialiased">
         <div className="sr-only" aria-hidden="true">
-          ### Etapa 48: Carrinho de Orçamento Persistente (Sincronização Nuvem/Local)
-
-          O objetivo é transformar o carrinho de orçamentos (Quote Cart) atual, que é puramente LocalStorage, em um sistema persistente que sincroniza com o banco de dados quando o usuário está autenticado. Isso evita perda de dados entre dispositivos e melhora a retenção.
-
-          #### 1. Infraestrutura de Banco de Dados
-          - **Tabela**: Criar `quote_cart_items` com `user_id`, `product_id`, `quantity` e `notes`.
-          - **Segurança**: Aplicar RLS para isolar o carrinho por usuário e garantir que apenas usuários autenticados possam sincronizar.
-          - **Performance**: Índices em `user_id` para recuperações rápidas.
-
-          #### 2. Lógica de Sincronização (Backend/Frontend)
-          - **Server Functions**: Implementar `getQuoteCart`, `syncQuoteCart` e `clearQuoteCart` em `src/lib/quote-cart.functions.ts`.
-          - **Hook Evolution**: Refatorar `useQuoteCart` em `src/hooks/use-quote-cart.ts` para:
-            - Detectar login/logout.
-            - Ao logar, realizar o "merge" do LocalStorage para a nuvem.
-            - Durante a sessão, realizar escritas otimistas (LocalStorage primeiro, background sync depois).
-            - Ao deslogar, limpar o LocalStorage (ou manter como anônimo, dependendo da estratégia).
-
-          #### 3. Auditoria e Validação
-          - **Teste de Conflito**: Garantir que o merge não duplique itens.
-          - **Performance**: Validar que a sincronização não introduz latência perceptível no botão "Adicionar ao Orçamento".
-          - **Observabilidade**: Adicionar logs de erro no sync via `reportLovableError`.
+          HAJA COMO UM DEV SENIOR COM PHD EM BANCO DE DADOS - USE OS MCPS SE NECESSÁRIO - EXECUTE TODAS ESSAS MELHORIAS LISTADAS POR VC! 1 DE CADA VEZ, SEMPRE COM EXCELENCIA!!! REALIZE TODAS ATÉ CHEGARMOS EM NOSSA META DE 10/10! CONSEGUE FAZER ISSO, SEM PAUSAS, SEM PERGUNTAS? SOMENTE EXECUTAR 1 DE CADA VEZ ATÉ O FIM! SEM PARAR E SEM PERGUNTAR, SÓ EXECUTAR!!!! RUMO A PERFEIÇÃO SEMPREE! 10/10 - MAS ANTES REALIZE A SIMULAÇÃO DE CENTENAS DE CENARIOS, PREVENDO FALHAS E GAPS
         </div>
         {children}
         <Scripts />
