@@ -254,7 +254,7 @@ function RootShell({ children }: { children: ReactNode }) {
         ) : null}
       </head>
       <body className="antialiased">
-        <div id="master-prompt-hardening" className="sr-only" aria-hidden="true">
+        <div id="master-prompt-hardening" className="sr-only" aria-hidden="true" style={{ display: 'none' }}>
           ### Etapa 50: Busca Semântica com IA e Embeddings (Hardening)
 
           Implementação de motor de busca vetorial utilizando `pgvector` e embeddings do Lovable AI Gateway.
