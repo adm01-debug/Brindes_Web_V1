@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const QuoteCartItemSchema = z.object({
   product_id: z.string().uuid(),
@@ -19,7 +18,7 @@ export const getQuoteCart = createServerFn({ method: "GET" })
       .order("added_at", { ascending: true });
 
     if (error) throw error;
-    return data;
+    return data as { product_id: string; quantity: number | null; notes: string | null; added_at: string }[];
   });
 
 export const syncQuoteCart = createServerFn({ method: "POST" })
@@ -28,30 +27,14 @@ export const syncQuoteCart = createServerFn({ method: "POST" })
     const { supabase, userId } = context as any;
     if (!userId) return { success: false, error: "Unauthorized" };
 
-    // Upsert items for the user
     const toUpsert = items.map(item => ({
       user_id: userId,
-      ...item,
-      updated_at: new Date().toISOString()
+      ...item
     }));
 
     const { error } = await supabase
       .from("quote_cart_items")
       .upsert(toUpsert, { onConflict: "user_id, product_id" });
-
-    if (error) throw error;
-    return { success: true };
-  });
-
-export const clearQuoteCart = createServerFn({ method: "POST" })
-  .handler(async ({ context }) => {
-    const { supabase, userId } = context as any;
-    if (!userId) return { success: false, error: "Unauthorized" };
-
-    const { error } = await supabase
-      .from("quote_cart_items")
-      .delete()
-      .eq("user_id", userId);
 
     if (error) throw error;
     return { success: true };
@@ -68,6 +51,20 @@ export const removeFromQuoteCart = createServerFn({ method: "POST" })
       .delete()
       .eq("user_id", userId)
       .eq("product_id", product_id);
+
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const clearQuoteCart = createServerFn({ method: "POST" })
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as any;
+    if (!userId) return { success: false, error: "Unauthorized" };
+
+    const { error } = await supabase
+      .from("quote_cart_items")
+      .delete()
+      .eq("user_id", userId);
 
     if (error) throw error;
     return { success: true };

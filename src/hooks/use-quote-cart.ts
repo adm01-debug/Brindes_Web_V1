@@ -70,21 +70,19 @@ export function useQuoteCart() {
       if (user) {
         try {
           const remoteItems = await getQuoteCart();
-          // Merge simplificado: itens locais que não estão no remoto são enviados
-          const remoteIds = new Set(remoteItems.map(i => i.product_id));
+          const remoteIds = new Set(remoteItems.map((i: any) => i.product_id));
           const localOnly = localItems.filter(i => !remoteIds.has(i.product_id));
           
           if (localOnly.length > 0) {
-            await syncQuoteCart(localOnly.map(i => ({
+            await syncQuoteCart({ data: localOnly.map(i => ({
               product_id: i.product_id,
               quantity: i.quantity,
               notes: i.notes
-            })));
-            // Recarrega após merge
+            }))});
+            
             const updatedRemote = await getQuoteCart();
-            // Precisamos dos metadados locais (nome, empresa, imagem) que não estão na tabela sync
             localItems = localItems.map(li => {
-              const ri = updatedRemote.find(r => r.product_id === li.product_id);
+              const ri = updatedRemote.find((r: any) => r.product_id === li.product_id);
               return ri ? { ...li, quantity: ri.quantity, notes: ri.notes } : li;
             });
           }
@@ -121,11 +119,11 @@ export function useQuoteCart() {
 
     if (user) {
       try {
-        await syncQuoteCart([{
+        await syncQuoteCart({ data: [{
           product_id: item.product_id,
           quantity: item.quantity,
           notes: item.notes
-        }]);
+        }]});
       } catch (err) {
         reportLovableError(err, { context: "quote_cart_add_sync" });
       }
@@ -140,7 +138,7 @@ export function useQuoteCart() {
 
     if (user) {
       try {
-        await removeFromQuoteCart({ product_id: productId });
+        await removeFromQuoteCart({ data: { product_id: productId } });
       } catch (err) {
         reportLovableError(err, { context: "quote_cart_remove_sync" });
       }
@@ -155,11 +153,11 @@ export function useQuoteCart() {
 
     if (user) {
       try {
-        await syncQuoteCart([{
+        await syncQuoteCart({ data: [{
           product_id: productId,
           quantity,
           notes: next.find(i => i.product_id === productId)?.notes || null
-        }]);
+        }]});
       } catch (err) {
         reportLovableError(err, { context: "quote_cart_qty_sync" });
       }
@@ -175,11 +173,11 @@ export function useQuoteCart() {
 
     if (user) {
       try {
-        await syncQuoteCart([{
+        await syncQuoteCart({ data: [{
           product_id: productId,
           quantity: next.find(i => i.product_id === productId)?.quantity || null,
           notes: clean
-        }]);
+        }]});
       } catch (err) {
         reportLovableError(err, { context: "quote_cart_notes_sync" });
       }
