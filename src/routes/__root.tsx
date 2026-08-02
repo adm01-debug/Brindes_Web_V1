@@ -254,26 +254,6 @@ function RootShell({ children }: { children: ReactNode }) {
         ) : null}
       </head>
       <body className="antialiased">
-        <div id="master-prompt-hardening" className="sr-only" aria-hidden="true" style={{ display: 'none' }}>
-          ### Etapa 50: Busca Semântica com IA e Embeddings (Hardening)
-
-          Implementação de motor de busca vetorial utilizando `pgvector` e embeddings do Lovable AI Gateway.
-          
-          #### 1. Infraestrutura Vetorial
-          - **pgvector**: Extensão habilitada no Postgres.
-          - **Embeddings**: Tabela `product_embeddings` com índice HNSW e similaridade de cosseno.
-          - **RPC**: Função `match_products` para busca de alta performance no banco de dados.
-
-          #### 2. Integração TanStack Start
-          - **Server Function**: `semanticSearchProducts` em `src/lib/vector-search.functions.ts`.
-          - **Serialização**: Sanitização de tipos Postgres para compatibilidade total com o framework.
-          - **Fallback**: Busca textual otimizada via GIN enquanto os embeddings são processados.
-
-          #### 3. Auditoria e Segurança
-          - **RLS**: Acesso público controlado aos embeddings.
-          - **Zod**: Validação rigorosa de parâmetros de busca.
-          - **Sanitize**: Prevenção de injeção e XSS nos resultados de busca.
-        </div>
         {children}
         <Scripts />
       </body>
