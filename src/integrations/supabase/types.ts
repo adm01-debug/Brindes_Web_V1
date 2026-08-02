@@ -928,6 +928,44 @@ export type Database = {
           },
         ]
       }
+      product_embeddings: {
+        Row: {
+          content: string
+          created_at: string | null
+          embedding: string | null
+          id: string
+          metadata: Json | null
+          product_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          metadata?: Json | null
+          product_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          metadata?: Json | null
+          product_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_embeddings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_facets: {
         Row: {
           created_at: string
@@ -1670,6 +1708,20 @@ export type Database = {
       }
       leads_purge: { Args: { _older_than_days?: number }; Returns: number }
       mark_leads_read: { Args: { _ids: string[] }; Returns: number }
+      match_products: {
+        Args: {
+          match_count: number
+          match_threshold: number
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          id: string
+          metadata: Json
+          product_id: string
+          similarity: number
+        }[]
+      }
       metrics_daily_snapshot: { Args: { _day?: string }; Returns: undefined }
       product_views_purge: {
         Args: { _older_than_days?: number }
